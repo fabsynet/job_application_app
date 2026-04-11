@@ -168,27 +168,82 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Traceability
 
-Which phases cover which requirements. Populated during roadmap creation.
+Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one phase.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01..07 | TBD | Pending |
-| CONF-01..08 | TBD | Pending |
-| DISC-01..07 | TBD | Pending |
-| MANL-01..06 | TBD | Pending |
-| MATCH-01..03 | TBD | Pending |
-| TAIL-01..09 | TBD | Pending |
-| SUBM-01..07 | TBD | Pending |
-| LEARN-01..05 | TBD | Pending |
-| REVW-01..07 | TBD | Pending |
-| NOTIF-01..02 | TBD | Pending |
-| SAFE-01..04 | TBD | Pending |
+| FOUND-01 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 1 | Pending |
+| FOUND-05 | Phase 1 | Pending |
+| FOUND-06 | Phase 1 | Pending |
+| FOUND-07 | Phase 1 | Pending |
+| CONF-01 | Phase 2 | Pending |
+| CONF-02 | Phase 2 | Pending |
+| CONF-03 | Phase 2 | Pending |
+| CONF-04 | Phase 2 | Pending |
+| CONF-05 | Phase 2 | Pending |
+| CONF-06 | Phase 2 | Pending |
+| CONF-07 | Phase 2 | Pending |
+| CONF-08 | Phase 2 | Pending |
+| DISC-01 | Phase 3 | Pending |
+| DISC-02 | Phase 3 | Pending |
+| DISC-03 | Phase 3 | Pending |
+| DISC-04 | Phase 3 | Pending |
+| DISC-05 | Phase 3 | Pending |
+| DISC-06 | Phase 3 | Pending |
+| DISC-07 | Phase 1 | Pending |
+| MANL-01 | Phase 5 | Pending |
+| MANL-02 | Phase 5 | Pending |
+| MANL-03 | Phase 5 | Pending |
+| MANL-04 | Phase 5 | Pending |
+| MANL-05 | Phase 5 | Pending |
+| MANL-06 | Phase 5 | Pending |
+| MATCH-01 | Phase 3 | Pending |
+| MATCH-02 | Phase 3 | Pending |
+| MATCH-03 | Phase 3 | Pending |
+| TAIL-01 | Phase 4 | Pending |
+| TAIL-02 | Phase 4 | Pending |
+| TAIL-03 | Phase 4 | Pending |
+| TAIL-04 | Phase 4 | Pending |
+| TAIL-05 | Phase 4 | Pending |
+| TAIL-06 | Phase 4 | Pending |
+| TAIL-07 | Phase 4 | Pending |
+| TAIL-08 | Phase 4 | Pending |
+| TAIL-09 | Phase 4 | Pending |
+| SUBM-01 | Phase 5 | Pending |
+| SUBM-02 | Phase 5 | Pending |
+| SUBM-03 | Phase 6 | Pending |
+| SUBM-04 | Phase 6 | Pending |
+| SUBM-05 | Phase 6 | Pending |
+| SUBM-06 | Phase 5 | Pending |
+| SUBM-07 | Phase 5 | Pending |
+| LEARN-01 | Phase 6 | Pending |
+| LEARN-02 | Phase 6 | Pending |
+| LEARN-03 | Phase 6 | Pending |
+| LEARN-04 | Phase 6 | Pending |
+| LEARN-05 | Phase 6 | Pending |
+| REVW-01 | Phase 5 | Pending |
+| REVW-02 | Phase 5 | Pending |
+| REVW-03 | Phase 5 | Pending |
+| REVW-04 | Phase 5 | Pending |
+| REVW-05 | Phase 5 | Pending |
+| REVW-06 | Phase 5 | Pending |
+| REVW-07 | Phase 5 | Pending |
+| NOTIF-01 | Phase 5 | Pending |
+| NOTIF-02 | Phase 5 | Pending |
+| SAFE-01 | Phase 1 | Pending |
+| SAFE-02 | Phase 1 | Pending |
+| SAFE-03 | Phase 1 | Pending |
+| SAFE-04 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 58 total
-- Mapped to phases: 0 (roadmap not yet created)
-- Unmapped: 58 ⚠️ (expected — populated by roadmapper next)
+- v1 requirements enumerated: 65 total (summary previously said 58 — discrepancy between the "58 total" note and the actual enumerated list; the 65 count is authoritative)
+- Mapped to phases: 65
+- Unmapped: 0
+- Distribution: Phase 1 = 11, Phase 2 = 8, Phase 3 = 9, Phase 4 = 10, Phase 5 = 19, Phase 6 = 8
 
 ---
 *Requirements defined: 2026-04-11*
-*Last updated: 2026-04-11 after initial definition*
+*Last updated: 2026-04-11 after roadmap creation (traceability populated)*
