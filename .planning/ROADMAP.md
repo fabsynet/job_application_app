@@ -29,7 +29,12 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
   3. User can flip a dry-run toggle and a kill-switch from the UI, and the scheduler immediately respects both
   4. User's secrets (Fernet-encrypted) survive container restart, and no PII or resume content ever appears in stdout/log files
   5. The rate-limit envelope (daily application cap, randomized per-source delays, jittered inter-action waits) is enforced by the scheduler before any downstream stage is even wired up
-**Plans**: TBD
+**Plans**: 5 plans
+  - [ ] 01-01-PLAN.md — Docker + SQLite + Alembic foundation (config, models, migration)
+  - [ ] 01-02-PLAN.md — FernetVault + two-layer log scrubber + zero-PII assertion test
+  - [ ] 01-03-PLAN.md — SchedulerService, run-lock, kill-switch, rate limiter, FastAPI lifespan, /health
+  - [ ] 01-04-PLAN.md — Dashboard, toggles, runs list/detail, settings page (HTMX + Jinja + Pico.css)
+  - [ ] 01-05-PLAN.md — Setup wizard, rotation banner, end-to-end goal-backward test suite, README
 
 ### Phase 2: Configuration, Profile & Resume Upload
 **Goal**: A user can configure every input the pipeline will need — keywords, threshold, profile, base resume, API keys, schedule, budget, mode — without any scraping, matching, or submission logic existing yet.
