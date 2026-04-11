@@ -92,6 +92,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **REVW-05**: App maintains an application history (job, company, status, resume version, match score, timestamp, source)
 - [ ] **REVW-06**: Dashboard shows counts by state (applied / queued / skipped / failed) for today and the last 7 days
 - [ ] **REVW-07**: User can download the tailored resume artifact for any past application
+- [ ] **REVW-08**: Dashboard shows an applied-jobs table listing every submitted application with role/title, company, source, submission timestamp, match score, and status
+- [ ] **REVW-09**: User can click any row to open a detail view showing the full job description/requirements, the tailored DOCX resume used (preview + download), the cover letter body used (if any), which submitter was used, and the submission timestamp
+- [ ] **REVW-10**: Applied-jobs dashboard is filterable by source and status and sortable by date, match score, and company
 
 ### Notifications
 
@@ -231,6 +234,9 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | REVW-05 | Phase 5 | Pending |
 | REVW-06 | Phase 5 | Pending |
 | REVW-07 | Phase 5 | Pending |
+| REVW-08 | Phase 5 | Pending |
+| REVW-09 | Phase 5 | Pending |
+| REVW-10 | Phase 5 | Pending |
 | NOTIF-01 | Phase 5 | Pending |
 | NOTIF-02 | Phase 5 | Pending |
 | SAFE-01 | Phase 1 | Pending |
@@ -239,10 +245,10 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | SAFE-04 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements enumerated: 65 total (summary previously said 58 — discrepancy between the "58 total" note and the actual enumerated list; the 65 count is authoritative)
-- Mapped to phases: 65
+- v1 requirements enumerated: 68 total
+- Mapped to phases: 68
 - Unmapped: 0
-- Distribution: Phase 1 = 11, Phase 2 = 8, Phase 3 = 9, Phase 4 = 10, Phase 5 = 19, Phase 6 = 8
+- Distribution: Phase 1 = 11, Phase 2 = 8, Phase 3 = 9, Phase 4 = 10, Phase 5 = 22, Phase 6 = 8
 
 ---
 *Requirements defined: 2026-04-11*

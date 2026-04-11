@@ -70,14 +70,15 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
 ### Phase 5: Email Submission, Review Queue, Manual Apply & Notifications
 **Goal**: A user's first real job applications go out — via email-apply only, through the full review-queue state machine, with per-job summary emails and support for pasting a URL to apply manually. The full-auto toggle goes live here, gated by the review queue the user has already built trust in.
 **Depends on**: Phase 4
-**Requirements**: SUBM-01, SUBM-02, SUBM-06, SUBM-07, REVW-01, REVW-02, REVW-03, REVW-04, REVW-05, REVW-06, REVW-07, NOTIF-01, NOTIF-02, MANL-01, MANL-02, MANL-03, MANL-04, MANL-05, MANL-06
+**Requirements**: SUBM-01, SUBM-02, SUBM-06, SUBM-07, REVW-01, REVW-02, REVW-03, REVW-04, REVW-05, REVW-06, REVW-07, REVW-08, REVW-09, REVW-10, NOTIF-01, NOTIF-02, MANL-01, MANL-02, MANL-03, MANL-04, MANL-05, MANL-06
 **Success Criteria** (what must be TRUE):
   1. User approves a tailored application in the review queue (with inline base-vs-tailored diff) and an email with the tailored DOCX attached arrives at the posted contact email
   2. User flips to full-auto mode and watches the next hourly run submit applications without human approval, honoring the daily cap and randomized delays
   3. User pastes a random job posting URL into the UI and that job routes through the same fetch -> tailor -> email pipeline, bypassing keyword match but respecting dedup
   4. User receives exactly one per-job summary email on every successful submission (job, company, match score, tailored resume attached, submitter used) and one failure notification when a run breaks
   5. User sees a dashboard showing counts by state (applied/queued/skipped/failed) for today and the last 7 days, and can download the tailored resume artifact for any past application
-  6. Re-running against the same application record never double-submits — submitter idempotency is verifiable by forcing a mid-run crash and confirming no duplicate email on retry
+  6. User sees an applied-jobs table listing every submitted application (role, company, source, timestamp, match score, status), can filter by source/status and sort by date/score/company, and can click any row to open a detail view with the full job description, tailored DOCX (preview + download), and cover letter body used
+  7. Re-running against the same application record never double-submits — submitter idempotency is verifiable by forcing a mid-run crash and confirming no duplicate email on retry
 **Plans**: TBD
 
 ### Phase 6: Playwright Browser Submission & Learning Loop
@@ -108,13 +109,13 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 ## Coverage
 
-**Total v1 requirements mapped:** 65/65 (the REQUIREMENTS.md summary says "58 total" but the enumerated list contains 65 — discrepancy flagged for correction during phase planning)
+**Total v1 requirements mapped:** 68/68
 
 - Phase 1: 11 requirements (FOUND-01..07, DISC-07, SAFE-01, SAFE-02, SAFE-03)
 - Phase 2: 8 requirements (CONF-01..08)
 - Phase 3: 9 requirements (DISC-01..06, MATCH-01..03)
 - Phase 4: 10 requirements (TAIL-01..09, SAFE-04)
-- Phase 5: 19 requirements (SUBM-01, SUBM-02, SUBM-06, SUBM-07, REVW-01..07, NOTIF-01..02, MANL-01..06)
+- Phase 5: 22 requirements (SUBM-01, SUBM-02, SUBM-06, SUBM-07, REVW-01..10, NOTIF-01..02, MANL-01..06)
 - Phase 6: 8 requirements (SUBM-03, SUBM-04, SUBM-05, LEARN-01..05)
 
 No orphans. No duplicates. v1.x (LinkedIn, Indeed, Ollama) and v2 (semantic matching, IMAP, multi-profile) are intentionally out of this roadmap.
