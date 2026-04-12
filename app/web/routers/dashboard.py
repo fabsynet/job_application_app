@@ -24,12 +24,15 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import select
 
+from app.db.models import Secret
 from app.runs.service import list_recent_runs
+from app.security.fernet import InvalidFernetKey
 from app.settings.service import get_settings_row
-from app.web.deps import get_killswitch, get_scheduler, get_session
+from app.web.deps import get_killswitch, get_scheduler, get_session, get_vault
 
 router = APIRouter()
 
@@ -82,7 +85,31 @@ async def _common_ctx(request, session, svc, ks) -> dict:
         "next_run_human": _humanize_seconds(svc.next_run_iso()),
         "last_run": last_run,
         "recent_runs": runs,
+        "rotation_banner": None,
     }
+
+
+async def _detect_rotation(session, vault) -> Optional[str]:
+    """Return a banner string if any stored Secret fails to decrypt.
+
+    Used only by the full dashboard page render (not by HTMX fragments) to
+    avoid re-running the decrypt probe on every 5-second poll. Stored rows
+    that fail are preserved in the DB — the banner is remediation, not
+    auto-deletion.
+    """
+    result = await session.execute(select(Secret).limit(1))
+    sample = result.scalar_one_or_none()
+    if sample is None:
+        return None
+    try:
+        vault.decrypt(sample.ciphertext)
+    except InvalidFernetKey:
+        return (
+            "Stored secrets cannot be decrypted. The FERNET_KEY appears to "
+            "have changed since these secrets were saved. Re-enter your API "
+            "keys and credentials in Settings to restore them."
+        )
+    return None
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -91,8 +118,20 @@ async def dashboard(
     session=Depends(get_session),
     svc=Depends(get_scheduler),
     ks=Depends(get_killswitch),
+    vault=Depends(get_vault),
 ):
+    """Full dashboard render with wizard guard + rotation banner detection.
+
+    Guard: fresh ``./data`` boots with ``Settings.wizard_complete=False``;
+    this redirects to ``/setup/1`` so the user walks through the wizard on
+    first arrival. ``POST /setup/skip`` or completing step 3 flips the flag
+    and this handler then serves the full dashboard.
+    """
+    row = await get_settings_row(session)
+    if not row.wizard_complete:
+        return RedirectResponse("/setup/1", status_code=307)
     ctx = await _common_ctx(request, session, svc, ks)
+    ctx["rotation_banner"] = await _detect_rotation(session, vault)
     return templates.TemplateResponse(request, "dashboard.html.j2", ctx)
 
 

@@ -1,0 +1,18 @@
+{% extends "wizard/_layout.html.j2" %}
+{% block wizard_content %}
+<section>
+  <h4>Keywords</h4>
+  <p>
+    Enter one keyword per line. Phase 2 will use these as the match set for
+    job discovery. You can edit this list later from the Settings page.
+  </p>
+
+  <form method="post" action="/setup/3">
+    <label>
+      Keywords (one per line)
+      <textarea name="keywords" rows="10" placeholder="python&#10;rust&#10;distributed systems">{{ keywords_text }}</textarea>
+    </label>
+    <button type="submit">Finish setup &rarr;</button>
+  </form>
+</section>
+{% endblock %}

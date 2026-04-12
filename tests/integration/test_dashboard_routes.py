@@ -48,6 +48,15 @@ async def live_app(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     importlib.reload(main_module)
 
     app = main_module.create_app()
+
+    # Dashboard routes assume a completed wizard; seed the flag directly so
+    # these tests keep exercising the post-wizard surface. Wizard-flow tests
+    # live in test_wizard_flow.py and drive the redirect path explicitly.
+    from app.settings.service import set_setting
+
+    async with base_module.async_session() as session:
+        await set_setting(session, "wizard_complete", True)
+
     yield app, base_module
 
     await base_module.engine.dispose()

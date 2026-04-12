@@ -1,6 +1,17 @@
 {% extends "base.html.j2" %}
 {% block title %}Dashboard &mdash; Job Apply{% endblock %}
 {% block content %}
+{% if rotation_banner %}
+<article class="contrast" id="rotation-banner" style="border: 2px solid var(--pico-del-color, #d33);">
+  <header>
+    <strong>FERNET_KEY rotation detected</strong>
+  </header>
+  <p>{{ rotation_banner }}</p>
+  <footer>
+    <a href="/settings" role="button">Go to Settings &rarr;</a>
+  </footer>
+</article>
+{% endif %}
 <article>
   <header>
     <hgroup>

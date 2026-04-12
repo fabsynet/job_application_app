@@ -50,6 +50,7 @@ from app.web.routers import health as health_router
 from app.web.routers import runs as runs_router
 from app.web.routers import settings as settings_router
 from app.web.routers import toggles as toggles_router
+from app.web.routers import wizard as wizard_router
 
 if TYPE_CHECKING:
     pass
@@ -165,6 +166,7 @@ def create_app() -> FastAPI:
     static_dir = Path(__file__).parent / "web" / "static"
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
     app.include_router(health_router.router)
+    app.include_router(wizard_router.router)
     app.include_router(dashboard_router.router)
     app.include_router(toggles_router.router)
     app.include_router(runs_router.router)

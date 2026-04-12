@@ -1,0 +1,27 @@
+{% extends "wizard/_layout.html.j2" %}
+{% block wizard_content %}
+<section>
+  <h4>Upload your base resume</h4>
+  <p>
+    Upload a single <strong>.docx</strong> file. This is the base that every
+    tailored application will be generated from (Phase 2+ will extract
+    sections into a Resume model). The file is stored at
+    <code>data/uploads/resume_base.docx</code> &mdash; nothing else touches it.
+  </p>
+
+  {% if existing %}
+    <p>
+      <ins>A resume is already on file.</ins>
+      Uploading a new file here will <strong>overwrite it</strong>.
+    </p>
+  {% endif %}
+
+  <form method="post" action="/setup/1" enctype="multipart/form-data">
+    <label>
+      Resume file (.docx)
+      <input type="file" name="resume" accept=".docx" required>
+    </label>
+    <button type="submit">Upload and continue &rarr;</button>
+  </form>
+</section>
+{% endblock %}

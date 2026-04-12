@@ -1,0 +1,37 @@
+{% extends "base.html.j2" %}
+{% block title %}Setup &mdash; Job Apply{% endblock %}
+{% block content %}
+<article>
+  <header>
+    <hgroup>
+      <h2>Setup wizard</h2>
+      <h3>Step {{ step }} of 3</h3>
+    </hgroup>
+    <nav>
+      <ul>
+        <li>
+          {% if step > 1 %}
+            <a href="/setup/{{ step - 1 }}" role="button" class="secondary outline">&larr; Back</a>
+          {% endif %}
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <form method="post" action="/setup/skip">
+            <button type="submit" class="outline">Skip setup</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  {% block wizard_content %}{% endblock %}
+
+  <footer>
+    <small>
+      The setup wizard is guidance, not a gate. You can skip at any point and
+      configure things later from the Settings page.
+    </small>
+  </footer>
+</article>
+{% endblock %}
