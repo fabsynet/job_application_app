@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 3 — Safe-Channel Discovery, Dedup & Matching
+**Current focus:** Phase 3 complete. Ready for Phase 4.
 
 ## Current Position
 
 Phase: 3 of 6 (Safe-Channel Discovery, Dedup & Matching)
-Plan: 5 of 6 in current phase
-Status: In progress
-Last activity: 2026-04-12 — Completed 03-05-PLAN.md (dashboard discovery UI)
+Plan: 6 of 6 in current phase
+Status: Phase complete
+Last activity: 2026-04-12 — Completed 03-06-PLAN.md (Phase 3 test coverage)
 
-Progress: [█████████░] 56% (Phase 1 + Phase 2 complete, Phase 3: 5/6 plans done)
+Progress: [██████████] 62% (Phase 1 + Phase 2 + Phase 3 complete, 16/~26 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: ~15 min
-- Total execution time: ~3h 45min
+- Total plans completed: 16
+- Average duration: ~14 min
+- Total execution time: ~3h 54min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [█████████░] 56% (Phase 1 + Phase 2 complete, Phas
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
-| 03    | 5     | ~23 min  | ~5 min   |
+| 03    | 6     | ~32 min  | ~5 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (~4 min, 2 tasks, schema only) | 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green) | 03-04 (~3 min, 2 tasks, 118 tests green) | 03-05 (~5 min, 2 tasks, 118 tests green)
-- Trend: 03-05 dashboard discovery UI -- per-source counts, anomaly banner, run detail stats
+- Last 5 plans: 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green) | 03-04 (~3 min, 2 tasks, 118 tests green) | 03-05 (~5 min, 2 tasks, 118 tests green) | 03-06 (~9 min, 2 tasks, 175 tests green)
+- Trend: 03-06 Phase 3 test coverage -- 57 new tests, posted_date bug fix
 
 *Updated after each plan completion*
 
@@ -44,6 +44,7 @@ Progress: [█████████░] 56% (Phase 1 + Phase 2 complete, Phas
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 03-06: Pipeline _parse_posted_date converts ISO strings from ATS APIs to datetime objects (was crashing SQLite)
 - 03-04: Sort defaults to score desc (highest matches first)
 - 03-04: 500-job limit on list query (reasonable ceiling for single-user app)
 - 03-04: Case-insensitive keyword matching for breakdown display
@@ -142,5 +143,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 03-05-PLAN.md (dashboard discovery UI). Per-source counts, anomaly banner, run detail stats.
+Stopped at: Completed 03-06-PLAN.md (Phase 3 test coverage). Phase 3 complete. 175 tests green.
 Resume file: None
