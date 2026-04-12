@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 2 of 6 (Configuration, Profile & Resume Upload)
-Plan: 4 of 5 in current phase
+Plan: 3 of 5 in current phase (02-03 just completed; 02-04 also done)
 Status: In progress
-Last activity: 2026-04-12 — Completed 02-04-PLAN.md (credentials section with encrypted storage + validation)
+Last activity: 2026-04-12 — Completed 02-03-PLAN.md (keywords, threshold, schedule, budget settings)
 
 Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2: 4/5 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~26 min
-- Total execution time: ~3h 2min
+- Total plans completed: 8
+- Average duration: ~23 min
+- Total execution time: ~3h 9min
 
 **By Phase:**
 
 | Phase | Plans | Total    | Avg/Plan |
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
-| 02    | 2     | ~8 min   | ~4 min   |
+| 02    | 3     | ~15 min  | ~5 min   |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green)
-- Trend: 02-04 fast — validation module + credentials UI with no new tests (existing 87 pass)
+- Last 5 plans: 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green)
+- Trend: 02-03 fast — four settings sections (keywords chips, threshold slider, schedule toggle, budget cap) with no new tests
 
 *Updated after each plan completion*
 
@@ -43,6 +43,10 @@ Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2: 4/5 p
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 02-03: Keywords use {keyword:path} path param in DELETE route for URL-encoded special chars
+- 02-03: Schedule checkbox parsed via raw form data (same pattern as safety toggles) — missing = False
+- 02-03: Budget progress bar calculated server-side in Jinja2 — no client JS needed for bar rendering
+- 02-03: _render_section enriches context per-section (keywords list parsing from pipe-delimited CSV)
 - 02-04: Save-first-validate-second pattern for credentials — encrypt+persist before async validation so network failures never prevent storage
 - 02-04: Credentials section never pre-fills inputs or shows masked values — always empty fields with Configured/Not set status
 - 02-04: SMTP validation runs synchronously via asyncio.to_thread to avoid blocking event loop
@@ -113,5 +117,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 02-04-PLAN.md. Credentials section with Anthropic API key + SMTP credential entry, Fernet-encrypted storage, inline validation, Configured/Not set status. All 87 tests green.
+Stopped at: Completed 02-03-PLAN.md. Keywords chip UI, threshold slider, schedule toggle + quiet hours, budget cap + progress bar. All 87 tests green. 02-04 also complete (credentials).
 Resume file: None
