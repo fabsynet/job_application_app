@@ -46,7 +46,12 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
   3. User can fill a full application profile (name, contact, work auth, salary, experience, portfolio links) and edit it
   4. User can enter Claude API key, SMTP credentials, and a monthly LLM budget cap through the UI, with secrets stored Fernet-encrypted
   5. User can toggle between full-auto and review-queue mode from a single control in the UI
-**Plans**: TBD
+**Plans**: 5 plans
+  - [ ] 02-01-PLAN.md — DB migration + sidebar layout shell + mode toggle
+  - [ ] 02-02-PLAN.md — Profile form + resume upload with DOCX preview
+  - [ ] 02-03-PLAN.md — Keywords chips + threshold slider + schedule + budget
+  - [ ] 02-04-PLAN.md — Credentials with validation (Anthropic API + SMTP)
+  - [ ] 02-05-PLAN.md — Integration tests for all CONF requirements
 
 ### Phase 3: Safe-Channel Discovery, Dedup & Matching
 **Goal**: On every hourly tick, the app pulls jobs from Greenhouse/Lever/Ashby public JSON APIs, normalizes them, deduplicates against history, scores them against the user's keywords, and queues matched jobs — all with zero submission risk and zero ToS exposure.
@@ -106,7 +111,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation, Scheduler & Safety Envelope | 5/5 | ✓ Complete | 2026-04-12 |
-| 2. Configuration, Profile & Resume Upload | 0/TBD | Not started | - |
+| 2. Configuration, Profile & Resume Upload | 0/5 | Planning complete | - |
 | 3. Safe-Channel Discovery, Dedup & Matching | 0/TBD | Not started | - |
 | 4. LLM Tailoring & DOCX Generation | 0/TBD | Not started | - |
 | 5. Email Submission, Review Queue, Manual Apply & Notifications | 0/TBD | Not started | - |
