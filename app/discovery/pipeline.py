@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime
 from typing import Any
 
 import httpx
@@ -33,6 +34,19 @@ from app.runs.context import RunContext
 from app.settings.service import get_settings_row
 
 log = structlog.get_logger(__name__)
+
+
+def _parse_posted_date(raw: Any) -> datetime | None:
+    """Parse a posted-date string into a datetime, or return None."""
+    if raw is None:
+        return None
+    if isinstance(raw, datetime):
+        return raw
+    try:
+        # Handle ISO-8601 strings from ATS APIs (e.g. "2026-03-15T12:00:00Z")
+        return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        return None
 
 
 async def _fetch_one_source(
@@ -159,7 +173,7 @@ async def run_discovery(ctx: RunContext, session_factory: Any) -> dict:
                     url=job_data.get("url", ""),
                     source=job_data.get("source", ""),
                     source_id=source_id,
-                    posted_date=job_data.get("posted_date"),
+                    posted_date=_parse_posted_date(job_data.get("posted_date")),
                     score=score,
                     matched_keywords="|".join(matched_kw),
                     status=status,
