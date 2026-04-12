@@ -10,28 +10,29 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 2 of 6 (Configuration, Profile & Resume Upload)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-12 — Phase 1 verified and completed (5/5 plans, 87 tests, 5/5 must-haves)
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-04-12 — Completed 02-01-PLAN.md (sidebar shell + Phase 2 schema)
 
-Progress: [██░░░░░░░░] 17% (Phase 1 complete, 5 phases remaining)
+Progress: [██░░░░░░░░] 20% (Phase 1 complete, Phase 2: 1/5 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~35 min
-- Total execution time: ~2h 54min
+- Total plans completed: 6
+- Average duration: ~30 min
+- Total execution time: ~2h 59min
 
 **By Phase:**
 
 | Phase | Plans | Total    | Avg/Plan |
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
+| 02    | 1     | ~5 min   | ~5 min   |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total)
-- Trend: steady ~35 min for a 3-task plan; 01-05 was the smoothest execution — only 2 auto-fixed bugs (wizard redirect guard breaking existing dashboard tests + stale get_settings reference in wizard module across test boundaries)
+- Last 5 plans: 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green)
+- Trend: 02-01 was fast — schema extension + sidebar shell with no new tests needed (existing 87 pass with 2 assertion updates)
 
 *Updated after each plan completion*
 
@@ -42,6 +43,10 @@ Progress: [██░░░░░░░░] 17% (Phase 1 complete, 5 phases remai
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 02-01: Settings page uses sidebar shell with HTMX section loading; each section is a partial loaded via hx-get
+- 02-01: POST /settings/limits returns partial HTML (not 303 redirect) for HTMX sidebar consistency
+- 02-01: Safety toggles accessible from both dashboard (/toggles) and settings sidebar (/settings/safety)
+- 02-01: Placeholder partials for unimplemented sections prevent 404 errors during sidebar navigation
 - 01-05: Wizard writes wizard_complete only on step 3 or skip — going back and forth does not flip the flag
 - 01-05: Wizard step 2 allows blank submissions (guidance, not a gate per CONTEXT.md)
 - 01-05: Rotation banner does not delete unreadable secrets — preserved for forensic recovery
@@ -103,6 +108,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-11
-Stopped at: Completed 01-05-setup-wizard-and-end-to-end-tests-PLAN.md. Phase 1 is fully complete. Setup wizard (3 steps + skip), Fernet rotation banner, goal-backward end-to-end test suite (87/87 green), and README all shipped. All 6 Phase 1 must_haves asserted and passing.
+Last session: 2026-04-12
+Stopped at: Completed 02-01-PLAN.md. Sidebar-navigated settings page with Mode toggle, Phase 1 settings (limits, safety) migrated into sidebar partials, Profile table + 10 new Settings columns via migration, python-docx dependency added. All 87 tests green.
 Resume file: None
