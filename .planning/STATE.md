@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-12 — Phase 3 verified and completed (6/6 plans, 175 tests, 5/5 must-haves)
+Plan: 1 of 7 in current phase
+Status: In progress
+Last activity: 2026-04-12 — Completed 04-01-PLAN.md (tailoring DB foundation)
 
-Progress: [█████████░] 50% (Phases 1-3 complete, 3 phases remaining)
+Progress: [█████████▌] 53% (17 of 22 plans complete: Phases 1-3 + 04-01)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: ~14 min
-- Total execution time: ~3h 54min
+- Total execution time: ~4h 2min
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [█████████░] 50% (Phases 1-3 complete, 3 phases re
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
 | 03    | 6     | ~32 min  | ~5 min   |
+| 04    | 1     | ~8 min   | ~8 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green) | 03-04 (~3 min, 2 tasks, 118 tests green) | 03-05 (~5 min, 2 tasks, 118 tests green) | 03-06 (~9 min, 2 tasks, 175 tests green)
-- Trend: 03-06 Phase 3 test coverage -- 57 new tests, posted_date bug fix
+- Last 5 plans: 03-02 (~8 min, 2 tasks) | 03-04 (~3 min, 2 tasks) | 03-05 (~5 min, 2 tasks) | 03-06 (~9 min, 2 tasks, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green)
+- Trend: Phase 4 kickoff — schema foundation (TailoringRecord + CostLedger + settings.tailoring_intensity) landed in one clean plan
 
 *Updated after each plan completion*
 
@@ -44,6 +45,13 @@ Progress: [█████████░] 50% (Phases 1-3 complete, 3 phases re
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-01: tailoring_records.version is integer counter (v1, v2, …) matching versioned artifact paths data/resumes/{job_id}/v{N}.docx
+- 04-01: cost_ledger.tailoring_record_id nullable so orphan validator/probe calls can still be logged for budget
+- 04-01: cost_ledger.month is denormalised string (YYYY-MM) indexed for cheap SUM-based budget queries (no strftime in hot path)
+- 04-01: validation_warnings stored as JSON string in VARCHAR column — portable SQLite migration, consumers json.loads on read
+- 04-01: Phase 4 models live under app/tailoring/, re-exported from app/db/models.py (mirrors Phase 3 app/discovery/ convention)
+- 04-01: Settings alter uses plain op.add_column (matches existing 0002 pattern, not batch_alter_table as plan suggested)
+- 04-01: Migration revision slug is 0004_phase4_tailoring (not bare 0004) to match existing chain convention
 - 03-06: Pipeline _parse_posted_date converts ISO strings from ATS APIs to datetime objects (was crashing SQLite)
 - 03-04: Sort defaults to score desc (highest matches first)
 - 03-04: 500-job limit on list query (reasonable ceiling for single-user app)
@@ -143,5 +151,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Phase 3 verified and completed. 6/6 plans, 175 tests (118 Phase 1+2 + 57 Phase 3), all 8 active requirements satisfied (DISC-04 deferred). Discovery pipeline, jobs UI, sources management, dashboard stats, anomaly banners all functional.
+Stopped at: Completed 04-01-PLAN.md. Phase 4 schema foundation landed: TailoringRecord + CostLedger tables, Settings.tailoring_intensity='balanced', Alembic migration 0004 roundtripping cleanly, 175/175 tests still green. Ready for 04-02.
 Resume file: None
