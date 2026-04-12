@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 1 of 6 (Foundation, Scheduler & Safety Envelope)
-Plan: 01-03 complete — scheduler / run-lock / kill-switch / rate-limit safety envelope
-Status: In progress — 01-04 (dashboard) + 01-05 (remaining Wave 2 items) still pending
-Last activity: 2026-04-11 — Completed 01-03-scheduler-runlock-killswitch-ratelimit-PLAN.md
+Plan: 01-04 complete — dashboard, toggles, runs list, settings page (Wave 3)
+Status: In progress — 01-05 (wizard + remaining Wave 3 items) still pending
+Last activity: 2026-04-11 — Completed 01-04-dashboard-toggles-runs-settings-PLAN.md
 
-Progress: [███░░░░░░░] ~30% (3 of ~10 phase-1 plans complete)
+Progress: [████░░░░░░] ~40% (4 of ~10 phase-1 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~33 min
-- Total execution time: ~1h 39min
+- Total plans completed: 4
+- Average duration: ~36 min
+- Total execution time: ~2h 24min
 
 **By Phase:**
 
 | Phase | Plans | Total    | Avg/Plan |
 |-------|-------|----------|----------|
-| 01    | 3     | ~99 min  | ~33 min  |
+| 01    | 4     | ~144 min | ~36 min  |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total)
-- Trend: steady ~35 min for a 3-task plan with both primitives and integration tests
+- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total)
+- Trend: steady ~40 min for a 3-task plan that ships integration tests alongside; 01-04 was slightly above average because of two test-infra fixes (Starlette signature + lazy async_session)
 
 *Updated after each plan completion*
 
@@ -42,6 +42,16 @@ Progress: [███░░░░░░░] ~30% (3 of ~10 phase-1 plans complete
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 01-04: Pico.css v2 bundled local (83KB), HTMX 2.0.3 via unpkg CDN, no build step
+- 01-04: HTMX fragments served from the same routers as full pages, sharing one `_common_ctx` builder so polled fragments never drift from initial render
+- 01-04: `_humanize_seconds` runs server-side — no client-side JS timers
+- 01-04: `/settings/limits` mutates `app.state.rate_limiter.{daily_cap,delay_min,delay_max,tz}` in-place so changes take effect without restart
+- 01-04: Starlette 1.0 `TemplateResponse(request, name, ctx)` positional form required — kwarg `{"request": request}` breaks Jinja LRU cache (unhashable dict)
+- 01-04: `get_session` dependency lazy-imports `async_session` inside the generator body so integration tests that reload `app.db.base` get the freshly bound engine
+- 01-04: Secrets CRUD routes `vault.encrypt` auto-registers plaintext with `SecretRegistry` BEFORE DB commit — scrubber armed at the same point as the write
+- 01-04: Runs show-more uses `hx-swap="outerHTML"` on a load-more `<tr>` (self-replacing) rather than `beforeend` on tbody — cleaner button lifecycle
+- 01-04: `/settings/limits` validation mirrors `RateLimiter.__init__` bounds exactly, keeping DB state guaranteed-startable
+- 01-04: POST `/runs/trigger` is fire-and-forget via `asyncio.create_task(svc.run_pipeline)` — HTTP returns fast, pipeline runs on same event loop
 - Roadmap: Safe-channel-first ordering (GH/Lever/Ashby + email before Playwright; LinkedIn/Indeed deferred to v1.x)
 - Roadmap: Rate limiting (SAFE-01/02, DISC-07) ships in Phase 1 with the scheduler, not later
 - Roadmap: Hallucination validator (TAIL-04) ships in the same phase as first LLM call (TAIL-01)
@@ -83,10 +93,13 @@ None yet.
 - 01-01: Docker image has not been built on this host (Docker Desktop daemon was not running during execution). `docker compose config` validated the compose file; first `docker compose build` still pending before 01-03 lands.
 - 01-01: Local test venv is Python 3.11.9 but pyproject requires >=3.12. Tests run green on 3.11 against pinned deps; production (Playwright base) uses 3.12+. Re-validate inside the container during Phase 1.
 - 01-03: requirements.txt should be split into prod vs dev — freezegun + pytest-asyncio were installed into .venv for tests but are NOT in requirements.txt. Non-blocking; flag as Phase 1 cleanup.
-- 01-03: `app.db.base._settings = get_settings()` executes at module import time, so integration tests that need a different DATA_DIR must reload `app.config` and `app.db.base` before importing `app.main`. Future plans should consider refactoring to lazy-init inside `init_db()`.
+- 01-03: `app.db.base._settings = get_settings()` executes at module import time, so integration tests that need a different DATA_DIR must reload `app.config` and `app.db.base` before importing `app.main`. Future plans should consider refactoring to lazy-init inside `init_db()`. **Partially mitigated in 01-04**: `get_session` dependency now lazy-imports `async_session` so at least the router layer survives the reload dance.
+- 01-04: HTMX is loaded from `unpkg.com/htmx.org@2.0.3` via CDN. Fully offline LAN deployments will render the dashboard but not poll. Consider bundling htmx.min.js locally (trivial, ~47KB, same pattern as `pico.min.css`) in a later cleanup plan.
+- 01-04: No "boot-time decrypt-failed" banner yet — plan 01-05 should add a middleware/lifespan check that flips a flag when `register_all_secrets_with_scrubber` returns fewer secrets than the DB has rows, and render the banner from the dashboard base template.
+- 01-04: POST `/runs/trigger` has no CSRF protection. LAN-bound + "no auth in v1" makes this acceptable; revisit if the app is ever exposed to a wider network.
 
 ## Session Continuity
 
 Last session: 2026-04-11
-Stopped at: Completed 01-03-scheduler-runlock-killswitch-ratelimit-PLAN.md. SchedulerService, lifespan, killswitch, rate limiter, RunContext contract, /health endpoint, orphan cleanup all shipped. 50/50 tests green (21 pre-existing + 29 new: 16 unit + 13 integration). Ready for 01-04 (dashboard) and 01-05.
+Stopped at: Completed 01-04-dashboard-toggles-runs-settings-PLAN.md. Dashboard, HTMX fragments, toggles (kill-switch + dry-run), runs list/detail, settings page with Fernet secrets CRUD and live rate-limit envelope all shipped. 68/68 tests green (50 prior + 18 new integration). Pico.css bundled local, HTMX 2.0.3 via CDN. Ready for 01-05 (wizard + remaining items).
 Resume file: None
