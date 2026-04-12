@@ -21,7 +21,39 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Settings
+from app.db.models import Profile, Settings
+
+
+async def get_profile_row(session: AsyncSession) -> Profile:
+    """Return the single Profile row, creating it on first access.
+
+    Singleton pattern identical to :func:`get_settings_row`.
+    """
+    result = await session.execute(select(Profile).where(Profile.id == 1))
+    row = result.scalar_one_or_none()
+    if row is None:
+        row = Profile(id=1)
+        session.add(row)
+        await session.commit()
+        await session.refresh(row)
+    return row
+
+
+async def update_profile(session: AsyncSession, **kwargs: Any) -> Profile:
+    """Update any provided fields on the Profile singleton and bump updated_at.
+
+    Only sets fields that are explicitly passed. Unknown field names raise
+    ``AttributeError`` so callers cannot silently persist nothing.
+    """
+    row = await get_profile_row(session)
+    for field, value in kwargs.items():
+        if not hasattr(row, field):
+            raise AttributeError(f"Profile has no field {field!r}")
+        setattr(row, field, value)
+    row.updated_at = datetime.utcnow()
+    await session.commit()
+    await session.refresh(row)
+    return row
 
 
 async def get_settings_row(session: AsyncSession) -> Settings:
@@ -64,4 +96,10 @@ async def get_setting(session: AsyncSession, field: str) -> Any:
     return getattr(row, field)
 
 
-__all__ = ["get_settings_row", "set_setting", "get_setting"]
+__all__ = [
+    "get_settings_row",
+    "set_setting",
+    "get_setting",
+    "get_profile_row",
+    "update_profile",
+]
