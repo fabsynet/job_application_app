@@ -1,0 +1,33 @@
+# Job Application App - docker compose deploy shape.
+#
+# CONTEXT.md locked decisions honored here:
+#   - FERNET_KEY delivered via env var at `docker compose up` (via .env / env_file).
+#   - Single ./data host volume (SQLite, logs, uploads, browser state live under it).
+#   - LAN-bound by default (BIND_ADDRESS=0.0.0.0), overridable to 127.0.0.1.
+#   - `docker compose up` is the canonical deploy shape.
+
+services:
+  app:
+    build: .
+    image: job-app:dev
+    container_name: job-app
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      PYTHONUNBUFFERED: "1"
+    ports:
+      # ${BIND_ADDRESS:-0.0.0.0}: 0.0.0.0 = LAN-reachable, 127.0.0.1 = loopback only.
+      - "${BIND_ADDRESS:-0.0.0.0}:8000:8000"
+    volumes:
+      # The ONE bind mount. Everything persistent lives under /data inside the container.
+      - ./data:/data
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "python -c \"import httpx,sys; sys.exit(0 if httpx.get('http://127.0.0.1:8000/health', timeout=3.0).status_code==200 else 1)\""
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
