@@ -11,7 +11,7 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Foundation, Scheduler & Safety Envelope** - Bootable Docker container with encrypted secrets, hourly scheduler, run-lock, kill-switch, dry-run, rate-limit envelope, and PII-safe logging
-- [ ] **Phase 2: Configuration, Profile & Resume Upload** - Web UI for keywords, profile, base DOCX upload, schedule/quiet hours, budget cap, mode toggle, and credential entry
+- [x] **Phase 2: Configuration, Profile & Resume Upload** - Web UI for keywords, profile, base DOCX upload, schedule/quiet hours, budget cap, mode toggle, and credential entry
 - [ ] **Phase 3: Safe-Channel Discovery, Dedup & Matching** - Greenhouse/Lever/Ashby JSON discovery, canonical fingerprint dedup, keyword-overlap matching, normalized job schema
 - [ ] **Phase 4: LLM Tailoring & DOCX Generation** - Extractive-only Claude tailoring with hallucination validator, prompt caching, budget enforcement, and format-preserving DOCX render
 - [ ] **Phase 5: Email Submission, Review Queue, Manual Apply & Notifications** - Email-apply submitter, full state machine, review queue with diff, paste-a-link flow, per-job summary emails
@@ -47,11 +47,11 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
   4. User can enter Claude API key, SMTP credentials, and a monthly LLM budget cap through the UI, with secrets stored Fernet-encrypted
   5. User can toggle between full-auto and review-queue mode from a single control in the UI
 **Plans**: 5 plans
-  - [ ] 02-01-PLAN.md — DB migration + sidebar layout shell + mode toggle
-  - [ ] 02-02-PLAN.md — Profile form + resume upload with DOCX preview
-  - [ ] 02-03-PLAN.md — Keywords chips + threshold slider + schedule + budget
-  - [ ] 02-04-PLAN.md — Credentials with validation (Anthropic API + SMTP)
-  - [ ] 02-05-PLAN.md — Integration tests for all CONF requirements
+  - [x] 02-01-PLAN.md — DB migration + sidebar layout shell + mode toggle
+  - [x] 02-02-PLAN.md — Profile form + resume upload with DOCX preview
+  - [x] 02-03-PLAN.md — Keywords chips + threshold slider + schedule + budget
+  - [x] 02-04-PLAN.md — Credentials with validation (Anthropic API + SMTP)
+  - [x] 02-05-PLAN.md — Integration tests for all CONF requirements
 
 ### Phase 3: Safe-Channel Discovery, Dedup & Matching
 **Goal**: On every hourly tick, the app pulls jobs from Greenhouse/Lever/Ashby public JSON APIs, normalizes them, deduplicates against history, scores them against the user's keywords, and queues matched jobs — all with zero submission risk and zero ToS exposure.
@@ -111,7 +111,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation, Scheduler & Safety Envelope | 5/5 | ✓ Complete | 2026-04-12 |
-| 2. Configuration, Profile & Resume Upload | 0/5 | Planning complete | - |
+| 2. Configuration, Profile & Resume Upload | 5/5 | ✓ Complete | 2026-04-12 |
 | 3. Safe-Channel Discovery, Dedup & Matching | 0/TBD | Not started | - |
 | 4. LLM Tailoring & DOCX Generation | 0/TBD | Not started | - |
 | 5. Email Submission, Review Queue, Manual Apply & Notifications | 0/TBD | Not started | - |

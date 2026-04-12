@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 2 complete. Ready for Phase 3 — Discovery & Matching
+**Current focus:** Phase 3 — Safe-Channel Discovery, Dedup & Matching
 
 ## Current Position
 
-Phase: 2 of 6 (Configuration, Profile & Resume Upload)
-Plan: 5 of 5 in current phase (02-01, 02-02, 02-03, 02-04, 02-05 done)
-Status: Phase complete
-Last activity: 2026-04-12 — Completed 02-05-PLAN.md (integration tests for all CONF requirements)
+Phase: 3 of 6 (Safe-Channel Discovery, Dedup & Matching)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-04-12 — Phase 2 verified and completed (5/5 plans, 118 tests, 5/5 must-haves)
 
-Progress: [█████░░░░░] 50% (Phase 1 + Phase 2 complete)
+Progress: [█████░░░░░] 33% (Phase 1 + Phase 2 complete, 4 phases remaining)
 
 ## Performance Metrics
 
@@ -121,5 +121,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 02-02-PLAN.md. Profile form with 10 fields across 3 collapsible groups + DOCX resume upload with drag-and-drop and structured text preview. All 87 tests green. 02-01, 02-03, 02-04 also complete.
+Stopped at: Phase 2 verified and completed. 5/5 plans, 118 tests (87 Phase 1 + 31 Phase 2), all 8 CONF requirements satisfied, 5/5 must-haves verified. Sidebar settings hub with profile, resume upload, keywords, threshold, schedule, budget, credentials, and mode toggle all functional.
 Resume file: None
