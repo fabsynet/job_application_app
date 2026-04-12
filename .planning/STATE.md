@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 1 COMPLETE. Ready for Phase 2 — Configuration, Profile & Resume Upload.
+**Current focus:** Phase 2 — Configuration, Profile & Resume Upload
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation, Scheduler & Safety Envelope) -- COMPLETE
-Plan: 05 of 05 (all plans in Phase 1 complete)
-Status: Phase 1 complete
-Last activity: 2026-04-11 — Completed 01-05-setup-wizard-and-end-to-end-tests-PLAN.md
+Phase: 2 of 6 (Configuration, Profile & Resume Upload)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-04-12 — Phase 1 verified and completed (5/5 plans, 87 tests, 5/5 must-haves)
 
-Progress: [█████░░░░░] ~50% (5 of ~10 phase-1 plans complete; Phase 1 fully done, overall ~17% of 6 phases)
+Progress: [██░░░░░░░░] 17% (Phase 1 complete, 5 phases remaining)
 
 ## Performance Metrics
 

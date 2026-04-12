@@ -10,7 +10,7 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation, Scheduler & Safety Envelope** - Bootable Docker container with encrypted secrets, hourly scheduler, run-lock, kill-switch, dry-run, rate-limit envelope, and PII-safe logging
+- [x] **Phase 1: Foundation, Scheduler & Safety Envelope** - Bootable Docker container with encrypted secrets, hourly scheduler, run-lock, kill-switch, dry-run, rate-limit envelope, and PII-safe logging
 - [ ] **Phase 2: Configuration, Profile & Resume Upload** - Web UI for keywords, profile, base DOCX upload, schedule/quiet hours, budget cap, mode toggle, and credential entry
 - [ ] **Phase 3: Safe-Channel Discovery, Dedup & Matching** - Greenhouse/Lever/Ashby JSON discovery, canonical fingerprint dedup, keyword-overlap matching, normalized job schema
 - [ ] **Phase 4: LLM Tailoring & DOCX Generation** - Extractive-only Claude tailoring with hallucination validator, prompt caching, budget enforcement, and format-preserving DOCX render
@@ -30,11 +30,11 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
   4. User's secrets (Fernet-encrypted) survive container restart, and no PII or resume content ever appears in stdout/log files
   5. The rate-limit envelope (daily application cap, randomized per-source delays, jittered inter-action waits) is enforced by the scheduler before any downstream stage is even wired up
 **Plans**: 5 plans
-  - [ ] 01-01-PLAN.md — Docker + SQLite + Alembic foundation (config, models, migration)
-  - [ ] 01-02-PLAN.md — FernetVault + two-layer log scrubber + zero-PII assertion test
-  - [ ] 01-03-PLAN.md — SchedulerService, run-lock, kill-switch, rate limiter, FastAPI lifespan, /health
-  - [ ] 01-04-PLAN.md — Dashboard, toggles, runs list/detail, settings page (HTMX + Jinja + Pico.css)
-  - [ ] 01-05-PLAN.md — Setup wizard, rotation banner, end-to-end goal-backward test suite, README
+  - [x] 01-01-PLAN.md — Docker + SQLite + Alembic foundation (config, models, migration)
+  - [x] 01-02-PLAN.md — FernetVault + two-layer log scrubber + zero-PII assertion test
+  - [x] 01-03-PLAN.md — SchedulerService, run-lock, kill-switch, rate limiter, FastAPI lifespan, /health
+  - [x] 01-04-PLAN.md — Dashboard, toggles, runs list/detail, settings page (HTMX + Jinja + Pico.css)
+  - [x] 01-05-PLAN.md — Setup wizard, rotation banner, end-to-end goal-backward test suite, README
 
 ### Phase 2: Configuration, Profile & Resume Upload
 **Goal**: A user can configure every input the pipeline will need — keywords, threshold, profile, base resume, API keys, schedule, budget, mode — without any scraping, matching, or submission logic existing yet.
@@ -105,7 +105,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation, Scheduler & Safety Envelope | 0/TBD | Not started | - |
+| 1. Foundation, Scheduler & Safety Envelope | 5/5 | ✓ Complete | 2026-04-12 |
 | 2. Configuration, Profile & Resume Upload | 0/TBD | Not started | - |
 | 3. Safe-Channel Discovery, Dedup & Matching | 0/TBD | Not started | - |
 | 4. LLM Tailoring & DOCX Generation | 0/TBD | Not started | - |

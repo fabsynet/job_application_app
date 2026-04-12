@@ -175,13 +175,13 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 1 | Pending |
-| FOUND-02 | Phase 1 | Pending |
-| FOUND-03 | Phase 1 | Pending |
-| FOUND-04 | Phase 1 | Pending |
-| FOUND-05 | Phase 1 | Pending |
-| FOUND-06 | Phase 1 | Pending |
-| FOUND-07 | Phase 1 | Pending |
+| FOUND-01 | Phase 1 | Complete |
+| FOUND-02 | Phase 1 | Complete |
+| FOUND-03 | Phase 1 | Complete |
+| FOUND-04 | Phase 1 | Complete |
+| FOUND-05 | Phase 1 | Complete |
+| FOUND-06 | Phase 1 | Complete |
+| FOUND-07 | Phase 1 | Complete |
 | CONF-01 | Phase 2 | Pending |
 | CONF-02 | Phase 2 | Pending |
 | CONF-03 | Phase 2 | Pending |
@@ -196,7 +196,7 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | DISC-04 | Phase 3 | Pending |
 | DISC-05 | Phase 3 | Pending |
 | DISC-06 | Phase 3 | Pending |
-| DISC-07 | Phase 1 | Pending |
+| DISC-07 | Phase 1 | Complete |
 | MANL-01 | Phase 5 | Pending |
 | MANL-02 | Phase 5 | Pending |
 | MANL-03 | Phase 5 | Pending |
@@ -239,9 +239,9 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | REVW-10 | Phase 5 | Pending |
 | NOTIF-01 | Phase 5 | Pending |
 | NOTIF-02 | Phase 5 | Pending |
-| SAFE-01 | Phase 1 | Pending |
-| SAFE-02 | Phase 1 | Pending |
-| SAFE-03 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Complete |
+| SAFE-02 | Phase 1 | Complete |
+| SAFE-03 | Phase 1 | Complete |
 | SAFE-04 | Phase 4 | Pending |
 
 **Coverage:**
