@@ -30,12 +30,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Job Discovery (Automatic)
 
-- [ ] **DISC-01**: App fetches jobs from Greenhouse public JSON API for user-specified companies/boards
-- [ ] **DISC-02**: App fetches jobs from Lever public JSON API for user-specified companies/boards
-- [ ] **DISC-03**: App fetches jobs from Ashby public JSON API for user-specified companies/boards
+- [x] **DISC-01**: App fetches jobs from Greenhouse public JSON API for user-specified companies/boards
+- [x] **DISC-02**: App fetches jobs from Lever public JSON API for user-specified companies/boards
+- [x] **DISC-03**: App fetches jobs from Ashby public JSON API for user-specified companies/boards
 - [ ] **DISC-04**: App discovers ATS-hosted jobs via general web search matching user keywords
-- [ ] **DISC-05**: App normalizes all discovered jobs to a common schema (title, company, location, description, url, source, posted_date)
-- [ ] **DISC-06**: App dedupes jobs across sources by fingerprint hash (url + title + company) and skips jobs already in history
+- [x] **DISC-05**: App normalizes all discovered jobs to a common schema (title, company, location, description, url, source, posted_date)
+- [x] **DISC-06**: App dedupes jobs across sources by fingerprint hash (url + title + company) and skips jobs already in history
 - [ ] **DISC-07**: App rate-limits discovery per source with randomized delays to avoid detection
 
 ### Manual Apply (Paste-a-Link)
@@ -49,9 +49,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Matching
 
-- [ ] **MATCH-01**: App computes a keyword-overlap score (0-100%) between each auto-discovered job description and the user's keyword list
-- [ ] **MATCH-02**: App auto-applies only to jobs at or above the user's match threshold
-- [ ] **MATCH-03**: Match score is stored alongside each job record and shown in the UI
+- [x] **MATCH-01**: App computes a keyword-overlap score (0-100%) between each auto-discovered job description and the user's keyword list
+- [x] **MATCH-02**: App auto-applies only to jobs at or above the user's match threshold
+- [x] **MATCH-03**: Match score is stored alongside each job record and shown in the UI
 
 ### Resume Tailoring
 
@@ -190,12 +190,12 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | CONF-06 | Phase 2 | Complete |
 | CONF-07 | Phase 2 | Complete |
 | CONF-08 | Phase 2 | Complete |
-| DISC-01 | Phase 3 | Pending |
-| DISC-02 | Phase 3 | Pending |
-| DISC-03 | Phase 3 | Pending |
+| DISC-01 | Phase 3 | Complete |
+| DISC-02 | Phase 3 | Complete |
+| DISC-03 | Phase 3 | Complete |
 | DISC-04 | Phase 3 | Pending |
-| DISC-05 | Phase 3 | Pending |
-| DISC-06 | Phase 3 | Pending |
+| DISC-05 | Phase 3 | Complete |
+| DISC-06 | Phase 3 | Complete |
 | DISC-07 | Phase 1 | Complete |
 | MANL-01 | Phase 5 | Pending |
 | MANL-02 | Phase 5 | Pending |
@@ -203,9 +203,9 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | MANL-04 | Phase 5 | Pending |
 | MANL-05 | Phase 5 | Pending |
 | MANL-06 | Phase 5 | Pending |
-| MATCH-01 | Phase 3 | Pending |
-| MATCH-02 | Phase 3 | Pending |
-| MATCH-03 | Phase 3 | Pending |
+| MATCH-01 | Phase 3 | Complete |
+| MATCH-02 | Phase 3 | Complete |
+| MATCH-03 | Phase 3 | Complete |
 | TAIL-01 | Phase 4 | Pending |
 | TAIL-02 | Phase 4 | Pending |
 | TAIL-03 | Phase 4 | Pending |
