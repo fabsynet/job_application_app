@@ -51,6 +51,7 @@ from app.web.routers import runs as runs_router
 from app.web.routers import settings as settings_router
 from app.web.routers import toggles as toggles_router
 from app.web.routers import sources as sources_router
+from app.web.routers import jobs as jobs_router
 from app.web.routers import wizard as wizard_router
 
 if TYPE_CHECKING:
@@ -173,6 +174,7 @@ def create_app() -> FastAPI:
     app.include_router(runs_router.router)
     app.include_router(settings_router.router)
     app.include_router(sources_router.router)
+    app.include_router(jobs_router.router)
     return app
 
 
