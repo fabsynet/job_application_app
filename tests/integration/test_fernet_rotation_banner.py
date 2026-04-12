@@ -38,6 +38,12 @@ def _reload_with_key(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, key: str):
 
     importlib.reload(base_module)
 
+    # Reload wizard router so its captured ``get_settings`` reference
+    # points to the freshly reloaded ``app.config.get_settings`` function.
+    import app.web.routers.wizard as wizard_module
+
+    importlib.reload(wizard_module)
+
     from sqlmodel import SQLModel
 
     from app.db import models  # noqa: F401

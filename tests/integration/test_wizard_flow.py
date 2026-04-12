@@ -41,6 +41,12 @@ def _reload_app_for(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, key: str):
 
     importlib.reload(base_module)
 
+    # Reload wizard router so its captured ``get_settings`` reference
+    # points to the freshly reloaded ``app.config.get_settings`` function.
+    import app.web.routers.wizard as wizard_module
+
+    importlib.reload(wizard_module)
+
     from sqlmodel import SQLModel
 
     from app.db import models  # noqa: F401
