@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 3 of 6 (Safe-Channel Discovery, Dedup & Matching)
-Plan: 4 of 6 in current phase
+Plan: 5 of 6 in current phase
 Status: In progress
-Last activity: 2026-04-12 — Completed 03-02-PLAN.md (discovery backend)
+Last activity: 2026-04-12 — Completed 03-04-PLAN.md (jobs page UI)
 
-Progress: [████████░░] 48% (Phase 1 + Phase 2 complete, Phase 3: 4/6 plans done)
+Progress: [█████████░] 52% (Phase 1 + Phase 2 complete, Phase 3: 5/6 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
-- Average duration: ~16 min
-- Total execution time: ~3h 37min
+- Total plans completed: 14
+- Average duration: ~15 min
+- Total execution time: ~3h 40min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████████░░] 48% (Phase 1 + Phase 2 complete, Phas
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
-| 03    | 4     | ~20 min  | ~5 min   |
+| 03    | 5     | ~23 min  | ~5 min   |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (~7 min, 2 tasks, 87 tests green) | 02-02 (~8 min, 2 tasks, 87 tests green) | 03-01 (~4 min, 2 tasks, schema only) | 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green)
-- Trend: 03-02 discovery backend -- fetchers, scoring, pipeline, scheduler integration
+- Last 5 plans: 02-02 (~8 min, 2 tasks, 87 tests green) | 03-01 (~4 min, 2 tasks, schema only) | 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green) | 03-04 (~3 min, 2 tasks, 118 tests green)
+- Trend: 03-04 jobs page UI -- sortable table, inline expand, keyword highlighting
 
 *Updated after each plan completion*
 
@@ -44,6 +44,10 @@ Progress: [████████░░] 48% (Phase 1 + Phase 2 complete, Phas
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 03-04: Sort defaults to score desc (highest matches first)
+- 03-04: 500-job limit on list query (reasonable ceiling for single-user app)
+- 03-04: Case-insensitive keyword matching for breakdown display
+- 03-04: Queue button only shown for discovered + below-threshold jobs
 - 03-02: detect_source returns (slug, source_type) tuple to match existing sources router contract
 - 03-02: validate_source returns (bool, str) tuple for router compatibility
 - 03-02: _execute_pipeline stores counts via self._last_counts; wrapper passes to finalize_run to avoid double-finalize
@@ -135,5 +139,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 03-02-PLAN.md (discovery backend). Fetchers, scoring, service, pipeline, and scheduler integration.
+Stopped at: Completed 03-04-PLAN.md (jobs page UI). Sortable table, inline expand, keyword highlighting, manual queue.
 Resume file: None
