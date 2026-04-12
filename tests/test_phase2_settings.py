@@ -316,3 +316,117 @@ async def test_budget_zero_means_no_limit(live_app) -> None:
             resp = await client.post("/settings/budget", data={"budget_cap_dollars": "0"})
             assert resp.status_code == 200
             assert "No limit" in resp.text
+
+
+# ── Profile ────────────────────────────────────────────────────────────
+
+
+async def test_profile_save(live_app) -> None:
+    app, base_module, _ = live_app
+    from app.db.models import Profile
+
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            resp = await client.post(
+                "/settings/profile",
+                data={
+                    "full_name": "John Doe",
+                    "email": "john@example.com",
+                    "phone": "(555) 123-4567",
+                    "address": "123 Main St",
+                    "work_authorization": "US Citizen",
+                    "salary_expectation": "$80,000-$100,000",
+                    "years_experience": "5",
+                    "linkedin_url": "https://linkedin.com/in/johndoe",
+                    "github_url": "https://github.com/johndoe",
+                    "portfolio_url": "https://johndoe.dev",
+                },
+            )
+            assert resp.status_code == 200
+            assert "Profile saved" in resp.text
+
+            async with base_module.async_session() as session:
+                row = (await session.execute(select(Profile).where(Profile.id == 1))).scalar_one()
+                assert row.full_name == "John Doe"
+                assert row.email == "john@example.com"
+                # Phone should have non-digits stripped
+                assert row.phone == "5551234567"
+
+
+async def test_profile_all_optional(live_app) -> None:
+    app, _, _ = live_app
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            resp = await client.post(
+                "/settings/profile",
+                data={
+                    "full_name": "",
+                    "email": "",
+                    "phone": "",
+                    "address": "",
+                    "work_authorization": "",
+                    "salary_expectation": "",
+                    "years_experience": "",
+                    "linkedin_url": "",
+                    "github_url": "",
+                    "portfolio_url": "",
+                },
+            )
+            assert resp.status_code == 200
+            assert "Profile saved" in resp.text
+
+
+async def test_profile_edit(live_app) -> None:
+    app, base_module, _ = live_app
+    from app.db.models import Profile
+
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            # Save initial
+            await client.post(
+                "/settings/profile",
+                data={
+                    "full_name": "Jane Smith",
+                    "email": "jane@example.com",
+                },
+            )
+            # Update
+            await client.post(
+                "/settings/profile",
+                data={
+                    "full_name": "Jane Doe",
+                    "email": "jane.doe@example.com",
+                },
+            )
+
+            async with base_module.async_session() as session:
+                row = (await session.execute(select(Profile).where(Profile.id == 1))).scalar_one()
+                assert row.full_name == "Jane Doe"
+                assert row.email == "jane.doe@example.com"
+
+
+async def test_profile_renders_existing(live_app) -> None:
+    app, _, _ = live_app
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            # Save profile
+            await client.post(
+                "/settings/profile",
+                data={
+                    "full_name": "Alice Wonderland",
+                    "email": "alice@example.com",
+                },
+            )
+            # Load section and check pre-filled values
+            resp = await client.get("/settings/section/profile")
+            assert resp.status_code == 200
+            assert "Alice Wonderland" in resp.text
+            assert "alice@example.com" in resp.text
