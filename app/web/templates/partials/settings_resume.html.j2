@@ -1,0 +1,78 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Resume</h3>
+<p>Upload your base resume (.docx format). This will be used as raw material for LLM-tailored applications.</p>
+
+{% if settings.resume_filename %}
+<div style="margin-bottom: 1rem; padding: 0.75rem; border: 1px solid var(--pico-muted-border-color, #ccc); border-radius: 4px;">
+  <strong>Current resume:</strong> {{ settings.resume_filename }}<br>
+  <small>Uploaded: {{ settings.resume_uploaded_at.strftime('%B %d, %Y at %I:%M %p') if settings.resume_uploaded_at else 'Unknown' }}</small>
+</div>
+{% endif %}
+
+<form id="resume-form"
+      hx-post="/settings/resume"
+      hx-target="#settings-content"
+      hx-swap="innerHTML"
+      hx-encoding="multipart/form-data">
+
+  <div id="drop-zone"
+       style="border: 2px dashed var(--pico-muted-border-color, #999);
+              border-radius: 8px;
+              padding: 2rem;
+              text-align: center;
+              margin-bottom: 1rem;
+              transition: border-color 0.2s, background-color 0.2s;">
+    <p style="margin: 0;">Drop your .docx file here</p>
+    <p style="margin: 0.5rem 0 0 0;"><small>or use the file picker below</small></p>
+  </div>
+
+  <input type="file" id="resume-input" name="resume" accept=".docx"
+         style="margin-bottom: 1rem;">
+
+  <button type="submit" class="primary">
+    {% if settings.resume_filename %}Replace resume{% else %}Upload resume{% endif %}
+  </button>
+</form>
+
+<script>
+(function() {
+  var zone = document.getElementById('drop-zone');
+  var input = document.getElementById('resume-input');
+  var form = document.getElementById('resume-form');
+  if (!zone || !input || !form) return;
+
+  zone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    zone.style.borderColor = 'var(--pico-primary, #1095c1)';
+    zone.style.backgroundColor = 'var(--pico-primary-focus, rgba(16,149,193,0.1))';
+  });
+  zone.addEventListener('dragleave', function() {
+    zone.style.borderColor = '';
+    zone.style.backgroundColor = '';
+  });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    zone.style.borderColor = '';
+    zone.style.backgroundColor = '';
+    if (e.dataTransfer.files.length > 0) {
+      input.files = e.dataTransfer.files;
+      form.requestSubmit();
+    }
+  });
+})();
+</script>
+
+{% if preview and preview.full_text %}
+<hr>
+<h4>Resume Preview</h4>
+<div style="max-height: 400px; overflow-y: auto; padding: 1rem; border: 1px solid var(--pico-muted-border-color, #ccc); border-radius: 4px; background: var(--pico-card-background-color, #fff);">
+  {% for section in preview.sections %}
+    {% if section.heading %}
+      <strong style="display: block; margin-top: 0.75rem; margin-bottom: 0.25rem;">{{ section.heading }}</strong>
+    {% endif %}
+    {% if section.text %}
+      <p style="white-space: pre-wrap; margin: 0 0 0.5rem 0;">{{ section.text }}</p>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
