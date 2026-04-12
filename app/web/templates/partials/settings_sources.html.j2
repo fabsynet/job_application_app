@@ -1,0 +1,73 @@
+<div id="sources-section">
+{% include "partials/flash_message.html.j2" %}
+<h3>Sources</h3>
+<p>Add ATS boards to discover jobs from. Paste a careers page URL or company slug.</p>
+
+{% if error %}
+<p class="error" style="color: var(--pico-color-red-500, #c62828); margin-bottom: 1rem;">{{ error }}</p>
+{% endif %}
+
+<form hx-post="/settings/sources" hx-target="#sources-section" hx-swap="outerHTML">
+  <fieldset role="group">
+    <input type="text" name="slug_or_url" autocomplete="off"
+           placeholder="e.g. stripe or https://boards.greenhouse.io/stripe"
+           required>
+    <button type="submit">Add Source</button>
+  </fieldset>
+</form>
+
+<div id="sources-list">
+  {% if sources %}
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Enabled</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for source in sources %}
+      <tr class="source-row">
+        <td>{{ source.display_name or source.slug }}</td>
+        <td>
+          <span class="badge badge-{{ source.source_type }}">{{ source.source_type }}</span>
+        </td>
+        <td>
+          {% if source.last_fetch_status == "error" %}
+          <span class="badge badge-error" style="background: var(--pico-color-red-500, #c62828); color: #fff; padding: 0.15em 0.5em; border-radius: 4px; font-size: 0.8em;"
+                title="{{ source.last_error_message or 'Fetch failed' }}">Error</span>
+          {% elif source.last_fetch_status == "ok" %}
+          <span style="color: var(--pico-color-green-500, #2e7d32); font-size: 0.8em;">OK</span>
+          {% else %}
+          <span style="color: var(--pico-color-grey-500, #9e9e9e); font-size: 0.8em;">Pending</span>
+          {% endif %}
+        </td>
+        <td>
+          <input type="checkbox" role="switch"
+                 {% if source.enabled %}checked{% endif %}
+                 name="enabled" value="true"
+                 hx-post="/settings/sources/{{ source.id }}/toggle"
+                 hx-swap="none"
+                 hx-trigger="change">
+        </td>
+        <td>
+          <button class="outline secondary" style="padding: 0.25em 0.5em; font-size: 0.8em;"
+                  hx-delete="/settings/sources/{{ source.id }}"
+                  hx-confirm="Remove {{ source.slug }}?"
+                  hx-target="closest .source-row"
+                  hx-swap="outerHTML">Remove</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p><small>No sources configured. Add a company slug or URL above.</small></p>
+  {% endif %}
+</div>
+
+<small>{{ sources | length }} source{{ 's' if sources | length != 1 else '' }} configured</small>
+</div>

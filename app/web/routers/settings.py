@@ -55,6 +55,7 @@ _SECTION_MAP: dict[str, tuple[str, str]] = {
     "threshold": ("partials/settings_threshold.html.j2", "Threshold"),
     "credentials": ("partials/settings_credentials.html.j2", "Credentials"),
     "schedule": ("partials/settings_schedule.html.j2", "Schedule"),
+    "sources": ("partials/settings_sources.html.j2", "Sources"),
     "budget": ("partials/settings_budget.html.j2", "Budget"),
     "limits": ("partials/settings_limits.html.j2", "Rate Limits"),
     "safety": ("partials/settings_safety.html.j2", "Safety"),
@@ -91,6 +92,10 @@ async def _render_section(
     if section_name == "keywords":
         raw = row.keywords_csv or ""
         ctx["keywords"] = [k for k in raw.split("|") if k]
+    elif section_name == "sources":
+        from app.discovery.service import get_all_sources
+
+        ctx["sources"] = await get_all_sources(session)
 
     return templates.TemplateResponse(request, template_path, ctx)
 
