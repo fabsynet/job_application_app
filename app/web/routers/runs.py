@@ -18,6 +18,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 
 from app.db.models import Run
+from app.discovery.models import DiscoveryRunStats, Source
 from app.runs.service import list_recent_runs
 from app.web.deps import get_session
 
@@ -67,10 +68,29 @@ async def run_detail(
     if run is None:
         raise HTTPException(status_code=404, detail="run not found")
     counts_json = json.dumps(run.counts or {}, indent=2, sort_keys=True)
+
+    # Per-source discovery stats for this run
+    stats_stmt = (
+        select(DiscoveryRunStats, Source)
+        .outerjoin(Source, DiscoveryRunStats.source_id == Source.id)
+        .where(DiscoveryRunStats.run_id == run_id)
+        .order_by(DiscoveryRunStats.id)
+    )
+    stats_result = await session.execute(stats_stmt)
+    discovery_stats = []
+    for stat, source in stats_result.all():
+        discovery_stats.append({
+            "source_name": (source.display_name or source.slug) if source else "unknown",
+            "source_type": source.source_type if source else "unknown",
+            "discovered": stat.discovered_count,
+            "matched": stat.matched_count,
+            "error": stat.error,
+        })
+
     return templates.TemplateResponse(
         request,
         "run_detail.html.j2",
-        {"run": run, "counts_json": counts_json},
+        {"run": run, "counts_json": counts_json, "discovery_stats": discovery_stats},
     )
 
 

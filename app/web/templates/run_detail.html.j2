@@ -26,6 +26,48 @@
     <dd>{{ run.failure_reason or "&mdash;" }}</dd>
   </dl>
 
+  {% if discovery_stats %}
+  <h3>Discovery results</h3>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>Source</th>
+        <th>Type</th>
+        <th>Discovered</th>
+        <th>Matched</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set ns = namespace(total_discovered=0, total_matched=0) %}
+      {% for s in discovery_stats %}
+      <tr>
+        <td>{{ s.source_name }}</td>
+        <td>{{ s.source_type }}</td>
+        <td>{{ s.discovered }}</td>
+        <td>{{ s.matched }}</td>
+        <td>
+          {% if s.error %}
+            <mark style="background: var(--pico-del-color, #d33); color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem;">{{ s.error }}</mark>
+          {% else %}
+            <span style="color: var(--pico-ins-color, #388e3c);">OK</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% set ns.total_discovered = ns.total_discovered + s.discovered %}
+      {% set ns.total_matched = ns.total_matched + s.matched %}
+      {% endfor %}
+      <tr>
+        <td><strong>Total</strong></td>
+        <td></td>
+        <td><strong>{{ ns.total_discovered }}</strong></td>
+        <td><strong>{{ ns.total_matched }}</strong></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
+
   <h3>Stage counts</h3>
   <pre><code>{{ counts_json }}</code></pre>
 
