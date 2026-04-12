@@ -6,63 +6,13 @@
     <h2>Settings</h2>
   </header>
 
-  <section>
-    <h3>Rate limit envelope</h3>
-    <form method="post" action="/settings/limits">
-      <label>
-        Daily cap (max submissions per day)
-        <input type="number" name="daily_cap" min="0" max="10000" value="{{ settings.daily_cap }}" required>
-      </label>
-      <div class="grid">
-        <label>
-          Delay min (seconds between actions)
-          <input type="number" name="delay_min_seconds" min="1" max="600" value="{{ settings.delay_min_seconds }}" required>
-        </label>
-        <label>
-          Delay max (seconds between actions)
-          <input type="number" name="delay_max_seconds" min="1" max="600" value="{{ settings.delay_max_seconds }}" required>
-        </label>
-      </div>
-      <label>
-        Timezone (IANA name, e.g. America/Los_Angeles)
-        <input type="text" name="timezone" value="{{ settings.timezone }}" required>
-      </label>
-      <button type="submit" class="primary">Save rate limit envelope</button>
-    </form>
-  </section>
-
-  <hr>
-
-  <section>
-    <h3>Secrets</h3>
-    <div class="warning-banner">
-      <strong>Rotation warning.</strong> Secrets are encrypted with your
-      <code>FERNET_KEY</code>. If you change or lose the key, stored secrets
-      become unrecoverable &mdash; you will need to re-enter them on this page.
+  <div class="settings-layout">
+    <aside class="settings-sidebar">
+      {% include "partials/settings_sidebar.html.j2" %}
+    </aside>
+    <div id="settings-content" class="settings-content">
+      {% include section_template %}
     </div>
-
-    <form hx-post="/settings/secrets"
-          hx-target="#secrets-list"
-          hx-swap="outerHTML"
-          hx-on::after-request="this.reset()">
-      <div class="grid">
-        <label>
-          Name
-          <select name="name" required>
-            {% for known in known_names %}
-              <option value="{{ known }}">{{ known }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <label>
-          Value
-          <input type="password" name="value" required autocomplete="off">
-        </label>
-      </div>
-      <button type="submit" class="primary">Save secret</button>
-    </form>
-
-    {% include "partials/secrets_list.html.j2" %}
-  </section>
+  </div>
 </article>
 {% endblock %}

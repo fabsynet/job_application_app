@@ -1,0 +1,19 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Safety Controls</h3>
+<p>Emergency stops and testing mode.</p>
+
+<form hx-post="/settings/safety" hx-target="#settings-content" hx-swap="innerHTML">
+  <fieldset>
+    <label>
+      <input type="checkbox" name="kill_switch" value="true"
+             {% if settings.kill_switch %}checked{% endif %}>
+      <strong>Kill Switch</strong> &mdash; Immediately halt all running and scheduled jobs
+    </label>
+    <label>
+      <input type="checkbox" name="dry_run" value="true"
+             {% if settings.dry_run %}checked{% endif %}>
+      <strong>Dry Run</strong> &mdash; Simulate the pipeline without actually submitting applications
+    </label>
+  </fieldset>
+  <button type="submit" class="primary">Save safety settings</button>
+</form>

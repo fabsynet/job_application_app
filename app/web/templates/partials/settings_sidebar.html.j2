@@ -1,0 +1,29 @@
+<nav>
+  <ul>
+    {% set sections = [
+      ("mode", "Mode"),
+      ("profile", "Profile"),
+      ("resume", "Resume"),
+      ("keywords", "Keywords"),
+      ("threshold", "Threshold"),
+      ("credentials", "Credentials"),
+      ("schedule", "Schedule"),
+      ("budget", "Budget"),
+      ("limits", "Rate Limits"),
+      ("safety", "Safety"),
+    ] %}
+    {% for slug, label in sections %}
+    <li>
+      <a href="#"
+         class="{% if active_section == slug %}active{% endif %}"
+         hx-get="/settings/section/{{ slug }}"
+         hx-target="#settings-content"
+         hx-swap="innerHTML"
+         hx-push-url="false"
+         hx-on::after-request="document.querySelectorAll('.settings-sidebar nav a').forEach(a => a.classList.remove('active')); this.classList.add('active')">
+        {{ label }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</nav>

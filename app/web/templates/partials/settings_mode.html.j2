@@ -1,0 +1,19 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Application Mode</h3>
+<p>Choose how the bot handles matched jobs.</p>
+
+<form hx-post="/settings/mode" hx-target="#settings-content" hx-swap="innerHTML">
+  <fieldset>
+    <label>
+      <input type="radio" name="auto_mode" value="true"
+             {% if settings.auto_mode %}checked{% endif %}>
+      <strong>Full Auto</strong> &mdash; Applications submitted automatically
+    </label>
+    <label>
+      <input type="radio" name="auto_mode" value="false"
+             {% if not settings.auto_mode %}checked{% endif %}>
+      <strong>Review Queue</strong> &mdash; Applications queued for your approval
+    </label>
+  </fieldset>
+  <button type="submit" class="primary">Save mode</button>
+</form>

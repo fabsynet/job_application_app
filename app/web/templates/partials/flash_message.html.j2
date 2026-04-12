@@ -1,0 +1,11 @@
+{% if flash %}
+<div class="flash-{{ flash[0] }}" id="flash-msg">
+  {{ flash[1] }}
+</div>
+<script>
+  setTimeout(function() {
+    var el = document.getElementById('flash-msg');
+    if (el) el.remove();
+  }, 3000);
+</script>
+{% endif %}

@@ -61,14 +61,20 @@ async def test_settings_page_renders(live_app) -> None:
             resp = await client.get("/settings")
             assert resp.status_code == 200
             body = resp.text
-            assert "Rate limit envelope" in body
-            assert "Secrets" in body
-            # Rotation warning present per CONTEXT.md.
-            assert "FERNET_KEY" in body
-            assert "unrecoverable" in body or "re-enter" in body
-            # Known names rendered as select options AND in the checklist.
-            assert "anthropic_api_key" in body
-            assert "smtp_host" in body
+            # Sidebar layout with section links
+            assert "settings-layout" in body
+            assert "settings-sidebar" in body
+            assert "settings-content" in body
+            # All 10 sidebar sections present as links
+            for section in [
+                "Mode", "Profile", "Resume", "Keywords", "Threshold",
+                "Credentials", "Schedule", "Budget", "Rate Limits", "Safety",
+            ]:
+                assert section in body
+            # Default section is Mode (loaded inline)
+            assert "Application Mode" in body
+            assert "Full Auto" in body
+            assert "Review Queue" in body
 
 
 async def test_save_secret_encrypts_and_scrubs(live_app) -> None:
@@ -178,10 +184,9 @@ async def test_save_limits_updates_live_rate_limiter(live_app) -> None:
                     "delay_max_seconds": "90",
                     "timezone": "America/Los_Angeles",
                 },
-                follow_redirects=False,
             )
-            assert resp.status_code == 303
-            assert resp.headers["location"] == "/settings"
+            assert resp.status_code == 200
+            assert "Rate limits saved" in resp.text
 
             # Live in-memory rate limiter reflects the change.
             rl = app.state.rate_limiter

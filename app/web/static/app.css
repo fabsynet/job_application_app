@@ -47,3 +47,59 @@
   padding: 0.75rem 1rem;
   margin: 1rem 0;
 }
+
+/* Settings sidebar layout */
+.settings-layout {
+  display: flex;
+  gap: 2rem;
+  min-height: 60vh;
+}
+.settings-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--pico-muted-border-color);
+  padding-right: 1rem;
+}
+.settings-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.settings-sidebar nav li {
+  margin: 0;
+  padding: 0;
+}
+.settings-sidebar nav a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  color: inherit;
+}
+.settings-sidebar nav a:hover {
+  background: var(--pico-secondary-background);
+}
+.settings-sidebar nav a.active {
+  background: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+.settings-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Flash messages */
+.flash-success {
+  border-left: 4px solid #2a9d8f;
+  background: #f0fff4;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem 0;
+  border-radius: 0.25rem;
+}
+.flash-error {
+  border-left: 4px solid #e76f51;
+  background: #fff3f0;
+  padding: 0.75rem 1rem;
+  margin: 0 0 1rem 0;
+  border-radius: 0.25rem;
+}

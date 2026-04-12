@@ -1,0 +1,28 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Rate Limits</h3>
+<p>Control how aggressively the bot applies to jobs.</p>
+
+<form hx-post="/settings/limits" hx-target="#settings-content" hx-swap="innerHTML">
+  <label>
+    Daily cap (max submissions per day)
+    <input type="number" name="daily_cap" min="0" max="10000"
+           value="{{ settings.daily_cap }}" required>
+  </label>
+  <div class="grid">
+    <label>
+      Delay min (seconds between actions)
+      <input type="number" name="delay_min_seconds" min="1" max="600"
+             value="{{ settings.delay_min_seconds }}" required>
+    </label>
+    <label>
+      Delay max (seconds between actions)
+      <input type="number" name="delay_max_seconds" min="1" max="600"
+             value="{{ settings.delay_max_seconds }}" required>
+    </label>
+  </div>
+  <label>
+    Timezone (IANA name, e.g. America/Los_Angeles)
+    <input type="text" name="timezone" value="{{ settings.timezone }}" required>
+  </label>
+  <button type="submit" class="primary">Save rate limits</button>
+</form>
