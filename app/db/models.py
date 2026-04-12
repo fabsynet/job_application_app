@@ -67,6 +67,9 @@ class Settings(SQLModel, table=True):
     resume_filename: Optional[str] = Field(default=None)
     resume_uploaded_at: Optional[datetime] = Field(default=None)
 
+    # --- Phase 4 fields ---
+    tailoring_intensity: str = Field(default="balanced")  # light | balanced | full
+
 
 class Secret(SQLModel, table=True):
     """Encrypted secret store.
@@ -154,6 +157,9 @@ class Profile(SQLModel, table=True):
 # up via ``from app.db import models`` and registers them on SQLModel.metadata.
 from app.discovery.models import DiscoveryRunStats, Job, Source  # noqa: F401, E402
 
+# Phase 4 tailoring models — same pattern as Phase 3 discovery above.
+from app.tailoring.models import CostLedger, TailoringRecord  # noqa: F401, E402
+
 __all__ = [
     "Settings",
     "Secret",
@@ -164,4 +170,6 @@ __all__ = [
     "Source",
     "Job",
     "DiscoveryRunStats",
+    "TailoringRecord",
+    "CostLedger",
 ]
