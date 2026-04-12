@@ -209,9 +209,16 @@ class SchedulerService:
                 raise
             else:
                 async with self._session_factory() as session:
-                    await finalize_run(
+                    run = await finalize_run(
                         session, ctx.run_id, status="succeeded"
                     )
+                log.info(
+                    "run_succeeded",
+                    run_id=ctx.run_id,
+                    counts=run.counts if run else {},
+                    dry_run=ctx.dry_run,
+                    triggered_by=ctx.triggered_by,
+                )
             finally:
                 self._current_task = None
 

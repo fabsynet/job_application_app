@@ -58,7 +58,7 @@ async def finalize_run(
     status: str,
     failure_reason: Optional[str] = None,
     counts: Optional[dict[str, Any]] = None,
-) -> None:
+) -> "Run":
     """Close out a Run row with terminal state.
 
     Computes ``duration_ms`` from ``started_at``. If ``counts`` is supplied,
@@ -80,6 +80,7 @@ async def finalize_run(
         merged.update(counts)
         row.counts = merged
     await session.commit()
+    return row
 
 
 async def mark_run_killed(session: AsyncSession, run_id: int) -> None:
