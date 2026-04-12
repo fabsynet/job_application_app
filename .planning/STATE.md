@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 Phase: 3 of 6 (Safe-Channel Discovery, Dedup & Matching)
 Plan: 5 of 6 in current phase
 Status: In progress
-Last activity: 2026-04-12 — Completed 03-04-PLAN.md (jobs page UI)
+Last activity: 2026-04-12 — Completed 03-05-PLAN.md (dashboard discovery UI)
 
-Progress: [█████████░] 52% (Phase 1 + Phase 2 complete, Phase 3: 5/6 plans done)
+Progress: [█████████░] 56% (Phase 1 + Phase 2 complete, Phase 3: 5/6 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: ~15 min
-- Total execution time: ~3h 40min
+- Total execution time: ~3h 45min
 
 **By Phase:**
 
@@ -32,8 +32,8 @@ Progress: [█████████░] 52% (Phase 1 + Phase 2 complete, Phas
 | 03    | 5     | ~23 min  | ~5 min   |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (~8 min, 2 tasks, 87 tests green) | 03-01 (~4 min, 2 tasks, schema only) | 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green) | 03-04 (~3 min, 2 tasks, 118 tests green)
-- Trend: 03-04 jobs page UI -- sortable table, inline expand, keyword highlighting
+- Last 5 plans: 03-01 (~4 min, 2 tasks, schema only) | 03-03 (~4 min, 2 tasks, 118 tests green) | 03-02 (~8 min, 2 tasks, 118 tests green) | 03-04 (~3 min, 2 tasks, 118 tests green) | 03-05 (~5 min, 2 tasks, 118 tests green)
+- Trend: 03-05 dashboard discovery UI -- per-source counts, anomaly banner, run detail stats
 
 *Updated after each plan completion*
 
@@ -52,6 +52,9 @@ Recent decisions affecting current work:
 - 03-02: validate_source returns (bool, str) tuple for router compatibility
 - 03-02: _execute_pipeline stores counts via self._last_counts; wrapper passes to finalize_run to avoid double-finalize
 - 03-02: Pipeline uses separate session scopes for load, fetch-status-update, persist, stats, anomaly phases
+- 03-05: Anomaly dismiss uses cookie (dismissed_anomaly_run_id) keyed on run_id -- no DB schema change
+- 03-05: Discovery summary queries DiscoveryRunStats joined with Source, not Run.counts JSON
+- 03-05: POST /dismiss-anomaly returns empty HTML for hx-swap=delete pattern
 - 03-03: Sources router uses _render_sources helper following _render_section pattern from settings.py
 - 03-03: Toggle endpoint returns empty 200 with HX-Reswap none header (no DOM update needed)
 - 03-03: Unknown source type triggers probe of all three ATS APIs sequentially
@@ -139,5 +142,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 03-04-PLAN.md (jobs page UI). Sortable table, inline expand, keyword highlighting, manual queue.
+Stopped at: Completed 03-05-PLAN.md (dashboard discovery UI). Per-source counts, anomaly banner, run detail stats.
 Resume file: None
