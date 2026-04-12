@@ -33,6 +33,7 @@ from app.discovery.models import DiscoveryRunStats, Source
 from app.runs.service import list_recent_runs
 from app.security.fernet import InvalidFernetKey
 from app.settings.service import get_settings_row
+from app.tailoring.service import get_monthly_cost_summary
 from app.web.deps import get_killswitch, get_scheduler, get_session, get_vault
 
 router = APIRouter()
@@ -87,6 +88,44 @@ async def _common_ctx(request, session, svc, ks) -> dict:
         "last_run": last_run,
         "recent_runs": runs,
         "rotation_banner": None,
+    }
+
+
+async def _get_budget_context(session) -> dict:
+    """Compose the dashboard budget widget context.
+
+    Reads the authoritative ``Settings`` row for cap / spent / month and
+    augments with the ``CostLedger`` per-call-type breakdown from
+    :func:`app.tailoring.service.get_monthly_cost_summary` so the widget
+    can show where the spend went.  ``budget_warning`` flips at 80% and
+    ``budget_halt`` at 100% per CONTEXT.md.
+    """
+    row = await get_settings_row(session)
+    cap = float(row.budget_cap_dollars or 0.0)
+    spent = float(row.budget_spent_dollars or 0.0)
+    month = row.budget_month or ""
+
+    if cap > 0:
+        pct = round(spent / cap * 100, 1)
+    else:
+        pct = 0.0
+    warning = cap > 0 and pct >= 80
+    halt = cap > 0 and pct >= 100
+
+    try:
+        summary = await get_monthly_cost_summary(session)
+        by_type = summary.get("by_type", {}) or {}
+    except Exception:  # noqa: BLE001
+        by_type = {}
+
+    return {
+        "budget_cap_dollars": cap,
+        "budget_spent_dollars": spent,
+        "budget_pct": pct,
+        "budget_warning": warning,
+        "budget_halt": halt,
+        "budget_by_type": by_type,
+        "budget_month": month,
     }
 
 
@@ -214,6 +253,8 @@ async def dashboard(
     ctx["rotation_banner"] = await _detect_rotation(session, vault)
     discovery_ctx = await _get_discovery_context(session, request)
     ctx.update(discovery_ctx)
+    budget_ctx = await _get_budget_context(session)
+    ctx.update(budget_ctx)
     return templates.TemplateResponse(request, "dashboard.html.j2", ctx)
 
 
@@ -256,6 +297,19 @@ async def trigger_run(
     asyncio.create_task(svc.run_pipeline(triggered_by="manual"))
     ctx = await _common_ctx(request, session, svc, ks)
     return templates.TemplateResponse(request, "partials/status_pill.html.j2", ctx)
+
+
+@router.post("/dismiss-budget-warning", response_class=HTMLResponse)
+async def dismiss_budget_warning(request: Request):
+    """Client-side dismissal of the 80% budget warning banner.
+
+    The banner is HTMX-swap=delete on this empty response, so the
+    dismissal is only visible until the user reloads the page — a new
+    run that pushes spend higher will resurface it.  We intentionally
+    do not persist this in a cookie: the halt banner (100%) is *not*
+    dismissible and this 80% warning is cheap to re-render.
+    """
+    return Response(content="", media_type="text/html")
 
 
 @router.post("/dismiss-anomaly", response_class=HTMLResponse)

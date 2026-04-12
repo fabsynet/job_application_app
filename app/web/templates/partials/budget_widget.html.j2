@@ -1,0 +1,64 @@
+{# Dashboard monthly-budget widget.
+
+   Expects context keys:
+     - budget_cap_dollars (float)
+     - budget_spent_dollars (float)
+     - budget_pct (int/float, rounded)
+     - budget_warning (bool)   — True when spend >= 80% of cap
+     - budget_halt (bool)      — True when spend >= 100% of cap
+     - budget_by_type (dict[str,float])
+     - budget_month (str)      — "YYYY-MM"
+#}
+<section id="budget-widget">
+  <h3>Monthly Budget</h3>
+  {% if budget_cap_dollars and budget_cap_dollars > 0 %}
+
+    {% if budget_halt %}
+    <article style="border:2px solid var(--pico-del-color,#d33);background:#f8d7da;color:#721c24;padding:0.75rem;border-radius:var(--pico-border-radius,0.25rem);">
+      <strong>Tailoring paused &mdash; budget limit reached.</strong>
+      Raise the cap in <a href="/settings">Settings &rarr; Budget</a> to continue.
+    </article>
+    {% elif budget_warning %}
+    <article id="budget-warning-banner"
+             style="border:1px solid #ffc107;background:#fff3cd;color:#856404;padding:0.75rem;border-radius:var(--pico-border-radius,0.25rem);">
+      <strong>Heads up:</strong> monthly spend has passed 80% of the cap.
+      <button type="button"
+              class="secondary outline"
+              style="float:right;padding:0.1rem 0.5rem;"
+              hx-post="/dismiss-budget-warning"
+              hx-target="#budget-warning-banner"
+              hx-swap="delete">
+        Dismiss
+      </button>
+    </article>
+    {% endif %}
+
+    <div class="budget-progress" style="background:#eee;height:1rem;border-radius:var(--pico-border-radius,0.25rem);overflow:hidden;margin:0.5rem 0;">
+      <div class="budget-progress-fill {{ 'over-budget' if budget_pct > 100 else '' }}"
+           style="height:100%;width:{{ [budget_pct, 100] | min }}%;background:{{ '#d33' if budget_pct >= 100 else ('#ffc107' if budget_pct >= 80 else '#28a745') }};"></div>
+    </div>
+    <p>
+      <strong>${{ '%.2f'|format(budget_spent_dollars or 0) }}</strong>
+      / ${{ '%.2f'|format(budget_cap_dollars) }} used this month
+      ({{ budget_pct }}%)
+      {% if budget_month %}<small>&mdash; {{ budget_month }}</small>{% endif %}
+    </p>
+
+    {% if budget_by_type %}
+    <details>
+      <summary><small>Breakdown by call type</small></summary>
+      <ul>
+        {% for call_type, subtotal in budget_by_type.items() %}
+        <li>{{ call_type }}: ${{ '%.4f'|format(subtotal) }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+
+  {% else %}
+    <p><em>No budget cap set.</em>
+       <a href="/settings">Set one in Settings &rarr; Budget</a>
+       to track monthly LLM spend.
+    </p>
+  {% endif %}
+</section>

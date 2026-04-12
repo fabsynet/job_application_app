@@ -1,0 +1,24 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Tailoring Intensity</h3>
+<p>Controls how aggressively the LLM rewrites your base resume for each matched job.</p>
+
+<form hx-post="/settings/tailoring" hx-target="#settings-content" hx-swap="innerHTML">
+  <fieldset>
+    <label>
+      <input type="radio" name="tailoring_intensity" value="light"
+             {% if settings.tailoring_intensity == "light" %}checked{% endif %}>
+      <strong>Light</strong> &mdash; Reorder and emphasize keywords
+    </label>
+    <label>
+      <input type="radio" name="tailoring_intensity" value="balanced"
+             {% if settings.tailoring_intensity == "balanced" or not settings.tailoring_intensity %}checked{% endif %}>
+      <strong>Balanced</strong> &mdash; Rephrase and reorder <small>(recommended)</small>
+    </label>
+    <label>
+      <input type="radio" name="tailoring_intensity" value="full"
+             {% if settings.tailoring_intensity == "full" %}checked{% endif %}>
+      <strong>Full</strong> &mdash; Full restructure for maximum relevance
+    </label>
+  </fieldset>
+  <button type="submit" class="primary">Save intensity</button>
+</form>

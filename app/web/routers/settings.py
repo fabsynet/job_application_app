@@ -57,6 +57,7 @@ _SECTION_MAP: dict[str, tuple[str, str]] = {
     "schedule": ("partials/settings_schedule.html.j2", "Schedule"),
     "sources": ("partials/settings_sources.html.j2", "Sources"),
     "budget": ("partials/settings_budget.html.j2", "Budget"),
+    "tailoring": ("partials/settings_tailoring.html.j2", "Tailoring"),
     "limits": ("partials/settings_limits.html.j2", "Rate Limits"),
     "safety": ("partials/settings_safety.html.j2", "Safety"),
 }
@@ -553,6 +554,37 @@ async def save_budget(
     return await _render_section(
         request, session, "budget",
         flash=("success", "Budget cap saved."),
+    )
+
+
+# ── Tailoring intensity ──────────────────────────────────────────────
+
+_VALID_INTENSITIES = {"light", "balanced", "full"}
+
+
+@router.post("/tailoring", response_class=HTMLResponse)
+async def save_tailoring(
+    request: Request,
+    tailoring_intensity: str = Form(...),
+    session=Depends(get_session),
+):
+    """Persist the three-position tailoring intensity selector.
+
+    Per CONTEXT.md this feels like a simple three-position control
+    rather than a numeric slider — values outside the allowed set are
+    rejected before hitting the DB so the pipeline (04-05) can trust
+    ``Settings.tailoring_intensity`` without defensive normalisation.
+    """
+    value = (tailoring_intensity or "").strip().lower()
+    if value not in _VALID_INTENSITIES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"tailoring_intensity must be one of {sorted(_VALID_INTENSITIES)}",
+        )
+    await set_setting(session, "tailoring_intensity", value)
+    return await _render_section(
+        request, session, "tailoring",
+        flash=("success", f"Tailoring intensity set to {value}."),
     )
 
 
