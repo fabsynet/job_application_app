@@ -1,0 +1,22 @@
+{# Reusable HTML-preview wrapper for a tailored DOCX rendered via mammoth.
+
+   Usage:
+       {% include "partials/resume_preview.html.j2" %}
+   with ``preview_html`` in scope (and optionally ``title``).
+
+   The preview is rendered as a Pico.css card with a subtle border so
+   the mammoth output sits visually apart from the rest of the detail
+   page.  Inline scoping keeps this partial self-contained.
+#}
+<article class="resume-preview" style="border:1px solid var(--pico-muted-border-color,#ccc);border-radius:var(--pico-border-radius,0.25rem);padding:1rem;background:var(--pico-card-background-color,#fff);">
+  {% if title %}
+  <header><small>{{ title }}</small></header>
+  {% endif %}
+  <div class="resume-preview-body" style="max-height:60vh;overflow-y:auto;font-size:0.95rem;line-height:1.4;">
+    {% if preview_html %}
+      {{ preview_html | safe }}
+    {% else %}
+      <p><em>No preview available.</em></p>
+    {% endif %}
+  </div>
+</article>

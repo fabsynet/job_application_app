@@ -1,0 +1,182 @@
+{% extends "base.html.j2" %}
+{% block title %}Tailoring &mdash; {{ job.title }} @ {{ job.company }}{% endblock %}
+{% block content %}
+<article>
+  <header>
+    <hgroup>
+      <h2>{{ job.title }}</h2>
+      <h3>{{ job.company }}{% if job.location %} &mdash; {{ job.location }}{% endif %}</h3>
+    </hgroup>
+    <p>
+      <small>
+        Match score <strong>{{ job.score }}</strong>
+        &middot; Status <strong>{{ job.status }}</strong>
+        {% if job.url %}&middot; <a href="{{ job.url }}" target="_blank" rel="noopener">View posting &rarr;</a>{% endif %}
+        &middot; <a href="/jobs">&larr; Back to jobs</a>
+      </small>
+    </p>
+  </header>
+
+  {# ── Version selector ────────────────────────────────────────── #}
+  {% if records %}
+  <section>
+    <h4>Versions</h4>
+    <div class="tailoring-versions">
+      {% for rec in records %}
+      <button type="button"
+              class="{% if latest_record and rec.id == latest_record.id %}primary{% else %}secondary{% endif %} outline"
+              hx-get="/tailoring/{{ job.id }}/preview/{{ rec.version }}"
+              hx-target="#tailoring-preview"
+              hx-swap="innerHTML"
+              style="margin-right:0.5rem;">
+        v{{ rec.version }}
+        <small>({{ rec.status }}{% if rec.validation_passed is not none %}, {% if rec.validation_passed %}validated{% else %}flagged{% endif %}{% endif %})</small>
+      </button>
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <p><em>No tailoring attempts yet for this job.</em></p>
+  {% endif %}
+
+  {% if latest_record %}
+
+  {# ── Downloads ───────────────────────────────────────────────── #}
+  <section>
+    <h4>Downloads</h4>
+    <a href="/tailoring/{{ job.id }}/download/{{ latest_record.version }}"
+       role="button" class="primary">
+      Download Resume (v{{ latest_record.version }})
+    </a>
+    {% if latest_record.cover_letter_path %}
+    <a href="/tailoring/{{ job.id }}/cover-letter/{{ latest_record.version }}"
+       role="button" class="secondary">
+      Download Cover Letter
+    </a>
+    {% endif %}
+  </section>
+
+  {# ── HTML preview ────────────────────────────────────────────── #}
+  <section>
+    <h4>Tailored Resume Preview</h4>
+    <div id="tailoring-preview">
+      {% with title="Version v" ~ latest_record.version %}
+        {% include "partials/resume_preview.html.j2" %}
+      {% endwith %}
+    </div>
+  </section>
+
+  {% if cover_letter_preview %}
+  <section>
+    <h4>Cover Letter Preview</h4>
+    {% with preview_html=cover_letter_preview, title="Cover Letter v" ~ latest_record.version %}
+      {% include "partials/resume_preview.html.j2" %}
+    {% endwith %}
+  </section>
+  {% endif %}
+
+  {# ── Side-by-side diff ───────────────────────────────────────── #}
+  {% if diff_html %}
+  <section>
+    <h4>Base vs Tailored</h4>
+    <p><small>Changed sections are highlighted. <ins>Added</ins> / <del>removed</del> lines show what the model rewrote.</small></p>
+    {{ diff_html | safe }}
+  </section>
+  {% endif %}
+
+  {# ── Validator findings ─────────────────────────────────────── #}
+  <section>
+    <h4>Validator</h4>
+    {% if latest_record.validation_passed %}
+      <p><mark style="background:#d4edda;color:#155724;">&check; Validator passed</mark>
+         after {{ latest_record.retry_count }} attempt{{ '' if latest_record.retry_count == 1 else 's' }}.</p>
+    {% elif latest_record.validation_passed is none %}
+      <p><em>No validator result recorded.</em></p>
+    {% else %}
+      <p><mark style="background:#f8d7da;color:#721c24;">&cross; Validator flagged issues</mark>
+         after {{ latest_record.retry_count }} attempt{{ '' if latest_record.retry_count == 1 else 's' }}.</p>
+    {% endif %}
+
+    {% if validation_warnings %}
+    <details open>
+      <summary>Findings ({{ validation_warnings | length }})</summary>
+      <ul>
+      {% for w in validation_warnings %}
+        <li>
+          {% if w is mapping %}
+            {% if w.rule %}<strong>{{ w.rule }}</strong>: {% endif %}
+            {{ w.message if w.message else w }}
+            {% if w.retry is defined %}<small>(retry {{ w.retry }})</small>{% endif %}
+          {% else %}
+            {{ w }}
+          {% endif %}
+        </li>
+      {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+  </section>
+
+  {# ── ATS checks + keyword coverage ──────────────────────────── #}
+  <section>
+    <h4>ATS Audit</h4>
+    {% if ats_checks %}
+    <ul>
+      <li>Tables present:
+        {% if ats_checks.has_tables %}
+          <mark style="background:#f8d7da;color:#721c24;">yes</mark>
+          <small>(tables can confuse older ATS parsers)</small>
+        {% else %}
+          <mark style="background:#d4edda;color:#155724;">no</mark>
+        {% endif %}
+      </li>
+      <li>Non-standard fonts:
+        {% if ats_checks.non_standard_fonts %}
+          <mark style="background:#fff3cd;color:#856404;">{{ ats_checks.non_standard_fonts | join(", ") }}</mark>
+        {% else %}
+          <mark style="background:#d4edda;color:#155724;">none</mark>
+        {% endif %}
+      </li>
+      <li>Keyword coverage:
+        {% if keyword_coverage is not none %}
+          <strong>{{ '%.0f'|format(keyword_coverage * 100) }}% keyword match</strong>
+          <small>(fraction of job-description tokens present in tailored text)</small>
+        {% else %}
+          <em>n/a</em>
+        {% endif %}
+      </li>
+    </ul>
+    {% else %}
+    <p><em>No ATS audit available.</em></p>
+    {% endif %}
+  </section>
+
+  {# ── Token usage and cost (SC-5: cache savings visible) ────── #}
+  <section>
+    <h4>Token Usage &amp; Cost</h4>
+    <table role="grid">
+      <tbody>
+        <tr><th scope="row">Input tokens</th><td>{{ '{:,}'.format(latest_record.input_tokens or 0) }}</td></tr>
+        <tr><th scope="row">Output tokens</th><td>{{ '{:,}'.format(latest_record.output_tokens or 0) }}</td></tr>
+        <tr><th scope="row">Cache write tokens</th><td>{{ '{:,}'.format(latest_record.cache_write_tokens or 0) }}</td></tr>
+        <tr><th scope="row">Cache read tokens</th><td>{{ '{:,}'.format(latest_record.cache_read_tokens or 0) }}</td></tr>
+        <tr>
+          <th scope="row">Estimated cache savings</th>
+          <td>
+            <strong>${{ '%.4f'|format(cache_savings_dollars) }}</strong>
+            <small>(saved by prompt caching vs. billing all input at full rate)</small>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Estimated total cost</th>
+          <td><strong>${{ '%.4f'|format(latest_record.estimated_cost_dollars or 0) }}</strong></td>
+        </tr>
+        <tr><th scope="row">Retries</th><td>{{ latest_record.retry_count }}</td></tr>
+        <tr><th scope="row">Intensity</th><td>{{ latest_record.intensity }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  {% endif %}
+</article>
+{% endblock %}
