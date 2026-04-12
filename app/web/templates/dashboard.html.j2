@@ -1,6 +1,7 @@
 {% extends "base.html.j2" %}
 {% block title %}Dashboard &mdash; Job Apply{% endblock %}
 {% block content %}
+{% include "partials/anomaly_banner.html.j2" %}
 {% if rotation_banner %}
 <article class="contrast" id="rotation-banner" style="border: 2px solid var(--pico-del-color, #d33);">
   <header>
@@ -45,6 +46,8 @@
       <p><em>No runs yet. Click "Force run now" to trigger one.</em></p>
     {% endif %}
   </section>
+
+  {% include "partials/dashboard_discovery_summary.html.j2" %}
 
   <section>
     <h3>Recent runs</h3>

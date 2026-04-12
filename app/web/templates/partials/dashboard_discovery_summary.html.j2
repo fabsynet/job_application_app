@@ -1,0 +1,32 @@
+{% if discovery_summary and discovery_summary.sources %}
+<section>
+  <h3>Discovery summary</h3>
+  <div class="grid">
+    {% for src in discovery_summary.sources %}
+    <article style="padding: 0.75rem; margin-bottom: 0;">
+      <header style="padding: 0.5rem 0.75rem;">
+        <strong>{{ src.display_name or src.slug }}</strong>
+        <small>({{ src.source_type }})</small>
+        {% if src.error %}
+          <mark style="background: var(--pico-del-color, #d33); color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; float: right; font-size: 0.75rem;">ERROR</mark>
+        {% endif %}
+      </header>
+      {% if src.error %}
+        <p style="color: var(--pico-del-color, #d33); font-size: 0.85rem;">{{ src.error }}</p>
+      {% else %}
+        <p style="margin-bottom: 0;">
+          <strong>{{ src.discovered }}</strong> discovered
+          &middot;
+          <strong>{{ src.matched }}</strong> matched
+        </p>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  <p>
+    <strong>Total:</strong>
+    {{ discovery_summary.total_discovered }} discovered,
+    {{ discovery_summary.total_matched }} matched
+  </p>
+</section>
+{% endif %}

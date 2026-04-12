@@ -1,0 +1,20 @@
+{% if show_anomaly_banner and anomaly_warnings %}
+<article id="anomaly-banner" style="border: 2px solid var(--pico-mark-background-color, #fd0); background: var(--pico-mark-background-color, #fd0); color: var(--pico-mark-color, #000);">
+  <header>
+    <strong>Discovery anomaly detected</strong>
+    <button
+      type="button"
+      class="outline secondary"
+      style="float: right; margin: 0; padding: 0.25rem 0.5rem; font-size: 0.8rem;"
+      hx-post="/dismiss-anomaly"
+      hx-target="#anomaly-banner"
+      hx-swap="delete"
+    >Dismiss</button>
+  </header>
+  <ul style="margin-bottom: 0;">
+    {% for warning in anomaly_warnings %}
+    <li>{{ warning }}</li>
+    {% endfor %}
+  </ul>
+</article>
+{% endif %}
