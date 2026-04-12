@@ -13,10 +13,10 @@ The class owns three pieces of safety state:
   the kill-switch uses for mid-run hard-stop.
 * ``_killswitch``, ``_rate_limiter`` — injected collaborators, both async-safe.
 
-Phase 1 ships a 50ms stub pipeline; Phase 2+ replaces :meth:`_execute_stub`
-with real stage calls. The *wrapper* semantics (lock, kill-switch gate,
-rate-limit gate, RunContext snapshot, finalise on success/error/cancel) stay
-identical across phases.
+Phase 3 replaced the Phase 1 stub with :meth:`_execute_pipeline` which calls
+``run_discovery`` for ATS fetching, dedup, scoring, and persistence.  The
+*wrapper* semantics (lock, kill-switch gate, rate-limit gate, RunContext
+snapshot, finalise on success/error/cancel) stay identical across phases.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from app.discovery.pipeline import run_discovery
 from app.runs.context import RunContext
 from app.runs.service import create_run, finalize_run, mark_run_killed
 from app.scheduler.killswitch import KillSwitch
@@ -134,7 +135,7 @@ class SchedulerService:
              and return.
           3. Create Run row with dry_run snapshot from Settings.
           4. Construct frozen RunContext.
-          5. Execute _execute_stub inside a cancellable asyncio.Task.
+          5. Execute _execute_pipeline inside a cancellable asyncio.Task.
           6. On CancelledError → finalise as failed/killed.
              On Exception → finalise as failed/error.
              On success → finalise as succeeded.
@@ -184,7 +185,7 @@ class SchedulerService:
                     tz=self._tz,
                 )
 
-            task = asyncio.create_task(self._execute_stub(ctx))
+            task = asyncio.create_task(self._execute_pipeline(ctx))
             self._current_task = task
             try:
                 await task
@@ -208,9 +209,14 @@ class SchedulerService:
                 log.exception("run_errored", run_id=ctx.run_id)
                 raise
             else:
+                pipeline_counts = getattr(self, "_last_counts", None)
+                self._last_counts = None
                 async with self._session_factory() as session:
                     run = await finalize_run(
-                        session, ctx.run_id, status="succeeded"
+                        session,
+                        ctx.run_id,
+                        status="succeeded",
+                        counts=pipeline_counts,
                     )
                 log.info(
                     "run_succeeded",
@@ -222,17 +228,28 @@ class SchedulerService:
             finally:
                 self._current_task = None
 
-    async def _execute_stub(self, ctx: RunContext) -> None:
-        """Phase 1 stub pipeline body.
+    async def _execute_pipeline(self, ctx: RunContext) -> None:
+        """Execute the discovery pipeline with kill-switch checkpoints.
 
-        Checkpoints the kill-switch, yields to the event loop briefly so
-        tests have a window to cancel mid-run, and writes nothing. Phase 2+
-        replaces *this body* with real stage calls — the wrapper above it
-        stays the same contract.
+        Replaces the Phase 1 stub. Calls ``run_discovery`` which fetches
+        from all enabled ATS sources, deduplicates, scores, and persists
+        jobs. The kill-switch is checked before and after the discovery
+        stage to honour mid-run hard-stop requests.
+
+        The wrapper ``run_pipeline`` handles final status (succeeded/failed)
+        and calls ``finalize_run`` -- this method only stores stage counts
+        on the Run row so the wrapper can read them back.
         """
         await self._killswitch.raise_if_engaged()
-        await asyncio.sleep(0.05)
+
+        # Run discovery stage
+        discovery_counts = await run_discovery(ctx, self._session_factory)
+
         await self._killswitch.raise_if_engaged()
+
+        # Store discovery counts on the Run row.  The wrapper's else-branch
+        # will call finalize_run(status="succeeded") which merges counts.
+        self._last_counts = discovery_counts
 
 
 __all__ = ["SchedulerService"]
