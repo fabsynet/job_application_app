@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 3 of 7 in current phase (Wave 2 in progress: 04-03 complete, 04-04 running in parallel)
+Plan: 4 of 7 in current phase (Wave 2 complete: 04-03 + 04-04)
 Status: In progress
-Last activity: 2026-04-12 — Completed 04-03-PLAN.md (tailoring prompts + engine)
+Last activity: 2026-04-12 — Completed 04-04-PLAN.md (DOCX writer + preview)
 
-Progress: [██████████] 58% (19 of 22 plans complete: Phases 1-3 + 04-01 + 04-02 + 04-03)
+Progress: [██████████▏] 91% (20 of 22 plans complete: Phases 1-3 + 04-01..04-04)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
+- Total plans completed: 20
 - Average duration: ~12 min
-- Total execution time: ~4h 13min
+- Total execution time: ~4h 20min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [██████████] 58% (19 of 22 plans complete: Phases 
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
 | 03    | 6     | ~32 min  | ~5 min   |
-| 04    | 3     | ~19 min  | ~6 min   |
+| 04    | 4     | ~26 min  | ~7 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-05 (~5 min) | 03-06 (~9 min, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green) | 04-03 (~5 min, 2 tasks, 175 tests green)
-- Trend: Wave 2 kicking off cleanly — 04-03 (prompts + engine) landed zero-deviation on first pass. Prompt templates + orchestration engine are now wired to LLMProvider/BudgetGuard from Wave 1. Running in parallel with 04-04 (docx_writer + preview).
+- Last 5 plans: 03-06 (~9 min, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green) | 04-03 (~5 min, 2 tasks, 175 tests green) | 04-04 (~7 min, 2 tasks, 175 tests green)
+- Trend: Wave 2 complete — 04-03 (prompts + engine) and 04-04 (docx_writer + preview) landed in parallel without merge conflict. 04-04 auto-fixed one Rule 3 environment blocker (mammoth not installed in local venv). All four Phase 4 Wave-1/Wave-2 plans shipped zero-deviation at the source level; test suite stable at 175/175.
 
 *Updated after each plan completion*
 
@@ -45,6 +45,13 @@ Progress: [██████████] 58% (19 of 22 plans complete: Phases 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-04: DOCX replacement goes through replace_paragraph_text_preserving_format exclusively — paragraph.text setter is only used in the no-runs fallback branch (research Pitfall 1 enforced in code)
+- 04-04: Section overflow drops excess tailored bullets with a warning log rather than cloning paragraph XML; underflow clears extras instead of deleting them so spacing stays stable
+- 04-04: Work-experience subsection matching uses a fixed 2-line skip after the company header (title + dates) before collecting bullets — heuristic, not style-parsed, because python-docx has no semantic bullet notion
+- 04-04: check_ats_friendly returns keyword_coverage=None; compute_keyword_coverage is a separate function so ATS audits can run without a job description in scope
+- 04-04: Cover letter font is auto-detected from the base resume's first run, falling back to Calibri — only affects the cover letter, resume template is untouched
+- 04-04: format_diff_html emits a scoped <style> prelude so <ins>/<del> colour themselves without requiring the review-queue template to ship matching CSS — the fragment is fully self-contained
+- 04-04: generate_section_diff appends tailored-only sections at the end (not interleaved) with empty base_text; interleaving would need base-order tracking that extract_resume_text does not expose
 - 04-03: TAILORING_SYSTEM_PROMPT is one monolithic constant — easier prompt-injection review and cleaner prompt caching than fragment assembly
 - 04-03: Temperature schedule pinned in engine: validator 0.1, tailoring 0.3, cover letter 0.4 — codified once so consumers cannot drift
 - 04-03: get_escalated_prompt_suffix escalates only the tailoring prompt on retries; validator strictness stays constant (research Pitfall 4)
@@ -173,5 +180,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 04-03-PLAN.md. Wave 2 in progress — 04-03 (prompts + engine) landed on master zero-deviation. Commits 60a20b4 (prompts) and a3d7633 (engine) added app/tailoring/prompts.py (396 lines, 3 system prompts + cache_control builders) and app/tailoring/engine.py (602 lines, strip_pii_sections + tailor_resume orchestration with retry/escalation). 175/175 tests green. 04-04 (docx_writer + preview) running in parallel. Ready for Wave 3 once 04-04 lands.
+Stopped at: Completed 04-04-PLAN.md. Wave 2 complete — 04-03 (prompts + engine) and 04-04 (docx_writer + preview) both merged cleanly on master. 04-04 commits 73f2fc6 (docx_writer) and 09b526c (preview) added app/tailoring/docx_writer.py (574 lines, build_tailored_docx + build_cover_letter_docx + ATS checks + keyword coverage) and app/tailoring/preview.py (307 lines, mammoth preview + generate_section_diff + format_diff_html). One Rule-3 auto-fix on 04-04: installed mammoth==1.12.0 into local .venv (already pinned in requirements.txt from 04-02). 175/175 tests green. Ready for Wave 3 (04-05 pipeline stage + 04-06 review queue UI + 04-07 end-to-end wiring).
 Resume file: None
