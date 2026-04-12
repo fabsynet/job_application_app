@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 4 — LLM Tailoring & DOCX Generation
+**Current focus:** Phase 4 complete — ready for Phase 5 (Submission)
 
 ## Current Position
 
 Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 6 of 7 in current phase (Wave 4 solo complete: 04-06)
-Status: In progress
-Last activity: 2026-04-12 — Completed 04-06-PLAN.md (tailoring review UI + settings intensity + dashboard budget widget)
+Plan: 7 of 7 in current phase (Wave 5 test hardening complete: 04-07)
+Status: Phase complete
+Last activity: 2026-04-12 — Completed 04-07-PLAN.md (41 new Phase 4 tests, 216/216 suite green)
 
-Progress: [██████████▊] 100% (22 of 22 plans complete: Phases 1-3 + 04-01..04-06) — 04-07 test hardening is the phase-closing plan
+Progress: [███████████] 100% (23 of 23 plans complete: Phases 1-3 + 04-01..04-07) — Phase 4 closed
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
+- Total plans completed: 23
 - Average duration: ~13 min
-- Total execution time: ~5h 0min
+- Total execution time: ~5h 12min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [██████████▊] 100% (22 of 22 plans complete: Pha
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
 | 03    | 6     | ~32 min  | ~5 min   |
-| 04    | 6     | ~66 min  | ~11 min  |
+| 04    | 7     | ~78 min  | ~11 min  |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (~6 min) | 04-03 (~5 min) | 04-04 (~7 min) | 04-05 (~32 min, 3 deviations) | 04-06 (~8 min, 2 minor deviations, 175 tests green)
-- Trend: 04-06 (Wave 4 solo UI layer) landed cleanly with two minor reconciliation deviations (sidebar placement ordering, keyword_coverage recomputation path) — no auto-fixes for bugs, all 175 tests green on both task commits. Duration back in the Phase 4 norm (~8 min vs ~11 min average) after the 04-05 debugging spike.
+- Last 5 plans: 04-03 (~5 min) | 04-04 (~7 min) | 04-05 (~32 min, 3 deviations) | 04-06 (~8 min, 2 minor deviations, 175 tests green) | 04-07 (~12 min, 0 deviations, 216 tests green)
+- Trend: 04-07 (Wave 5 phase-closing tests) landed cleanly with no deviations. 41 new tests (1,167 lines) covering TAIL-01..09 + SAFE-04 using FakeLLMProvider. 216/216 green. Phase 4 is now feature-complete and fully tested — ready for Phase 5.
 
 *Updated after each plan completion*
 
@@ -45,6 +45,14 @@ Progress: [██████████▊] 100% (22 of 22 plans complete: Pha
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-07: FakeLLMProvider is a local test class (not a shared conftest fixture) — Phase 4 is its only consumer and local definition keeps the test surface legible
+- 04-07: Base resume DOCX fixture built via python-docx in a pytest helper rather than checked into the repo — fully deterministic, version-tracked as code
+- 04-07: SC-5 cache-token-visibility test asserts against the template file via read_text+substring checks rather than rendering through Jinja2 — avoids needing a full Jinja env + dummy context
+- 04-07: SC-2 end-to-end invented-skill test scripts 6 FakeLLMProvider responses (tailor/validate × 3) to exercise the full retry+escalation loop and prove success=False at max_retries
+- 04-07: SAFE-04 PII-in-prompt test flattens every recorded provider call (system blocks + messages) into one blob and greps for literal name/email/phone — strictest possible assertion
+- 04-07: Service-layer tests use the async_session conftest fixture directly rather than live_app because they only need DB state, not HTTP surface
+- 04-07: Job fixtures in Phase 4 tests must include external_id='ext-N' (NOT NULL constraint); Phase 3 tests implicitly satisfied this via real ATS payloads
+- 04-07: resume_artifact_path test normalises to forward slashes before asserting '42/v1.docx' so it passes on Windows and Linux
 - 04-06: Tailoring detail view recomputes keyword_coverage on each render via compute_keyword_coverage — TailoringRecord has no keyword_coverage column so the value is derived from (tailored_docx_text, job.description) at render time
 - 04-06: Detail-view diff shim re-extracts the tailored DOCX and reshapes into {sections:[{heading,content}]} — the engine's tailored_sections JSON is not persisted, so the diff rebuilds input from the artifact (line-level diff still highlights bullet changes correctly)
 - 04-06: Cache savings pricing constants (_INPUT_PRICE_PER_MTOK=3.00, _CACHE_READ_PRICE_PER_MTOK=0.30) inlined in tailoring router rather than re-exported from BudgetGuard.PRICING to avoid UI↔budget import coupling — marked must-stay-in-sync
@@ -202,5 +210,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 04-06-PLAN.md. Wave 4 solo UI layer landed on master. Task 1 commit 983575c added app/web/routers/tailoring.py (~300 lines: detail + preview + download + cover-letter endpoints) plus tailoring_detail.html.j2 and resume_preview.html.j2 partials, and registered the router in app/main.py. The detail view wires every Wave 1-3 deliverable (docx_to_html preview, generate_section_diff + format_diff_html, check_ats_friendly, compute_keyword_coverage), surfaces cache_read_tokens and estimated cache savings prominently (SC-5), and recomputes keyword_coverage at render time since TailoringRecord has no such column. Task 2 commit 3ce775c added the three-position tailoring intensity selector (settings_tailoring.html.j2 + _SECTION_MAP entry + POST /settings/tailoring with strict value validation), added "Tailoring" to the settings sidebar after Budget, and added the dashboard budget widget (dashboard._get_budget_context helper, budget_widget.html.j2, POST /dismiss-budget-warning, include in dashboard.html.j2). Two minor reconciliation deviations (sidebar ordering, keyword_coverage recomputation) — no auto-fixed bugs. 175/175 tests green across both commits. Phase 4 is now feature-complete except plan 04-07 (test hardening). Ready for 04-07.
+Stopped at: Completed 04-07-PLAN.md. Wave 5 phase-closing test hardening landed on master. Task 1 commit 25b630e added tests/test_phase4_tailoring.py (1,167 lines, 41 tests) covering TAIL-01..TAIL-09 and SAFE-04. Test groups: PII stripping (5), Prompts (4), Validator (4), Budget guard (8), DOCX writer (9), Preview (3), Service layer (5), Settings UI (1), Cache token visibility (2). Key tests tie directly to phase success criteria: SC-1 (bold/italic preservation via replace_paragraph_text_preserving_format round-trip), SC-2 (end-to-end tailor_resume retry loop rejecting invented "React" across 3 attempts), SC-3/SAFE-04 (PII blob assertion flattening every FakeLLMProvider.calls payload and grepping for literal name/email/phone), SC-4 (budget halt at spent==cap), SC-5 (template file assertion for cache_read_tokens + "cache savings" substrings). FakeLLMProvider test double records every system/messages payload so PII-in-prompt assertions can inspect outgoing traffic. Base resume DOCX fixture is built in-memory via python-docx (no binary check-in). Zero deviations — one mechanical fixture fix added external_id='ext-N' to Job instances to satisfy NOT NULL constraint. 216/216 tests green (175 existing + 41 new). **Phase 4 is COMPLETE** and feature-frozen; ready for Phase 5 (Submission).
 Resume file: None
