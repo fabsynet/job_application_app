@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 2 of 7 in current phase (Wave 1 complete: 04-01 + 04-02)
+Plan: 3 of 7 in current phase (Wave 2 in progress: 04-03 complete, 04-04 running in parallel)
 Status: In progress
-Last activity: 2026-04-12 — Completed 04-02-PLAN.md (LLM provider + BudgetGuard)
+Last activity: 2026-04-12 — Completed 04-03-PLAN.md (tailoring prompts + engine)
 
-Progress: [█████████▌] 55% (18 of 22 plans complete: Phases 1-3 + 04-01 + 04-02)
+Progress: [██████████] 58% (19 of 22 plans complete: Phases 1-3 + 04-01 + 04-02 + 04-03)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
-- Average duration: ~13 min
-- Total execution time: ~4h 8min
+- Total plans completed: 19
+- Average duration: ~12 min
+- Total execution time: ~4h 13min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [█████████▌] 55% (18 of 22 plans complete: Phases 
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
 | 03    | 6     | ~32 min  | ~5 min   |
-| 04    | 2     | ~14 min  | ~7 min   |
+| 04    | 3     | ~19 min  | ~6 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (~3 min) | 03-05 (~5 min) | 03-06 (~9 min, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green)
-- Trend: Wave 1 parallel execution successful — 04-01 schema + 04-02 LLM provider/BudgetGuard landed together without conflicts. Two Rule 3 auto-fixes on 04-02 (vault module path, Settings field name).
+- Last 5 plans: 03-05 (~5 min) | 03-06 (~9 min, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green) | 04-03 (~5 min, 2 tasks, 175 tests green)
+- Trend: Wave 2 kicking off cleanly — 04-03 (prompts + engine) landed zero-deviation on first pass. Prompt templates + orchestration engine are now wired to LLMProvider/BudgetGuard from Wave 1. Running in parallel with 04-04 (docx_writer + preview).
 
 *Updated after each plan completion*
 
@@ -45,6 +45,17 @@ Progress: [█████████▌] 55% (18 of 22 plans complete: Phases 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-03: TAILORING_SYSTEM_PROMPT is one monolithic constant — easier prompt-injection review and cleaner prompt caching than fragment assembly
+- 04-03: Temperature schedule pinned in engine: validator 0.1, tailoring 0.3, cover letter 0.4 — codified once so consumers cannot drift
+- 04-03: get_escalated_prompt_suffix escalates only the tailoring prompt on retries; validator strictness stays constant (research Pitfall 4)
+- 04-03: strip_pii_sections drops ANY section matching contact-hint keywords (contact/info/personal/details/profile), not just section 0 — handles mid-document contact blocks
+- 04-03: Regex email/phone redaction runs AFTER heading-based stripping as belt-and-braces for stray PII embedded in non-contact sections
+- 04-03: TailoringResult.retry_count is 1-indexed (retry+1) — 'how many attempts did this take', not 'loop index we stopped at'
+- 04-03: Cover letter failures are NON-fatal — a validated tailored resume is not discarded because the cover letter JSON was malformed; success=True with a warning
+- 04-03: validate_output returns (passed, violations, LLMResponse) as a 3-tuple so validator tokens flow into the same per-call ledger as tailoring tokens
+- 04-03: parse_tailoring_response only validates sections is a list, not strict per-section schema — resume structure varies too much; DOCX writer (04-04) handles mapping
+- 04-03: Violations from earlier retries preserved in validation_warnings even when a later retry passes — review queue shows the full 'what did we catch and fix' history per CONTEXT.md trust-building requirement
+- 04-03: Cache_control breakpoint placed AFTER base resume (not after instructions) so prompt caching hits on sequential jobs — minimum-token threshold requires enough content before the breakpoint
 - 04-02: LLMProvider is a runtime_checkable Protocol; AnthropicProvider lazy-imports AsyncAnthropic inside __init__ so the file loads even when anthropic isn't installed yet
 - 04-02: get_provider resolves anthropic_api_key through FernetVault.from_env (same pattern as SMTP / ATS credentials) — never reads ANTHROPIC_API_KEY from env directly
 - 04-02: LLMResponse keeps input/output/cache_creation/cache_read tokens as four separate ints so BudgetGuard can price cached calls at the correct per-bucket rate
@@ -162,5 +173,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 04-02-PLAN.md. Wave 1 parallel execution complete: 04-01 (schema) and 04-02 (LLM provider + BudgetGuard) both landed on master. Commits 150669e (provider) and 4131cf1 (budget) added app/tailoring/provider.py and app/tailoring/budget.py. anthropic==0.94.0 and mammoth==1.12.0 installed and pinned. 175/175 tests green. Ready for Wave 2 (04-03 prompt templates).
+Stopped at: Completed 04-03-PLAN.md. Wave 2 in progress — 04-03 (prompts + engine) landed on master zero-deviation. Commits 60a20b4 (prompts) and a3d7633 (engine) added app/tailoring/prompts.py (396 lines, 3 system prompts + cache_control builders) and app/tailoring/engine.py (602 lines, strip_pii_sections + tailor_resume orchestration with retry/escalation). 175/175 tests green. 04-04 (docx_writer + preview) running in parallel. Ready for Wave 3 once 04-04 lands.
 Resume file: None
