@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 1 of 7 in current phase
+Plan: 2 of 7 in current phase (Wave 1 complete: 04-01 + 04-02)
 Status: In progress
-Last activity: 2026-04-12 — Completed 04-01-PLAN.md (tailoring DB foundation)
+Last activity: 2026-04-12 — Completed 04-02-PLAN.md (LLM provider + BudgetGuard)
 
-Progress: [█████████▌] 53% (17 of 22 plans complete: Phases 1-3 + 04-01)
+Progress: [█████████▌] 55% (18 of 22 plans complete: Phases 1-3 + 04-01 + 04-02)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: ~14 min
-- Total execution time: ~4h 2min
+- Total plans completed: 18
+- Average duration: ~13 min
+- Total execution time: ~4h 8min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [█████████▌] 53% (17 of 22 plans complete: Phases 
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
 | 03    | 6     | ~32 min  | ~5 min   |
-| 04    | 1     | ~8 min   | ~8 min   |
+| 04    | 2     | ~14 min  | ~7 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (~8 min, 2 tasks) | 03-04 (~3 min, 2 tasks) | 03-05 (~5 min, 2 tasks) | 03-06 (~9 min, 2 tasks, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green)
-- Trend: Phase 4 kickoff — schema foundation (TailoringRecord + CostLedger + settings.tailoring_intensity) landed in one clean plan
+- Last 5 plans: 03-04 (~3 min) | 03-05 (~5 min) | 03-06 (~9 min, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green)
+- Trend: Wave 1 parallel execution successful — 04-01 schema + 04-02 LLM provider/BudgetGuard landed together without conflicts. Two Rule 3 auto-fixes on 04-02 (vault module path, Settings field name).
 
 *Updated after each plan completion*
 
@@ -45,6 +45,15 @@ Progress: [█████████▌] 53% (17 of 22 plans complete: Phases 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-02: LLMProvider is a runtime_checkable Protocol; AnthropicProvider lazy-imports AsyncAnthropic inside __init__ so the file loads even when anthropic isn't installed yet
+- 04-02: get_provider resolves anthropic_api_key through FernetVault.from_env (same pattern as SMTP / ATS credentials) — never reads ANTHROPIC_API_KEY from env directly
+- 04-02: LLMResponse keeps input/output/cache_creation/cache_read tokens as four separate ints so BudgetGuard can price cached calls at the correct per-bucket rate
+- 04-02: BudgetGuard.PRICING is class-level; unknown models fall back to claude-sonnet-4-5 rates rather than raising KeyError (mis-estimation recoverable, crash is not)
+- 04-02: budget_cap_dollars == 0 means "unlimited" (the default singleton value); users who want a zero-spend halt set kill_switch instead
+- 04-02: Month rollover runs inline inside check_budget on first call of a new month — no separate APScheduler cron job
+- 04-02: debit serializes through a per-instance asyncio.Lock and writes Settings increment + CostLedger row in one transaction (research Pitfall 6)
+- 04-02: BudgetGuard must be a singleton per process because the asyncio.Lock lives on the instance — Plan 04-04 owns construction
+- 04-02: CostLedger imported locally inside debit() so app.tailoring.budget stays importable during Wave 1 parallel execution with 04-01
 - 04-01: tailoring_records.version is integer counter (v1, v2, …) matching versioned artifact paths data/resumes/{job_id}/v{N}.docx
 - 04-01: cost_ledger.tailoring_record_id nullable so orphan validator/probe calls can still be logged for budget
 - 04-01: cost_ledger.month is denormalised string (YYYY-MM) indexed for cheap SUM-based budget queries (no strftime in hot path)
@@ -147,9 +156,11 @@ None.
 - 01-03: `app.db.base._settings = get_settings()` executes at module import time, so integration tests that need a different DATA_DIR must reload `app.config` and `app.db.base` before importing `app.main`. Future plans should consider refactoring to lazy-init inside `init_db()`. **Partially mitigated in 01-04/01-05**: `get_session` dependency now lazy-imports `async_session`; wizard module must also be reloaded alongside `app.config` in test fixtures.
 - 01-04: HTMX is loaded from `unpkg.com/htmx.org@2.0.3` via CDN. Fully offline LAN deployments will render the dashboard but not poll. Consider bundling htmx.min.js locally (trivial, ~47KB, same pattern as `pico.min.css`) in a later cleanup plan.
 - 01-04: POST `/runs/trigger` has no CSRF protection. LAN-bound + "no auth in v1" makes this acceptable; revisit if the app is ever exposed to a wider network.
+- 04-02: BudgetGuard instance lifecycle — asyncio.Lock is per-instance, so Plan 04-04 must instantiate exactly one BudgetGuard and pass it to every tailoring consumer (validator calls and cover-letter calls must debit through the same instance).
+- 04-02: Anthropic SDK streaming vs. non-streaming not yet decided. Current AnthropicProvider.complete assumes non-streaming (simpler for validator + DOCX rewrite that need the full text). Revisit during 04-03 if prompt design requires streaming.
 
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 04-01-PLAN.md. Phase 4 schema foundation landed: TailoringRecord + CostLedger tables, Settings.tailoring_intensity='balanced', Alembic migration 0004 roundtripping cleanly, 175/175 tests still green. Ready for 04-02.
+Stopped at: Completed 04-02-PLAN.md. Wave 1 parallel execution complete: 04-01 (schema) and 04-02 (LLM provider + BudgetGuard) both landed on master. Commits 150669e (provider) and 4131cf1 (budget) added app/tailoring/provider.py and app/tailoring/budget.py. anthropic==0.94.0 and mammoth==1.12.0 installed and pinned. 175/175 tests green. Ready for Wave 2 (04-03 prompt templates).
 Resume file: None
