@@ -13,7 +13,7 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
 - [x] **Phase 1: Foundation, Scheduler & Safety Envelope** - Bootable Docker container with encrypted secrets, hourly scheduler, run-lock, kill-switch, dry-run, rate-limit envelope, and PII-safe logging
 - [x] **Phase 2: Configuration, Profile & Resume Upload** - Web UI for keywords, profile, base DOCX upload, schedule/quiet hours, budget cap, mode toggle, and credential entry
 - [x] **Phase 3: Safe-Channel Discovery, Dedup & Matching** - Greenhouse/Lever/Ashby JSON discovery, canonical fingerprint dedup, keyword-overlap matching, normalized job schema
-- [ ] **Phase 4: LLM Tailoring & DOCX Generation** - Extractive-only Claude tailoring with hallucination validator, prompt caching, budget enforcement, and format-preserving DOCX render
+- [x] **Phase 4: LLM Tailoring & DOCX Generation** - Extractive-only Claude tailoring with hallucination validator, prompt caching, budget enforcement, and format-preserving DOCX render
 - [ ] **Phase 5: Email Submission, Review Queue, Manual Apply & Notifications** - Email-apply submitter, full state machine, review queue with diff, paste-a-link flow, per-job summary emails
 - [ ] **Phase 6: Playwright Browser Submission & Learning Loop** - Persistent-context Playwright submitter for Greenhouse/Lever/Ashby/generic forms with unknown-field capture, user answers, and retry
 
@@ -81,7 +81,15 @@ This roadmap delivers a single-user, Dockerized job-application auto-apply app i
   3. User never sees PII (address, phone, SSN, DOB) anywhere in the LLM prompt logs — only bullets and skills cross the LLM boundary
   4. User can set a monthly budget cap and watch tailoring halt with a clear UI notification when the cap is hit
   5. Every tailored resume exists as a versioned, downloadable artifact linked to its pending application record, and prompt caching on the master resume visibly reduces cost per tailoring call
-**Plans**: TBD
+**Plans**: 7 plans
+Plans:
+  - [x] 04-01-PLAN.md — DB models (TailoringRecord, CostLedger) + Alembic migration 0004
+  - [x] 04-02-PLAN.md — LLM provider protocol + AnthropicProvider + BudgetGuard + deps
+  - [x] 04-03-PLAN.md — Tailoring engine (prompts, PII stripping, structured output, validator, retry)
+  - [x] 04-04-PLAN.md — DOCX writer (format-preserving replacement, cover letter, ATS checks, preview)
+  - [x] 04-05-PLAN.md — Pipeline integration (run_tailoring stage, artifact storage, scheduler wiring)
+  - [x] 04-06-PLAN.md — UI (tailoring detail/preview/download, settings intensity, budget widget)
+  - [x] 04-07-PLAN.md — Integration tests for all TAIL + SAFE-04 requirements
 
 ### Phase 5: Email Submission, Review Queue, Manual Apply & Notifications
 **Goal**: A user's first real job applications go out — via email-apply only, through the full review-queue state machine, with per-job summary emails and support for pasting a URL to apply manually. The full-auto toggle goes live here, gated by the review queue the user has already built trust in.
@@ -119,7 +127,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. Foundation, Scheduler & Safety Envelope | 5/5 | ✓ Complete | 2026-04-12 |
 | 2. Configuration, Profile & Resume Upload | 5/5 | ✓ Complete | 2026-04-12 |
 | 3. Safe-Channel Discovery, Dedup & Matching | 6/6 | ✓ Complete | 2026-04-12 |
-| 4. LLM Tailoring & DOCX Generation | 0/TBD | Not started | - |
+| 4. LLM Tailoring & DOCX Generation | 7/7 | ✓ Complete | 2026-04-12 |
 | 5. Email Submission, Review Queue, Manual Apply & Notifications | 0/TBD | Not started | - |
 | 6. Playwright Browser Submission & Learning Loop | 0/TBD | Not started | - |
 

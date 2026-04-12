@@ -55,15 +55,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Resume Tailoring
 
-- [ ] **TAIL-01**: App rewrites the base DOCX resume per job using the Claude API
-- [ ] **TAIL-02**: LLM calls are made through a provider abstraction so additional backends can be added later
-- [ ] **TAIL-03**: Tailoring prompt is extractive-only — it may reword, reorder, and emphasize, but must never invent experience
-- [ ] **TAIL-04**: App validates tailored output with a post-generation check that rejects any entity (company, title, skill) not present in the base resume
-- [ ] **TAIL-05**: App renders the tailored content back into DOCX while preserving the base resume's formatting
-- [ ] **TAIL-06**: App runs ATS-friendly output checks (no tables, standard fonts, keyword coverage reported)
-- [ ] **TAIL-07**: App caches the master resume in prompt cache to reduce Claude API cost
-- [ ] **TAIL-08**: App halts tailoring and notifies the user when the monthly LLM budget cap is hit
-- [ ] **TAIL-09**: Every tailored resume is stored as a versioned artifact linked to its application record
+- [x] **TAIL-01**: App rewrites the base DOCX resume per job using the Claude API
+- [x] **TAIL-02**: LLM calls are made through a provider abstraction so additional backends can be added later
+- [x] **TAIL-03**: Tailoring prompt is extractive-only — it may reword, reorder, and emphasize, but must never invent experience
+- [x] **TAIL-04**: App validates tailored output with a post-generation check that rejects any entity (company, title, skill) not present in the base resume
+- [x] **TAIL-05**: App renders the tailored content back into DOCX while preserving the base resume's formatting
+- [x] **TAIL-06**: App runs ATS-friendly output checks (no tables, standard fonts, keyword coverage reported)
+- [x] **TAIL-07**: App caches the master resume in prompt cache to reduce Claude API cost
+- [x] **TAIL-08**: App halts tailoring and notifies the user when the monthly LLM budget cap is hit
+- [x] **TAIL-09**: Every tailored resume is stored as a versioned artifact linked to its application record
 
 ### Submission
 
@@ -106,7 +106,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **SAFE-01**: App enforces a daily cap on total applications submitted (default 30/day, user-configurable)
 - [ ] **SAFE-02**: App inserts randomized human-like delays between actions within any browser session
 - [ ] **SAFE-03**: App never logs the full resume content or PII (SSN, DOB) to stdout or log files
-- [ ] **SAFE-04**: App never sends PII beyond what the tailoring prompt strictly requires to the LLM
+- [x] **SAFE-04**: App never sends PII beyond what the tailoring prompt strictly requires to the LLM
 
 ## v1.x Requirements
 
@@ -206,15 +206,15 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | MATCH-01 | Phase 3 | Complete |
 | MATCH-02 | Phase 3 | Complete |
 | MATCH-03 | Phase 3 | Complete |
-| TAIL-01 | Phase 4 | Pending |
-| TAIL-02 | Phase 4 | Pending |
-| TAIL-03 | Phase 4 | Pending |
-| TAIL-04 | Phase 4 | Pending |
-| TAIL-05 | Phase 4 | Pending |
-| TAIL-06 | Phase 4 | Pending |
-| TAIL-07 | Phase 4 | Pending |
-| TAIL-08 | Phase 4 | Pending |
-| TAIL-09 | Phase 4 | Pending |
+| TAIL-01 | Phase 4 | Complete |
+| TAIL-02 | Phase 4 | Complete |
+| TAIL-03 | Phase 4 | Complete |
+| TAIL-04 | Phase 4 | Complete |
+| TAIL-05 | Phase 4 | Complete |
+| TAIL-06 | Phase 4 | Complete |
+| TAIL-07 | Phase 4 | Complete |
+| TAIL-08 | Phase 4 | Complete |
+| TAIL-09 | Phase 4 | Complete |
 | SUBM-01 | Phase 5 | Pending |
 | SUBM-02 | Phase 5 | Pending |
 | SUBM-03 | Phase 6 | Pending |
@@ -242,7 +242,7 @@ Populated by roadmap creation 2026-04-11. Each requirement maps to exactly one p
 | SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 1 | Complete |
 | SAFE-03 | Phase 1 | Complete |
-| SAFE-04 | Phase 4 | Pending |
+| SAFE-04 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements enumerated: 68 total
