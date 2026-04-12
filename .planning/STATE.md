@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 2 of 6 (Configuration, Profile & Resume Upload)
-Plan: 1 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-04-12 — Completed 02-01-PLAN.md (sidebar shell + Phase 2 schema)
+Last activity: 2026-04-12 — Completed 02-04-PLAN.md (credentials section with encrypted storage + validation)
 
-Progress: [██░░░░░░░░] 20% (Phase 1 complete, Phase 2: 1/5 plans done)
+Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2: 4/5 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: ~30 min
-- Total execution time: ~2h 59min
+- Total plans completed: 7
+- Average duration: ~26 min
+- Total execution time: ~3h 2min
 
 **By Phase:**
 
 | Phase | Plans | Total    | Avg/Plan |
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
-| 02    | 1     | ~5 min   | ~5 min   |
+| 02    | 2     | ~8 min   | ~4 min   |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green)
-- Trend: 02-01 was fast — schema extension + sidebar shell with no new tests needed (existing 87 pass with 2 assertion updates)
+- Last 5 plans: 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green)
+- Trend: 02-04 fast — validation module + credentials UI with no new tests (existing 87 pass)
 
 *Updated after each plan completion*
 
@@ -43,6 +43,10 @@ Progress: [██░░░░░░░░] 20% (Phase 1 complete, Phase 2: 1/5 p
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 02-04: Save-first-validate-second pattern for credentials — encrypt+persist before async validation so network failures never prevent storage
+- 02-04: Credentials section never pre-fills inputs or shows masked values — always empty fields with Configured/Not set status
+- 02-04: SMTP validation runs synchronously via asyncio.to_thread to avoid blocking event loop
+- 02-04: _upsert_secret helper DRYs Secret row upsert for credential routes
 - 02-01: Settings page uses sidebar shell with HTMX section loading; each section is a partial loaded via hx-get
 - 02-01: POST /settings/limits returns partial HTML (not 303 redirect) for HTMX sidebar consistency
 - 02-01: Safety toggles accessible from both dashboard (/toggles) and settings sidebar (/settings/safety)
@@ -109,5 +113,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 02-01-PLAN.md. Sidebar-navigated settings page with Mode toggle, Phase 1 settings (limits, safety) migrated into sidebar partials, Profile table + 10 new Settings columns via migration, python-docx dependency added. All 87 tests green.
+Stopped at: Completed 02-04-PLAN.md. Credentials section with Anthropic API key + SMTP credential entry, Fernet-encrypted storage, inline validation, Configured/Not set status. All 87 tests green.
 Resume file: None
