@@ -37,6 +37,16 @@ from app.scheduler.killswitch import KillSwitch
 from app.scheduler.rate_limit import RateLimiter, RateLimitExceeded
 from app.settings.service import get_settings_row
 
+# NOTE: ``run_tailoring`` is imported lazily inside ``_execute_pipeline``
+# rather than at module top.  The tailoring pipeline module transitively
+# imports ``app.resume.service`` / ``app.tailoring.service`` which both
+# capture ``from app.config import get_settings`` at import time.  The
+# integration test ``live_app`` fixture reloads ``app.config`` between
+# runs, so a top-level import here would lock a stale reference into
+# ``sys.modules`` via the scheduler's import graph and silently break
+# every DATA_DIR-dependent assertion downstream.  Deferring to first
+# call keeps the scheduler's static graph minimal.
+
 log = structlog.get_logger(__name__)
 _stdlog = logging.getLogger(__name__)
 
@@ -247,9 +257,25 @@ class SchedulerService:
 
         await self._killswitch.raise_if_engaged()
 
-        # Store discovery counts on the Run row.  The wrapper's else-branch
-        # will call finalize_run(status="succeeded") which merges counts.
-        self._last_counts = discovery_counts
+        # Run tailoring stage (Phase 4).  Kill-switch is checked between
+        # individual job tailoring calls inside run_tailoring via the
+        # injected callable — the per-stage gate below is the hard stop
+        # that fires if the switch engaged between the two stages.
+        # Lazy import per the module-top note.
+        from app.tailoring.pipeline import run_tailoring
+
+        tailoring_counts = await run_tailoring(
+            ctx,
+            self._session_factory,
+            killswitch_check=self._killswitch.raise_if_engaged,
+        )
+
+        await self._killswitch.raise_if_engaged()
+
+        # Store merged stage counts on the Run row.  The wrapper's
+        # else-branch will call finalize_run(status="succeeded") which
+        # merges counts onto the Run.counts JSON.
+        self._last_counts = {**discovery_counts, **tailoring_counts}
 
 
 __all__ = ["SchedulerService"]
