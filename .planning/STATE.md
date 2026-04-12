@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 3 of 6 (Safe-Channel Discovery, Dedup & Matching)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-12 — Phase 2 verified and completed (5/5 plans, 118 tests, 5/5 must-haves)
+Plan: 1 of 6 in current phase
+Status: In progress
+Last activity: 2026-04-12 — Completed 03-01-PLAN.md (discovery schema)
 
-Progress: [█████░░░░░] 33% (Phase 1 + Phase 2 complete, 4 phases remaining)
+Progress: [██████░░░░] 37% (Phase 1 + Phase 2 complete, Phase 3: 1/6 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: ~22 min
-- Total execution time: ~3h 17min
+- Total plans completed: 10
+- Average duration: ~20 min
+- Total execution time: ~3h 21min
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [█████░░░░░] 33% (Phase 1 + Phase 2 complete, 4 ph
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
+| 03    | 1     | ~4 min   | ~4 min   |
 
 **Recent Trend:**
-- Last 5 plans: 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green) | 02-02 (~8 min, 2 tasks, 87 tests green)
-- Trend: 02-02 profile + resume upload with DOCX extraction, no new tests needed
+- Last 5 plans: 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green) | 02-02 (~8 min, 2 tasks, 87 tests green) | 03-01 (~4 min, 2 tasks, schema only)
+- Trend: 03-01 discovery schema tables + migration, no new tests (schema-only plan)
 
 *Updated after each plan completion*
 
@@ -43,6 +44,11 @@ Progress: [█████░░░░░] 33% (Phase 1 + Phase 2 complete, 4 ph
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 03-01: Discovery models live in app/discovery/models.py, imported into app/db/models.py for Alembic metadata registration
+- 03-01: Job.fingerprint is SHA256, unique-indexed for O(1) dedup lookups
+- 03-01: posted_date nullable (Lever public API lacks this field)
+- 03-01: description and description_html stored separately (plain text for scoring, HTML for display)
+- 03-01: DiscoveryRunStats tracks per-source per-run counts for anomaly detection rolling averages
 - 02-02: Profile fields normalise empty strings to None; phone strips non-digits
 - 02-02: Resume stored as single file base_resume.docx, replaced on re-upload (no versioning)
 - 02-02: DOCX text extraction splits on Heading styles; full_text capped at 500 lines
@@ -121,5 +127,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Phase 2 verified and completed. 5/5 plans, 118 tests (87 Phase 1 + 31 Phase 2), all 8 CONF requirements satisfied, 5/5 must-haves verified. Sidebar settings hub with profile, resume upload, keywords, threshold, schedule, budget, credentials, and mode toggle all functional.
+Stopped at: Completed 03-01-PLAN.md (discovery schema). Source, Job, DiscoveryRunStats tables created with migration 0003.
 Resume file: None
