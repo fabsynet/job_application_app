@@ -1,0 +1,21 @@
+{% for r in runs %}
+<tr>
+  <td><a href="/runs/{{ r.id }}">{{ r.started_at.strftime("%Y-%m-%d %H:%M:%S") }}</a></td>
+  <td>{{ r.status }}{% if r.dry_run %} <span class="dry-run-badge">DRY</span>{% endif %}</td>
+  <td>{{ r.duration_ms if r.duration_ms is not none else "&mdash;" }} ms</td>
+  <td>{{ r.triggered_by }}</td>
+  <td>{{ r.failure_reason or "&mdash;" }}</td>
+</tr>
+{% endfor %}
+{% if next_offset is not none and runs|length > 0 %}
+<tr id="runs-load-more">
+  <td colspan="5">
+    <button hx-get="/runs?offset={{ next_offset }}"
+            hx-target="#runs-load-more"
+            hx-swap="outerHTML"
+            class="secondary">
+      Show more
+    </button>
+  </td>
+</tr>
+{% endif %}

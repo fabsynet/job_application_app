@@ -1,0 +1,34 @@
+{% extends "base.html.j2" %}
+{% block title %}Run {{ run.id }} &mdash; Job Apply{% endblock %}
+{% block content %}
+<article>
+  <header>
+    <hgroup>
+      <h2>Run {{ run.id }}</h2>
+      <p>
+        {{ run.status }}
+        {% if run.dry_run %}<span class="dry-run-badge">DRY</span>{% endif %}
+        &middot; triggered by {{ run.triggered_by }}
+      </p>
+    </hgroup>
+  </header>
+
+  <dl>
+    <dt>Started</dt>
+    <dd>{{ run.started_at.isoformat() }}</dd>
+    <dt>Ended</dt>
+    <dd>{{ run.ended_at.isoformat() if run.ended_at else "&mdash;" }}</dd>
+    <dt>Duration</dt>
+    <dd>{{ run.duration_ms if run.duration_ms is not none else "&mdash;" }} ms</dd>
+    <dt>Status</dt>
+    <dd>{{ run.status }}</dd>
+    <dt>Failure reason</dt>
+    <dd>{{ run.failure_reason or "&mdash;" }}</dd>
+  </dl>
+
+  <h3>Stage counts</h3>
+  <pre><code>{{ counts_json }}</code></pre>
+
+  <p><a href="/runs">&larr; Back to runs</a></p>
+</article>
+{% endblock %}

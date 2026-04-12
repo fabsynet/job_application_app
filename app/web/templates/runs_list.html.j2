@@ -1,0 +1,28 @@
+{% extends "base.html.j2" %}
+{% block title %}Runs &mdash; Job Apply{% endblock %}
+{% block content %}
+<article>
+  <header>
+    <h2>Runs</h2>
+    <p>Showing the most recent {{ runs|length }} runs. The database keeps every run forever.</p>
+  </header>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>Started</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Triggered by</th>
+        <th>Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if runs %}
+        {% include "partials/runs_rows.html.j2" %}
+      {% else %}
+        <tr><td colspan="5"><em>No runs yet.</em></td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</article>
+{% endblock %}

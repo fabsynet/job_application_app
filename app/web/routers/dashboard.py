@@ -75,7 +75,6 @@ async def _common_ctx(request, session, svc, ks) -> dict:
     runs = await list_recent_runs(session, limit=50)
     last_run = runs[0] if runs else None
     return {
-        "request": request,
         "killed": ks.is_engaged(),
         "paused": False,
         "dry_run": row.dry_run,
@@ -94,7 +93,7 @@ async def dashboard(
     ks=Depends(get_killswitch),
 ):
     ctx = await _common_ctx(request, session, svc, ks)
-    return templates.TemplateResponse("dashboard.html.j2", ctx)
+    return templates.TemplateResponse(request, "dashboard.html.j2", ctx)
 
 
 @router.get("/fragments/status", response_class=HTMLResponse)
@@ -105,7 +104,7 @@ async def status_pill(
     ks=Depends(get_killswitch),
 ):
     ctx = await _common_ctx(request, session, svc, ks)
-    return templates.TemplateResponse("partials/status_pill.html.j2", ctx)
+    return templates.TemplateResponse(request, "partials/status_pill.html.j2", ctx)
 
 
 @router.get("/fragments/next-run", response_class=HTMLResponse)
@@ -116,7 +115,7 @@ async def next_run_fragment(
     ks=Depends(get_killswitch),
 ):
     ctx = await _common_ctx(request, session, svc, ks)
-    return templates.TemplateResponse("partials/next_run.html.j2", ctx)
+    return templates.TemplateResponse(request, "partials/next_run.html.j2", ctx)
 
 
 @router.post("/runs/trigger", response_class=HTMLResponse)
@@ -135,7 +134,7 @@ async def trigger_run(
     """
     asyncio.create_task(svc.run_pipeline(triggered_by="manual"))
     ctx = await _common_ctx(request, session, svc, ks)
-    return templates.TemplateResponse("partials/status_pill.html.j2", ctx)
+    return templates.TemplateResponse(request, "partials/status_pill.html.j2", ctx)
 
 
 __all__ = ["router"]

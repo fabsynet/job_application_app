@@ -14,11 +14,17 @@ from typing import AsyncIterator
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.base import async_session
-
 
 async def get_session() -> AsyncIterator[AsyncSession]:
-    """Yield a scoped ``AsyncSession`` and commit-less close on exit."""
+    """Yield a scoped ``AsyncSession`` and commit-less close on exit.
+
+    Imports ``async_session`` lazily so that integration tests which reload
+    ``app.db.base`` (to rebind the engine at a fresh DATA_DIR) get the
+    freshly bound session factory, not a stale reference captured at router
+    import time.
+    """
+    from app.db.base import async_session  # lazy: see docstring
+
     async with async_session() as session:
         yield session
 
