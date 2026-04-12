@@ -150,6 +150,10 @@ class Profile(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+# Phase 3 discovery models — imported here so Alembic's env.py picks them
+# up via ``from app.db import models`` and registers them on SQLModel.metadata.
+from app.discovery.models import DiscoveryRunStats, Job, Source  # noqa: F401, E402
+
 __all__ = [
     "Settings",
     "Secret",
@@ -157,4 +161,7 @@ __all__ = [
     "RateLimitCounter",
     "Profile",
     "CANONICAL_FAILURE_REASONS",
+    "Source",
+    "Job",
+    "DiscoveryRunStats",
 ]
