@@ -13,3 +13,5 @@ structlog==24.4.0
 httpx==0.28.1
 python-multipart==0.0.17
 python-docx==1.1.2
+anthropic==0.94.0
+mammoth==1.12.0
