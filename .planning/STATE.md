@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 1 of 6 (Foundation, Scheduler & Safety Envelope)
-Plan: Wave 1 complete — 01-01 (docker/db) + 01-02 (security/log scrubber)
-Status: In progress — Wave 2 unblocked (01-03 scheduler, 01-04 rate limiter, 01-05 dashboard)
-Last activity: 2026-04-12 00:06 UTC — Completed 01-01-docker-db-foundation-PLAN.md
+Plan: 01-03 complete — scheduler / run-lock / kill-switch / rate-limit safety envelope
+Status: In progress — 01-04 (dashboard) + 01-05 (remaining Wave 2 items) still pending
+Last activity: 2026-04-11 — Completed 01-03-scheduler-runlock-killswitch-ratelimit-PLAN.md
 
-Progress: [██░░░░░░░░] ~20% (2 of ~10 phase-1 plans complete)
+Progress: [███░░░░░░░] ~30% (3 of ~10 phase-1 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: ~32 min
-- Total execution time: ~1h 4min
+- Total plans completed: 3
+- Average duration: ~33 min
+- Total execution time: ~1h 39min
 
 **By Phase:**
 
-| Phase | Plans | Total   | Avg/Plan |
-|-------|-------|---------|----------|
-| 01    | 2     | ~64 min | ~32 min  |
+| Phase | Plans | Total    | Avg/Plan |
+|-------|-------|----------|----------|
+| 01    | 3     | ~99 min  | ~33 min  |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green)
-- Trend: —
+- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total)
+- Trend: steady ~35 min for a 3-task plan with both primitives and integration tests
 
 *Updated after each plan completion*
 
@@ -47,6 +47,16 @@ Recent decisions affecting current work:
 - Roadmap: Hallucination validator (TAIL-04) ships in the same phase as first LLM call (TAIL-01)
 - Roadmap: Learning loop (LEARN-01..05) ships with Playwright (Phase 6), not earlier
 - Roadmap: Manual paste-a-link (MANL-01..06) is first-class v1, landing in Phase 5
+- 01-03: Phase 1 stub pipeline is a 50ms asyncio.sleep with killswitch checkpoints — Phases 2+ replace the body, not the wrapper
+- 01-03: RunContext is a frozen dataclass passed as argument (explicit > implicit; ContextVar rejected)
+- 01-03: Rate-limit counter is a dedicated table keyed by local-TZ ISO date string (cheap next-day insert)
+- 01-03: Midnight reset runs as an APScheduler CronTrigger job, not an in-process timer
+- 01-03: run_pipeline swallows CancelledError at its boundary after finalising the Run row — propagating would abort the APScheduler worker
+- 01-03: Three-layer run-lock defense (asyncio.Lock + max_instances=1 + DB sentinel Run row)
+- 01-03: set_scheduler_service module-level setter bridges APScheduler function-call invocation with lifespan-scoped state
+- 01-03: app.runs.service.mark_orphans_failed supersedes earlier placeholder in app.db.base (session-scoped, returns rowcount)
+- 01-03: Integration tests drive lifespan via app.router.lifespan_context(app) — httpx 0.28 dropped ASGITransport(lifespan='on')
+- 01-03: freezegun abandoned for midnight-reset integration test (hangs async runner on Windows); replaced with monkeypatched today_local
 - 01-02: SecretRegistry is a module-level singleton with threading.Lock (FastAPI + APScheduler share state)
 - 01-02: structlog scrub processor precedes JSONRenderer (scrub typed values, not rendered strings)
 - 01-02: 4-char minimum on literal registration to prevent common-word redaction soup
@@ -72,9 +82,11 @@ None yet.
 - Wave 1 parallel execution: plans 01-01 and 01-02 share the same working directory; 01-01 scaffolding files (`.env.example`, `.gitignore`, `Dockerfile`, `compose.yml`, `pyproject.toml`, `requirements.txt`) were swept into 01-02's first commit (`fb9410f`) because they appeared in the working tree at commit time. `git log --grep=01-01` undercounts 01-01's work by one commit. No data loss; consider isolating working dirs or serializing commits in future waves.
 - 01-01: Docker image has not been built on this host (Docker Desktop daemon was not running during execution). `docker compose config` validated the compose file; first `docker compose build` still pending before 01-03 lands.
 - 01-01: Local test venv is Python 3.11.9 but pyproject requires >=3.12. Tests run green on 3.11 against pinned deps; production (Playwright base) uses 3.12+. Re-validate inside the container during Phase 1.
+- 01-03: requirements.txt should be split into prod vs dev — freezegun + pytest-asyncio were installed into .venv for tests but are NOT in requirements.txt. Non-blocking; flag as Phase 1 cleanup.
+- 01-03: `app.db.base._settings = get_settings()` executes at module import time, so integration tests that need a different DATA_DIR must reload `app.config` and `app.db.base` before importing `app.main`. Future plans should consider refactoring to lazy-init inside `init_db()`.
 
 ## Session Continuity
 
-Last session: 2026-04-12 00:06 UTC
-Stopped at: Completed 01-01-docker-db-foundation-PLAN.md. Wave 1 (01-01 + 01-02) now fully committed and summarized. 9/9 config+model tests + 12/12 security tests green. Ready for Wave 2: 01-03 scheduler, 01-04 rate limiter, 01-05 dashboard.
+Last session: 2026-04-11
+Stopped at: Completed 01-03-scheduler-runlock-killswitch-ratelimit-PLAN.md. SchedulerService, lifespan, killswitch, rate limiter, RunContext contract, /health endpoint, orphan cleanup all shipped. 50/50 tests green (21 pre-existing + 29 new: 16 unit + 13 integration). Ready for 01-04 (dashboard) and 01-05.
 Resume file: None
