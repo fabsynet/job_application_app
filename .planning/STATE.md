@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 3 of 6 (Safe-Channel Discovery, Dedup & Matching)
-Plan: 1 of 6 in current phase
+Plan: 3 of 6 in current phase
 Status: In progress
-Last activity: 2026-04-12 — Completed 03-01-PLAN.md (discovery schema)
+Last activity: 2026-04-12 — Completed 03-03-PLAN.md (sources settings UI)
 
-Progress: [██████░░░░] 37% (Phase 1 + Phase 2 complete, Phase 3: 1/6 plans done)
+Progress: [███████░░░] 44% (Phase 1 + Phase 2 complete, Phase 3: 3/6 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~20 min
-- Total execution time: ~3h 21min
+- Total plans completed: 12
+- Average duration: ~17 min
+- Total execution time: ~3h 29min
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████░░░░] 37% (Phase 1 + Phase 2 complete, Phas
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
-| 03    | 1     | ~4 min   | ~4 min   |
+| 03    | 3     | ~12 min  | ~4 min   |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green) | 02-02 (~8 min, 2 tasks, 87 tests green) | 03-01 (~4 min, 2 tasks, schema only)
-- Trend: 03-01 discovery schema tables + migration, no new tests (schema-only plan)
+- Last 5 plans: 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green) | 02-02 (~8 min, 2 tasks, 87 tests green) | 03-01 (~4 min, 2 tasks, schema only) | 03-03 (~4 min, 2 tasks, 118 tests green)
+- Trend: 03-03 sources settings UI, parallel execution with 03-02
 
 *Updated after each plan completion*
 
@@ -44,6 +44,10 @@ Progress: [██████░░░░] 37% (Phase 1 + Phase 2 complete, Phas
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 03-03: Sources router uses _render_sources helper following _render_section pattern from settings.py
+- 03-03: Toggle endpoint returns empty 200 with HX-Reswap none header (no DOM update needed)
+- 03-03: Unknown source type triggers probe of all three ATS APIs sequentially
+- 03-03: Sources section positioned after Keywords in sidebar ordering
 - 03-01: Discovery models live in app/discovery/models.py, imported into app/db/models.py for Alembic metadata registration
 - 03-01: Job.fingerprint is SHA256, unique-indexed for O(1) dedup lookups
 - 03-01: posted_date nullable (Lever public API lacks this field)
@@ -127,5 +131,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 03-01-PLAN.md (discovery schema). Source, Job, DiscoveryRunStats tables created with migration 0003.
+Stopped at: Completed 03-03-PLAN.md (sources settings UI). Sources section with CRUD routes, HTMX template, and sidebar integration.
 Resume file: None
