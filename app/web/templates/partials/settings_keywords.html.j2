@@ -1,0 +1,30 @@
+<div id="keywords-section">
+{% include "partials/flash_message.html.j2" %}
+<h3>Keywords</h3>
+<p>Add keywords that describe your target roles. Jobs are matched against these terms.</p>
+
+<div class="chips">
+  {% for kw in keywords %}
+  <span class="chip">
+    {{ kw }}
+    <button class="chip-remove"
+            hx-delete="/settings/keywords/{{ kw | urlencode }}"
+            hx-target="#keywords-section"
+            hx-swap="outerHTML"
+            title="Remove {{ kw }}">&times;</button>
+  </span>
+  {% endfor %}
+</div>
+
+<form hx-post="/settings/keywords" hx-target="#keywords-section" hx-swap="outerHTML">
+  <input type="text" name="keyword" autocomplete="off"
+         placeholder="Type keyword, press Enter"
+         hx-post="/settings/keywords"
+         hx-trigger="keyup[key=='Enter'] from:this"
+         hx-target="#keywords-section"
+         hx-swap="outerHTML"
+         hx-include="this">
+</form>
+
+<small>{{ keywords | length }} keyword{{ 's' if keywords | length != 1 else '' }}</small>
+</div>
