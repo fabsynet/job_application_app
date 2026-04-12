@@ -76,7 +76,7 @@ async def job_detail(
     """Inline expansion partial with full description and keyword breakdown."""
     job = await get_job_detail(session, job_id)
     if job is None:
-        return HTMLResponse("<tr><td colspan='6'>Job not found</td></tr>", status_code=404)
+        return HTMLResponse("<tr><td colspan='7'>Job not found</td></tr>", status_code=404)
 
     settings = await get_settings_row(session)
     all_keywords = _parse_keywords(settings.keywords_csv)
@@ -104,7 +104,7 @@ async def queue_job(
     """Manually queue a below-threshold job for application."""
     job = await update_job_status(session, job_id, "queued")
     if job is None:
-        return HTMLResponse("<tr><td colspan='6'>Job not found</td></tr>", status_code=404)
+        return HTMLResponse("<tr><td colspan='7'>Job not found</td></tr>", status_code=404)
 
     settings = await get_settings_row(session)
     all_keywords = _parse_keywords(settings.keywords_csv)

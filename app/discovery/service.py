@@ -140,6 +140,7 @@ async def list_jobs(
     column_map = {
         "title": Job.title,
         "company": Job.company,
+        "location": Job.location,
         "source": Job.source,
         "score": Job.score,
         "posted_date": Job.posted_date,

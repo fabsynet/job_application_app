@@ -5,6 +5,7 @@
     style="cursor: pointer;">
   <td>{{ job.title }}</td>
   <td>{{ job.company }}</td>
+  <td>{{ job.location or '' }}</td>
   <td>{{ job.source }}</td>
   <td>
     {% if job.score >= threshold %}
@@ -19,8 +20,8 @@
   <td>{{ job.status }}</td>
 </tr>
 <tr id="detail-{{ job.id }}" class="job-detail-row">
-  <td colspan="6"></td>
+  <td colspan="7"></td>
 </tr>
 {% else %}
-<tr><td colspan="6">No jobs discovered yet. Add sources and run a discovery cycle.</td></tr>
+<tr><td colspan="7">No jobs discovered yet. Add sources and run a discovery cycle.</td></tr>
 {% endfor %}

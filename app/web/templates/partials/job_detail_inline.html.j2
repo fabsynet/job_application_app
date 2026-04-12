@@ -1,7 +1,7 @@
-<td colspan="6">
+<td colspan="7">
   <article style="margin: 0;">
     <header>
-      <strong>{{ job.title }}</strong> at {{ job.company }}
+      <strong>{{ job.title }}</strong> at {{ job.company }}{% if job.location %} &mdash; {{ job.location }}{% endif %}
       {% if job.url %}
         &mdash; <a href="{{ job.url }}" target="_blank" rel="noopener">View original posting</a>
       {% endif %}
