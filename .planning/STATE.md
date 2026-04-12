@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 2 — Configuration, Profile & Resume Upload
+**Current focus:** Phase 2 complete. Ready for Phase 3 — Discovery & Matching
 
 ## Current Position
 
 Phase: 2 of 6 (Configuration, Profile & Resume Upload)
-Plan: 4 of 5 in current phase (02-01, 02-02, 02-03, 02-04 done)
-Status: In progress
-Last activity: 2026-04-12 — Completed 02-02-PLAN.md (profile form + resume upload with DOCX extraction)
+Plan: 5 of 5 in current phase (02-01, 02-02, 02-03, 02-04, 02-05 done)
+Status: Phase complete
+Last activity: 2026-04-12 — Completed 02-05-PLAN.md (integration tests for all CONF requirements)
 
-Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2: 4/5 plans done)
+Progress: [█████░░░░░] 50% (Phase 1 + Phase 2 complete)
 
 ## Performance Metrics
 
