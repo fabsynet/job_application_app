@@ -160,3 +160,17 @@
 .budget-progress-fill.over-budget {
   background: #e76f51;
 }
+
+/* Score badges */
+.badge-green { background: #2a7; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; display: inline-block; }
+.badge-yellow { background: #c90; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; display: inline-block; }
+.badge-gray { background: #888; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; display: inline-block; }
+
+/* Keyword highlighting in job detail */
+.keyword-matched { background: #d4edda; color: #155724; font-weight: bold; }
+.keyword-unmatched { background: #e2e3e5; color: #888; }
+
+/* Job detail inline expansion */
+.job-detail-row td { padding: 0; border: none; }
+.job-detail-row article { border-left: 3px solid var(--pico-primary); }
+.job-description { max-height: 300px; overflow-y: auto; margin-bottom: 1rem; }

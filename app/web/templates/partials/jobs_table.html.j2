@@ -1,0 +1,26 @@
+{% for job in jobs %}
+<tr hx-get="/jobs/{{ job.id }}/detail"
+    hx-target="#detail-{{ job.id }}"
+    hx-swap="innerHTML"
+    style="cursor: pointer;">
+  <td>{{ job.title }}</td>
+  <td>{{ job.company }}</td>
+  <td>{{ job.source }}</td>
+  <td>
+    {% if job.score >= threshold %}
+      <span class="badge-green">{{ job.score }}%</span>
+    {% elif job.score >= (threshold * 0.5)|int %}
+      <span class="badge-yellow">{{ job.score }}%</span>
+    {% else %}
+      <span class="badge-gray">{{ job.score }}%</span>
+    {% endif %}
+  </td>
+  <td>{{ job.posted_date.strftime('%Y-%m-%d') if job.posted_date else 'N/A' }}</td>
+  <td>{{ job.status }}</td>
+</tr>
+<tr id="detail-{{ job.id }}" class="job-detail-row">
+  <td colspan="6"></td>
+</tr>
+{% else %}
+<tr><td colspan="6">No jobs discovered yet. Add sources and run a discovery cycle.</td></tr>
+{% endfor %}

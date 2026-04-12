@@ -1,0 +1,38 @@
+{% extends "base.html.j2" %}
+{% block title %}Jobs &mdash; Job Apply{% endblock %}
+{% block content %}
+<h2>Discovered Jobs</h2>
+<p>{{ jobs|length }} jobs discovered</p>
+
+{% macro sort_header(column, label) %}
+{% set next_dir = "asc" if (current_sort == column and current_dir == "desc") else "desc" %}
+<th>
+  <a href="#"
+     hx-get="/jobs?sort={{ column }}&dir={{ next_dir }}"
+     hx-target="#jobs-body"
+     hx-swap="innerHTML"
+     style="text-decoration: none; color: inherit; cursor: pointer;">
+    {{ label }}
+    {% if current_sort == column %}
+      {% if current_dir == "asc" %}&uarr;{% else %}&darr;{% endif %}
+    {% endif %}
+  </a>
+</th>
+{% endmacro %}
+
+<table role="grid">
+  <thead>
+    <tr>
+      {{ sort_header("title", "Title") }}
+      {{ sort_header("company", "Company") }}
+      {{ sort_header("source", "Source") }}
+      {{ sort_header("score", "Score") }}
+      {{ sort_header("posted_date", "Posted") }}
+      {{ sort_header("status", "Status") }}
+    </tr>
+  </thead>
+  <tbody id="jobs-body">
+    {% include "partials/jobs_table.html.j2" %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,42 @@
+<td colspan="6">
+  <article style="margin: 0;">
+    <header>
+      <strong>{{ job.title }}</strong> at {{ job.company }}
+      {% if job.url %}
+        &mdash; <a href="{{ job.url }}" target="_blank" rel="noopener">View original posting</a>
+      {% endif %}
+    </header>
+
+    <div class="job-description">
+      {{ job.description_html|safe if job.description_html else job.description }}
+    </div>
+
+    <h4>Keyword Breakdown</h4>
+    <div class="chips">
+      {% for kw in matched_keywords %}
+        <span class="chip keyword-matched">{{ kw }}</span>
+      {% endfor %}
+      {% for kw in unmatched_keywords %}
+        <span class="chip keyword-unmatched">{{ kw }}</span>
+      {% endfor %}
+    </div>
+
+    <footer>
+      {% if job.status == "discovered" and job.score < threshold %}
+        <button hx-post="/jobs/{{ job.id }}/queue"
+                hx-target="#detail-{{ job.id }}"
+                hx-swap="innerHTML"
+                class="contrast">
+          Queue for apply
+        </button>
+      {% elif job.status == "queued" %}
+        <button disabled class="secondary">Queued</button>
+      {% elif job.status == "matched" %}
+        <span class="badge-green">Matched</span>
+      {% elif job.status == "applied" %}
+        <span class="badge-green">Applied</span>
+      {% endif %}
+      <span class="badge-gray" style="margin-left: 0.5rem;">Score: {{ job.score }}%</span>
+    </footer>
+  </article>
+</td>
