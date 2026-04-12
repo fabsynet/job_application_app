@@ -1,0 +1,57 @@
+{% extends "base.html.j2" %}
+{% block title %}Dashboard &mdash; Job Apply{% endblock %}
+{% block content %}
+<article>
+  <header>
+    <hgroup>
+      <h2>Scheduler</h2>
+      {% include "partials/status_pill.html.j2" %}
+    </hgroup>
+    <p id="next-run" hx-get="/fragments/next-run" hx-trigger="every 15s [document.hidden === false]" hx-swap="innerHTML">{% include "partials/next_run.html.j2" %}</p>
+  </header>
+
+  {% include "partials/toggles.html.j2" %}
+
+  <section>
+    <h3>Last run</h3>
+    {% if last_run %}
+      <p>
+        {{ last_run.started_at.isoformat() }} &mdash; {{ last_run.status }}
+        {% if last_run.duration_ms is not none %}({{ last_run.duration_ms }} ms){% endif %}
+        {% if last_run.failure_reason %}&mdash; reason: {{ last_run.failure_reason }}{% endif %}
+        {% if last_run.dry_run %}<span class="dry-run-badge">DRY</span>{% endif %}
+      </p>
+      <p>
+        <small>
+          discovered {{ last_run.counts.get("discovered", 0) }}
+          &middot; matched {{ last_run.counts.get("matched", 0) }}
+          &middot; tailored {{ last_run.counts.get("tailored", 0) }}
+          &middot; submitted {{ last_run.counts.get("submitted", 0) }}
+          &middot; failed {{ last_run.counts.get("failed", 0) }}
+        </small>
+      </p>
+    {% else %}
+      <p><em>No runs yet. Click "Force run now" to trigger one.</em></p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h3>Recent runs</h3>
+    <table role="grid">
+      <thead><tr><th>Started</th><th>Status</th><th>Duration</th><th>Reason</th></tr></thead>
+      <tbody>
+      {% for r in recent_runs %}
+        <tr>
+          <td><a href="/runs/{{ r.id }}">{{ r.started_at.strftime("%Y-%m-%d %H:%M") }}</a></td>
+          <td>{{ r.status }}{% if r.dry_run %} <span class="dry-run-badge">DRY</span>{% endif %}</td>
+          <td>{{ r.duration_ms if r.duration_ms is not none else "&mdash;" }} ms</td>
+          <td>{{ r.failure_reason or "&mdash;" }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4"><em>No runs yet.</em></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</article>
+{% endblock %}

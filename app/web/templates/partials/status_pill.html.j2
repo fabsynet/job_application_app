@@ -1,0 +1,11 @@
+<p id="status-pill" hx-get="/fragments/status" hx-trigger="every 5s [document.hidden === false]" hx-swap="outerHTML">
+{% if killed %}
+  <span class="status-pill status-killed">&#9679; Paused by kill-switch</span>
+{% elif paused %}
+  <span class="status-pill status-paused">&#9679; Paused</span>
+{% elif dry_run %}
+  <span class="status-pill status-paused">&#9679; Running (dry-run)</span>
+{% else %}
+  <span class="status-pill status-ok">&#9679; Running{% if next_run_human %}, next run in {{ next_run_human }}{% endif %}</span>
+{% endif %}
+</p>

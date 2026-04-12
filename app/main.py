@@ -25,11 +25,14 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
+from pathlib import Path
+
 import structlog
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from zoneinfo import ZoneInfo
 
 from app.config import get_settings
@@ -42,6 +45,7 @@ from app.scheduler.rate_limit import RateLimiter
 from app.scheduler.service import SchedulerService
 from app.security.fernet import FernetVault
 from app.settings.service import get_settings_row
+from app.web.routers import dashboard as dashboard_router
 from app.web.routers import health as health_router
 
 if TYPE_CHECKING:
@@ -155,7 +159,10 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan, title="Job Application Auto-Apply")
+    static_dir = Path(__file__).parent / "web" / "static"
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
     app.include_router(health_router.router)
+    app.include_router(dashboard_router.router)
     return app
 
 

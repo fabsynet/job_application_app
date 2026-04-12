@@ -1,0 +1,15 @@
+<div id="toggles" class="grid">
+  <form hx-post="/toggles/kill-switch" hx-target="#toggles" hx-swap="outerHTML">
+    <button type="submit" class="{% if kill_engaged %}kill-switch{% else %}secondary{% endif %}">
+      {% if kill_engaged %}Release kill-switch{% else %}Kill switch{% endif %}
+    </button>
+  </form>
+  <form hx-post="/toggles/dry-run" hx-target="#toggles" hx-swap="outerHTML">
+    <button type="submit" class="{% if dry_run %}dry-run-on{% else %}secondary{% endif %}">
+      Dry run: {{ "ON" if dry_run else "OFF" }}
+    </button>
+  </form>
+  <form hx-post="/runs/trigger" hx-target="#status-pill" hx-swap="outerHTML">
+    <button type="submit" class="primary">Force run now</button>
+  </form>
+</div>
