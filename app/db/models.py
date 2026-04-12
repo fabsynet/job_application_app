@@ -52,8 +52,20 @@ class Settings(SQLModel, table=True):
     delay_max_seconds: int = Field(default=120)
     timezone: str = Field(default="UTC")
     wizard_complete: bool = Field(default=False)
-    keywords_csv: str = Field(default="")
+    keywords_csv: str = Field(default="")  # pipe-delimited (|) despite legacy name
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # --- Phase 2 fields ---
+    match_threshold: int = Field(default=60)
+    schedule_enabled: bool = Field(default=False)
+    quiet_hours_start: int = Field(default=22)   # 0-23
+    quiet_hours_end: int = Field(default=7)       # 0-23
+    budget_cap_dollars: float = Field(default=0.0)    # 0 = no cap
+    budget_spent_dollars: float = Field(default=0.0)
+    budget_month: str = Field(default="")  # e.g. "2026-04"
+    auto_mode: bool = Field(default=True)  # True=full-auto, False=review-queue
+    resume_filename: Optional[str] = Field(default=None)
+    resume_uploaded_at: Optional[datetime] = Field(default=None)
 
 
 class Secret(SQLModel, table=True):
@@ -115,10 +127,34 @@ class RateLimitCounter(SQLModel, table=True):
     submitted_count: int = Field(default=0)
 
 
+class Profile(SQLModel, table=True):
+    """User profile for auto-filling application forms.
+
+    Singleton row (id=1) like Settings. Populated from the Profile section
+    of the settings sidebar or parsed from an uploaded resume.
+    """
+
+    __tablename__ = "profile"
+
+    id: int = Field(default=1, primary_key=True)  # singleton row
+    full_name: Optional[str] = Field(default=None)
+    email: Optional[str] = Field(default=None)
+    phone: Optional[str] = Field(default=None)
+    address: Optional[str] = Field(default=None)
+    work_authorization: Optional[str] = Field(default=None)
+    salary_expectation: Optional[str] = Field(default=None)
+    years_experience: Optional[int] = Field(default=None)
+    linkedin_url: Optional[str] = Field(default=None)
+    github_url: Optional[str] = Field(default=None)
+    portfolio_url: Optional[str] = Field(default=None)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 __all__ = [
     "Settings",
     "Secret",
     "Run",
     "RateLimitCounter",
+    "Profile",
     "CANONICAL_FAILURE_REASONS",
 ]
