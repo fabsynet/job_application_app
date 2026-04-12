@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 2 of 6 (Configuration, Profile & Resume Upload)
-Plan: 3 of 5 in current phase (02-03 just completed; 02-04 also done)
+Plan: 4 of 5 in current phase (02-01, 02-02, 02-03, 02-04 done)
 Status: In progress
-Last activity: 2026-04-12 — Completed 02-03-PLAN.md (keywords, threshold, schedule, budget settings)
+Last activity: 2026-04-12 — Completed 02-02-PLAN.md (profile form + resume upload with DOCX extraction)
 
 Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2: 4/5 plans done)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~23 min
-- Total execution time: ~3h 9min
+- Total plans completed: 9
+- Average duration: ~22 min
+- Total execution time: ~3h 17min
 
 **By Phase:**
 
 | Phase | Plans | Total    | Avg/Plan |
 |-------|-------|----------|----------|
 | 01    | 5     | ~174 min | ~35 min  |
-| 02    | 3     | ~15 min  | ~5 min   |
+| 02    | 4     | ~23 min  | ~6 min   |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green)
-- Trend: 02-03 fast — four settings sections (keywords chips, threshold slider, schedule toggle, budget cap) with no new tests
+- Last 5 plans: 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total) | 02-01 (~5 min, 2 tasks, 87 tests green) | 02-04 (~3 min, 2 tasks, 87 tests green) | 02-03 (~7 min, 2 tasks, 87 tests green) | 02-02 (~8 min, 2 tasks, 87 tests green)
+- Trend: 02-02 profile + resume upload with DOCX extraction, no new tests needed
 
 *Updated after each plan completion*
 
@@ -43,6 +43,10 @@ Progress: [████░░░░░░] 40% (Phase 1 complete, Phase 2: 4/5 p
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 02-02: Profile fields normalise empty strings to None; phone strips non-digits
+- 02-02: Resume stored as single file base_resume.docx, replaced on re-upload (no versioning)
+- 02-02: DOCX text extraction splits on Heading styles; full_text capped at 500 lines
+- 02-02: Dedicated GET routes for profile/resume declared before generic catch-all for correct FastAPI routing
 - 02-03: Keywords use {keyword:path} path param in DELETE route for URL-encoded special chars
 - 02-03: Schedule checkbox parsed via raw form data (same pattern as safety toggles) — missing = False
 - 02-03: Budget progress bar calculated server-side in Jinja2 — no client JS needed for bar rendering
@@ -117,5 +121,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 02-03-PLAN.md. Keywords chip UI, threshold slider, schedule toggle + quiet hours, budget cap + progress bar. All 87 tests green. 02-04 also complete (credentials).
+Stopped at: Completed 02-02-PLAN.md. Profile form with 10 fields across 3 collapsible groups + DOCX resume upload with drag-and-drop and structured text preview. All 87 tests green. 02-01, 02-03, 02-04 also complete.
 Resume file: None
