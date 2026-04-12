@@ -1,0 +1,41 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Schedule &amp; Quiet Hours</h3>
+<p>Control when the pipeline runs. Quiet hours pause job processing during specified times.</p>
+
+<form hx-post="/settings/schedule" hx-target="#settings-content" hx-swap="innerHTML">
+  <fieldset>
+    <label>
+      <input type="checkbox" name="schedule_enabled" value="true"
+             {% if settings.schedule_enabled %}checked{% endif %}>
+      Enable hourly schedule
+    </label>
+  </fieldset>
+
+  <label for="quiet_hours_start">
+    Quiet hours start: <output id="qh-start-value">{{ "%d:00 %s"|format(settings.quiet_hours_start if settings.quiet_hours_start <= 12 else settings.quiet_hours_start - 12, "AM" if settings.quiet_hours_start < 12 else "PM") if settings.quiet_hours_start != 0 else "12:00 AM" }}</output>
+  </label>
+  <input type="range" name="quiet_hours_start" id="quiet_hours_start"
+         min="0" max="23" step="1"
+         value="{{ settings.quiet_hours_start }}"
+         oninput="document.getElementById('qh-start-value').textContent = formatHour(this.value)">
+
+  <label for="quiet_hours_end">
+    Quiet hours end: <output id="qh-end-value">{{ "%d:00 %s"|format(settings.quiet_hours_end if settings.quiet_hours_end <= 12 else settings.quiet_hours_end - 12, "AM" if settings.quiet_hours_end < 12 else "PM") if settings.quiet_hours_end != 0 else "12:00 AM" }}</output>
+  </label>
+  <input type="range" name="quiet_hours_end" id="quiet_hours_end"
+         min="0" max="23" step="1"
+         value="{{ settings.quiet_hours_end }}"
+         oninput="document.getElementById('qh-end-value').textContent = formatHour(this.value)">
+
+  <script>
+    function formatHour(h) {
+      h = parseInt(h);
+      if (h === 0) return "12:00 AM";
+      if (h === 12) return "12:00 PM";
+      if (h < 12) return h + ":00 AM";
+      return (h - 12) + ":00 PM";
+    }
+  </script>
+
+  <button type="submit" class="primary">Save schedule</button>
+</form>

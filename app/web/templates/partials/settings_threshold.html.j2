@@ -1,0 +1,19 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Match Threshold</h3>
+<p>Set the minimum match score for job recommendations. Higher values mean stricter matching.</p>
+
+<form hx-post="/settings/threshold" hx-target="#settings-content" hx-swap="innerHTML">
+  <label for="match_threshold">
+    Threshold: <output id="threshold-value">{{ settings.match_threshold }}%</output>
+  </label>
+  <input type="range" name="match_threshold" id="match_threshold"
+         min="0" max="100" step="5"
+         value="{{ settings.match_threshold }}"
+         oninput="document.getElementById('threshold-value').textContent = this.value + '%'">
+  <div class="slider-labels">
+    <span>Loose (30%)</span>
+    <span>Moderate (60%)</span>
+    <span>Strict (85%)</span>
+  </div>
+  <button type="submit" class="primary">Save threshold</button>
+</form>

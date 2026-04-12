@@ -1,0 +1,26 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Budget Cap</h3>
+<p>Set a monthly spending limit for LLM API usage. Set to $0 for no limit.</p>
+
+<form hx-post="/settings/budget" hx-target="#settings-content" hx-swap="innerHTML">
+  <label for="budget_cap_dollars">
+    Monthly budget cap ($)
+  </label>
+  <input type="number" name="budget_cap_dollars" id="budget_cap_dollars"
+         min="0" step="0.01"
+         value="{{ '%.2f'|format(settings.budget_cap_dollars) }}"
+         placeholder="0.00">
+
+  {% if settings.budget_cap_dollars > 0 %}
+  <div class="budget-progress">
+    {% set pct = ((settings.budget_spent_dollars or 0) / settings.budget_cap_dollars * 100) | round(1) %}
+    <div class="budget-progress-fill {{ 'over-budget' if pct > 100 else '' }}"
+         style="width: {{ [pct, 100] | min }}%"></div>
+  </div>
+  <small>${{ '%.2f'|format(settings.budget_spent_dollars or 0) }} / ${{ '%.2f'|format(settings.budget_cap_dollars) }} used ({{ pct }}%)</small>
+  {% else %}
+  <p><small>No limit set &mdash; spending is unrestricted.</small></p>
+  {% endif %}
+
+  <button type="submit" class="primary">Save budget</button>
+</form>

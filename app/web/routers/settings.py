@@ -14,7 +14,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import delete as sql_delete
@@ -22,6 +22,7 @@ from sqlalchemy import select
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from app.db.models import Profile, Secret
+from app.resume.service import extract_resume_text, get_resume_path, save_resume
 from app.settings.service import (
     get_profile_row,
     get_settings_row,
@@ -49,12 +50,12 @@ KNOWN_SECRET_NAMES = [
 _SECTION_MAP: dict[str, tuple[str, str]] = {
     "mode": ("partials/settings_mode.html.j2", "Mode"),
     "profile": ("partials/settings_profile.html.j2", "Profile"),
-    "resume": ("partials/settings_placeholder.html.j2", "Resume"),
+    "resume": ("partials/settings_resume.html.j2", "Resume"),
     "keywords": ("partials/settings_keywords.html.j2", "Keywords"),
-    "threshold": ("partials/settings_placeholder.html.j2", "Threshold"),
+    "threshold": ("partials/settings_threshold.html.j2", "Threshold"),
     "credentials": ("partials/settings_credentials.html.j2", "Credentials"),
-    "schedule": ("partials/settings_placeholder.html.j2", "Schedule"),
-    "budget": ("partials/settings_placeholder.html.j2", "Budget"),
+    "schedule": ("partials/settings_schedule.html.j2", "Schedule"),
+    "budget": ("partials/settings_budget.html.j2", "Budget"),
     "limits": ("partials/settings_limits.html.j2", "Rate Limits"),
     "safety": ("partials/settings_safety.html.j2", "Safety"),
 }
@@ -220,6 +221,34 @@ async def get_credentials_section(
     )
 
 
+# ── Resume ──────────────────────────────────────────────────────────
+
+@router.get("/section/resume", response_class=HTMLResponse)
+async def get_resume_section(
+    request: Request,
+    session=Depends(get_session),
+):
+    """Load the resume upload form with preview if a resume exists."""
+    row = await get_settings_row(session)
+    resume_path = get_resume_path()
+    preview = None
+    if resume_path and resume_path.exists():
+        try:
+            preview = extract_resume_text(resume_path)
+        except Exception:
+            preview = None
+    return templates.TemplateResponse(
+        request,
+        "partials/settings_resume.html.j2",
+        {
+            "settings": row,
+            "resume_path": resume_path,
+            "preview": preview,
+            "active_section": "resume",
+        },
+    )
+
+
 # ── Generic section loader (catch-all — keep last among GET /section/*) ──
 
 @router.get("/section/{section_name}", response_class=HTMLResponse)
@@ -321,6 +350,66 @@ async def save_profile(
     )
 
 
+# ── Resume POST ──────────────────────────────────────────────────────
+
+@router.post("/resume", response_class=HTMLResponse)
+async def upload_resume(
+    request: Request,
+    resume: UploadFile = File(...),
+    session=Depends(get_session),
+):
+    """Upload a DOCX resume, store it, and show extracted text preview."""
+    # Validate file extension
+    filename = resume.filename or ""
+    if not filename.lower().endswith(".docx"):
+        row = await get_settings_row(session)
+        resume_path = get_resume_path()
+        preview = None
+        if resume_path and resume_path.exists():
+            try:
+                preview = extract_resume_text(resume_path)
+            except Exception:
+                preview = None
+        return templates.TemplateResponse(
+            request,
+            "partials/settings_resume.html.j2",
+            {
+                "settings": row,
+                "resume_path": resume_path,
+                "preview": preview,
+                "active_section": "resume",
+                "flash": ("error", "Only .docx files are accepted."),
+            },
+        )
+
+    # Save and extract
+    saved_path = await save_resume(resume)
+
+    # Update Settings metadata
+    await set_setting(session, "resume_filename", filename)
+    await set_setting(session, "resume_uploaded_at", datetime.utcnow())
+
+    # Extract text for preview
+    preview = None
+    try:
+        preview = extract_resume_text(saved_path)
+    except Exception:
+        preview = None
+
+    row = await get_settings_row(session)
+    return templates.TemplateResponse(
+        request,
+        "partials/settings_resume.html.j2",
+        {
+            "settings": row,
+            "resume_path": saved_path,
+            "preview": preview,
+            "active_section": "resume",
+            "flash": ("success", f"Resume '{filename}' uploaded successfully."),
+        },
+    )
+
+
 # ── Rate Limits ───────────────────────────────────────────────────────
 
 @router.post("/limits", response_class=HTMLResponse)
@@ -392,6 +481,73 @@ async def save_safety(
     return await _render_section(
         request, session, "safety",
         flash=("success", "Safety settings saved."),
+    )
+
+
+# ── Threshold ────────────────────────────────────────────────────────
+
+@router.post("/threshold", response_class=HTMLResponse)
+async def save_threshold(
+    request: Request,
+    match_threshold: int = Form(...),
+    session=Depends(get_session),
+):
+    """Save the match threshold (0-100)."""
+    if match_threshold < 0 or match_threshold > 100:
+        raise HTTPException(400, "Threshold must be between 0 and 100")
+    await set_setting(session, "match_threshold", match_threshold)
+    return await _render_section(
+        request, session, "threshold",
+        flash=("success", "Match threshold saved."),
+    )
+
+
+# ── Schedule ─────────────────────────────────────────────────────────
+
+@router.post("/schedule", response_class=HTMLResponse)
+async def save_schedule(
+    request: Request,
+    session=Depends(get_session),
+):
+    """Save schedule toggle and quiet hours.
+
+    Checkboxes only submit when checked, so we parse raw form data.
+    """
+    form = await request.form()
+    schedule_enabled = form.get("schedule_enabled", "").lower() == "true"
+    quiet_hours_start = int(form.get("quiet_hours_start", "22"))
+    quiet_hours_end = int(form.get("quiet_hours_end", "7"))
+
+    if not (0 <= quiet_hours_start <= 23):
+        raise HTTPException(400, "quiet_hours_start must be 0-23")
+    if not (0 <= quiet_hours_end <= 23):
+        raise HTTPException(400, "quiet_hours_end must be 0-23")
+
+    await set_setting(session, "schedule_enabled", schedule_enabled)
+    await set_setting(session, "quiet_hours_start", quiet_hours_start)
+    await set_setting(session, "quiet_hours_end", quiet_hours_end)
+
+    return await _render_section(
+        request, session, "schedule",
+        flash=("success", "Schedule settings saved."),
+    )
+
+
+# ── Budget ───────────────────────────────────────────────────────────
+
+@router.post("/budget", response_class=HTMLResponse)
+async def save_budget(
+    request: Request,
+    budget_cap_dollars: float = Form(...),
+    session=Depends(get_session),
+):
+    """Save the monthly budget cap."""
+    if budget_cap_dollars < 0:
+        raise HTTPException(400, "Budget cap cannot be negative")
+    await set_setting(session, "budget_cap_dollars", budget_cap_dollars)
+    return await _render_section(
+        request, session, "budget",
+        flash=("success", "Budget cap saved."),
     )
 
 
