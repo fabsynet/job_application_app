@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 4 of 7 in current phase (Wave 2 complete: 04-03 + 04-04)
+Plan: 5 of 7 in current phase (Wave 3 task 1 of 3 complete: 04-05)
 Status: In progress
-Last activity: 2026-04-12 — Completed 04-04-PLAN.md (DOCX writer + preview)
+Last activity: 2026-04-12 — Completed 04-05-PLAN.md (tailoring pipeline stage + scheduler integration)
 
-Progress: [██████████▏] 91% (20 of 22 plans complete: Phases 1-3 + 04-01..04-04)
+Progress: [██████████▌] 95% (21 of 22 plans complete: Phases 1-3 + 04-01..04-05)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
-- Average duration: ~12 min
-- Total execution time: ~4h 20min
+- Total plans completed: 21
+- Average duration: ~13 min
+- Total execution time: ~4h 52min
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [██████████▏] 91% (20 of 22 plans complete: Phas
 | 01    | 5     | ~174 min | ~35 min  |
 | 02    | 4     | ~23 min  | ~6 min   |
 | 03    | 6     | ~32 min  | ~5 min   |
-| 04    | 4     | ~26 min  | ~7 min   |
+| 04    | 5     | ~58 min  | ~12 min  |
 
 **Recent Trend:**
-- Last 5 plans: 03-06 (~9 min, 175 tests green) | 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green) | 04-03 (~5 min, 2 tasks, 175 tests green) | 04-04 (~7 min, 2 tasks, 175 tests green)
-- Trend: Wave 2 complete — 04-03 (prompts + engine) and 04-04 (docx_writer + preview) landed in parallel without merge conflict. 04-04 auto-fixed one Rule 3 environment blocker (mammoth not installed in local venv). All four Phase 4 Wave-1/Wave-2 plans shipped zero-deviation at the source level; test suite stable at 175/175.
+- Last 5 plans: 04-01 (~8 min, 2 tasks, 175 tests green) | 04-02 (~6 min, 2 tasks, 175 tests green) | 04-03 (~5 min, 2 tasks, 175 tests green) | 04-04 (~7 min, 2 tasks, 175 tests green) | 04-05 (~32 min, 2 tasks, 175 tests green, 3 auto-fixed deviations)
+- Trend: Wave 3 task 1 (04-05 pipeline stage + scheduler integration) landed with 3 auto-fixed deviations — all from a single root cause: `app.resume.service`'s module-level `from app.config import get_settings` binding interacts badly with the integration-test `live_app` fixture's `importlib.reload(app.config)` when a NEW pipeline stage calls `get_resume_path()` from earlier pipeline tests. Worked around by inlining the path check via a lazy `get_settings()` import in `run_tailoring`, and by making the scheduler's import of `run_tailoring` itself lazy. Underlying fragility in `app.resume.service` is now a flagged blocker. Duration spike (~32 min vs ~7 min average) almost entirely debugging time; source-level changes were small.
 
 *Updated after each plan completion*
 
@@ -45,6 +45,17 @@ Progress: [██████████▏] 91% (20 of 22 plans complete: Phas
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-05: Queued jobs = status='matched' from discovery; ordered score DESC so budget-constrained runs tailor the best matches first
+- 04-05: get_next_version counts ALL existing records (any status) so retries get a fresh version number rather than reusing a failed slot
+- 04-05: save_tailoring_record flushes (not commits) so callers can group record + cost entries + debit into one transaction
+- 04-05: prompt_hash = SHA256(system_prompt | resume_text | job_description) with 0x1E separator between fields
+- 04-05: save_cost_entries re-estimates cost per row via BudgetGuard.estimate_cost — ledger sums stay aligned with the budget counter using one source of truth
+- 04-05: Budget halt at 100% BREAKS the per-job loop; remaining jobs stay 'matched' for next run — no partial-retry in the pipeline layer
+- 04-05: Rejected records ALSO write CostLedger entries and debit BudgetGuard because tokens were consumed; engine-exception records do NOT (no result to bill)
+- 04-05: DOCX write failures still debit (tokens were consumed) but flip job to 'failed'; cover letter write failures are non-fatal (resume saved, status='tailored')
+- 04-05: run_tailoring lazy-imported inside SchedulerService._execute_pipeline to keep the scheduler's static import graph minimal under test reload cycles
+- 04-05: Base resume path resolved via inlined Path(get_settings().data_dir) / 'resumes' / 'base_resume.docx' instead of app.resume.service.get_resume_path — avoids stale LRU cache hits after importlib.reload(app.config) in integration tests
+- 04-05: run_tailoring wraps get_settings() in try/except so late APScheduler firings during pytest monkeypatch teardown log skipped_no_resume instead of propagating ValidationError
 - 04-04: DOCX replacement goes through replace_paragraph_text_preserving_format exclusively — paragraph.text setter is only used in the no-runs fallback branch (research Pitfall 1 enforced in code)
 - 04-04: Section overflow drops excess tailored bullets with a warning log rather than cloning paragraph XML; underflow clears extras instead of deleting them so spacing stays stable
 - 04-04: Work-experience subsection matching uses a fixed 2-line skip after the company header (title + dates) before collecting bullets — heuristic, not style-parsed, because python-docx has no semantic bullet notion
@@ -176,9 +187,12 @@ None.
 - 01-04: POST `/runs/trigger` has no CSRF protection. LAN-bound + "no auth in v1" makes this acceptable; revisit if the app is ever exposed to a wider network.
 - 04-02: BudgetGuard instance lifecycle — asyncio.Lock is per-instance, so Plan 04-04 must instantiate exactly one BudgetGuard and pass it to every tailoring consumer (validator calls and cover-letter calls must debit through the same instance).
 - 04-02: Anthropic SDK streaming vs. non-streaming not yet decided. Current AnthropicProvider.complete assumes non-streaming (simpler for validator + DOCX rewrite that need the full text). Revisit during 04-03 if prompt design requires streaming.
+- 04-05: **`app.resume.service` module-level `from app.config import get_settings` binding is a latent fragility.** It captures the get_settings function object at first import, so any module-level reload of `app.config` (as the integration-test `live_app` fixture does) leaves `app.resume.service` holding a stale reference with a stale LRU cache. Any future code path that calls `get_resume_path()` or `save_resume()` from a pipeline stage must route through a lazy `get_settings()` import (the way `run_tailoring` now does) OR refactor `_resume_dir()` to call `app.config.get_settings()` lazily. Cleanup plan: refactor `app.resume.service._resume_dir()` to `return Path(__import__("app.config", fromlist=["get_settings"]).get_settings().data_dir) / "resumes"` or similar — a single-line change that eliminates the binding hazard.
+- 04-05: APScheduler teardown race — late pipeline firings during pytest monkeypatch teardown can still propagate exceptions up the stack. `run_tailoring` is defensive, but `run_discovery` and `run_pipeline` itself are not. Non-blocking for now; flag if more pipeline stages land in Phase 5.
+- 04-05: BudgetGuard instance lifecycle — `run_tailoring` currently constructs a fresh `BudgetGuard()` per stage invocation. Safe today (asyncio.Lock is per-instance; each `_execute_pipeline` owns exactly one), but if a future stage needs cross-call concurrency (parallel tailoring inside one run) the BudgetGuard should be promoted to a `SchedulerService` attribute initialised at lifespan. Flag for 04-07.
 
 ## Session Continuity
 
 Last session: 2026-04-12
-Stopped at: Completed 04-04-PLAN.md. Wave 2 complete — 04-03 (prompts + engine) and 04-04 (docx_writer + preview) both merged cleanly on master. 04-04 commits 73f2fc6 (docx_writer) and 09b526c (preview) added app/tailoring/docx_writer.py (574 lines, build_tailored_docx + build_cover_letter_docx + ATS checks + keyword coverage) and app/tailoring/preview.py (307 lines, mammoth preview + generate_section_diff + format_diff_html). One Rule-3 auto-fix on 04-04: installed mammoth==1.12.0 into local .venv (already pinned in requirements.txt from 04-02). 175/175 tests green. Ready for Wave 3 (04-05 pipeline stage + 04-06 review queue UI + 04-07 end-to-end wiring).
+Stopped at: Completed 04-05-PLAN.md. Wave 3 task 1 of 3 complete — tailoring pipeline stage and scheduler integration landed on master. Task 1 commit 409a388 added app/tailoring/service.py (363 lines, DB ops for TailoringRecord/CostLedger + versioned artifact path helpers). Task 2 commit 872cbe9 added app/tailoring/pipeline.py (run_tailoring stage orchestrator, budget/kill-switch/DOCX-write/record+debit flow) and wired it into SchedulerService._execute_pipeline via a lazy import after run_discovery. Three auto-fixed deviations (all rooted in `app.resume.service`'s module-level `get_settings` binding interacting with integration-test `importlib.reload(app.config)`): inlined path resolution in run_tailoring via lazy `get_settings()` import, lazy import of run_tailoring inside _execute_pipeline instead of at scheduler module top, and defensive try/except around get_settings() for late APScheduler teardown firings. 175/175 tests green. The `app.resume.service` binding is now a flagged latent fragility in Blockers/Concerns. Ready for 04-06 (review queue UI) and 04-07 (end-to-end wiring + settings UI).
 Resume file: None
