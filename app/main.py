@@ -48,6 +48,7 @@ from app.settings.service import get_settings_row
 from app.web.routers import dashboard as dashboard_router
 from app.web.routers import health as health_router
 from app.web.routers import runs as runs_router
+from app.web.routers import settings as settings_router
 from app.web.routers import toggles as toggles_router
 
 if TYPE_CHECKING:
@@ -167,6 +168,7 @@ def create_app() -> FastAPI:
     app.include_router(dashboard_router.router)
     app.include_router(toggles_router.router)
     app.include_router(runs_router.router)
+    app.include_router(settings_router.router)
     return app
 
 
