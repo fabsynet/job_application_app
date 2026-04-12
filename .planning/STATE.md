@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 1 — Foundation, Scheduler & Safety Envelope
+**Current focus:** Phase 1 COMPLETE. Ready for Phase 2 — Configuration, Profile & Resume Upload.
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation, Scheduler & Safety Envelope)
-Plan: 01-04 complete — dashboard, toggles, runs list, settings page (Wave 3)
-Status: In progress — 01-05 (wizard + remaining Wave 3 items) still pending
-Last activity: 2026-04-11 — Completed 01-04-dashboard-toggles-runs-settings-PLAN.md
+Phase: 1 of 6 (Foundation, Scheduler & Safety Envelope) -- COMPLETE
+Plan: 05 of 05 (all plans in Phase 1 complete)
+Status: Phase 1 complete
+Last activity: 2026-04-11 — Completed 01-05-setup-wizard-and-end-to-end-tests-PLAN.md
 
-Progress: [████░░░░░░] ~40% (4 of ~10 phase-1 plans complete)
+Progress: [█████░░░░░] ~50% (5 of ~10 phase-1 plans complete; Phase 1 fully done, overall ~17% of 6 phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: ~36 min
-- Total execution time: ~2h 24min
+- Total plans completed: 5
+- Average duration: ~35 min
+- Total execution time: ~2h 54min
 
 **By Phase:**
 
 | Phase | Plans | Total    | Avg/Plan |
 |-------|-------|----------|----------|
-| 01    | 4     | ~144 min | ~36 min  |
+| 01    | 5     | ~174 min | ~35 min  |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total)
-- Trend: steady ~40 min for a 3-task plan that ships integration tests alongside; 01-04 was slightly above average because of two test-infra fixes (Starlette signature + lazy async_session)
+- Last 5 plans: 01-01 (~1h, 3 tasks, 9 tests green) | 01-02 (4 min, 3 tasks, 12 tests green) | 01-03 (~35 min, 3 tasks, 29 new tests green, 50 total) | 01-04 (~45 min, 3 tasks, 18 new tests green, 68 total) | 01-05 (~30 min, 3 tasks, 19 new tests green, 87 total)
+- Trend: steady ~35 min for a 3-task plan; 01-05 was the smoothest execution — only 2 auto-fixed bugs (wizard redirect guard breaking existing dashboard tests + stale get_settings reference in wizard module across test boundaries)
 
 *Updated after each plan completion*
 
@@ -42,6 +42,11 @@ Progress: [████░░░░░░] ~40% (4 of ~10 phase-1 plans complete
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 01-05: Wizard writes wizard_complete only on step 3 or skip — going back and forth does not flip the flag
+- 01-05: Wizard step 2 allows blank submissions (guidance, not a gate per CONTEXT.md)
+- 01-05: Rotation banner does not delete unreadable secrets — preserved for forensic recovery
+- 01-05: End-to-end tests run against the real lifespan with tmp_path data dirs, not mocks
+- 01-05: Reload wizard module in test fixtures to avoid stale get_settings reference from importlib.reload(app.config)
 - 01-04: Pico.css v2 bundled local (83KB), HTMX 2.0.3 via unpkg CDN, no build step
 - 01-04: HTMX fragments served from the same routers as full pages, sharing one `_common_ctx` builder so polled fragments never drift from initial render
 - 01-04: `_humanize_seconds` runs server-side — no client-side JS timers
@@ -82,24 +87,22 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- REQUIREMENTS.md summary says "58 total v1 requirements" but the enumerated list contains 65. Discrepancy flagged in ROADMAP.md Coverage section; correct during Phase 1 planning.
+- REQUIREMENTS.md summary says "58 total v1 requirements" but the enumerated list contains 65. Discrepancy flagged in ROADMAP.md Coverage section; correct during Phase 2 planning.
 - Phase 4 needs a prompt-design spike (extractive tailoring) before full pipeline integration, per research SUMMARY.md.
 - Phase 6 generic-ATS form matching may need a selector-stability spike before implementation.
-- Wave 1 parallel execution: plans 01-01 and 01-02 share the same working directory; 01-01 scaffolding files (`.env.example`, `.gitignore`, `Dockerfile`, `compose.yml`, `pyproject.toml`, `requirements.txt`) were swept into 01-02's first commit (`fb9410f`) because they appeared in the working tree at commit time. `git log --grep=01-01` undercounts 01-01's work by one commit. No data loss; consider isolating working dirs or serializing commits in future waves.
-- 01-01: Docker image has not been built on this host (Docker Desktop daemon was not running during execution). `docker compose config` validated the compose file; first `docker compose build` still pending before 01-03 lands.
-- 01-01: Local test venv is Python 3.11.9 but pyproject requires >=3.12. Tests run green on 3.11 against pinned deps; production (Playwright base) uses 3.12+. Re-validate inside the container during Phase 1.
-- 01-03: requirements.txt should be split into prod vs dev — freezegun + pytest-asyncio were installed into .venv for tests but are NOT in requirements.txt. Non-blocking; flag as Phase 1 cleanup.
-- 01-03: `app.db.base._settings = get_settings()` executes at module import time, so integration tests that need a different DATA_DIR must reload `app.config` and `app.db.base` before importing `app.main`. Future plans should consider refactoring to lazy-init inside `init_db()`. **Partially mitigated in 01-04**: `get_session` dependency now lazy-imports `async_session` so at least the router layer survives the reload dance.
+- 01-01: Docker image has not been built on this host (Docker Desktop daemon was not running during execution). `docker compose config` validated the compose file; first `docker compose build` still pending.
+- 01-01: Local test venv is Python 3.11.9 but pyproject requires >=3.12. Tests run green on 3.11 against pinned deps; production (Playwright base) uses 3.12+. Re-validate inside the container during Phase 2.
+- 01-03: requirements.txt should be split into prod vs dev — freezegun + pytest-asyncio were installed into .venv for tests but are NOT in requirements.txt. Non-blocking; flag as Phase 2 cleanup.
+- 01-03: `app.db.base._settings = get_settings()` executes at module import time, so integration tests that need a different DATA_DIR must reload `app.config` and `app.db.base` before importing `app.main`. Future plans should consider refactoring to lazy-init inside `init_db()`. **Partially mitigated in 01-04/01-05**: `get_session` dependency now lazy-imports `async_session`; wizard module must also be reloaded alongside `app.config` in test fixtures.
 - 01-04: HTMX is loaded from `unpkg.com/htmx.org@2.0.3` via CDN. Fully offline LAN deployments will render the dashboard but not poll. Consider bundling htmx.min.js locally (trivial, ~47KB, same pattern as `pico.min.css`) in a later cleanup plan.
-- 01-04: No "boot-time decrypt-failed" banner yet — plan 01-05 should add a middleware/lifespan check that flips a flag when `register_all_secrets_with_scrubber` returns fewer secrets than the DB has rows, and render the banner from the dashboard base template.
 - 01-04: POST `/runs/trigger` has no CSRF protection. LAN-bound + "no auth in v1" makes this acceptable; revisit if the app is ever exposed to a wider network.
 
 ## Session Continuity
 
 Last session: 2026-04-11
-Stopped at: Completed 01-04-dashboard-toggles-runs-settings-PLAN.md. Dashboard, HTMX fragments, toggles (kill-switch + dry-run), runs list/detail, settings page with Fernet secrets CRUD and live rate-limit envelope all shipped. 68/68 tests green (50 prior + 18 new integration). Pico.css bundled local, HTMX 2.0.3 via CDN. Ready for 01-05 (wizard + remaining items).
+Stopped at: Completed 01-05-setup-wizard-and-end-to-end-tests-PLAN.md. Phase 1 is fully complete. Setup wizard (3 steps + skip), Fernet rotation banner, goal-backward end-to-end test suite (87/87 green), and README all shipped. All 6 Phase 1 must_haves asserted and passing.
 Resume file: None
