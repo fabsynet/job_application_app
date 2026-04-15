@@ -1,0 +1,17 @@
+A submission attempt failed.
+
+Stage:       {{ stage }}
+Error class: {{ error_class }}
+Message:     {{ error_message }}
+{% if job %}
+Job:         {{ job.title }} at {{ job.company }}
+Job URL:     {{ job.url }}
+{% endif %}
+Signature:   {{ signature }}
+
+Additional failures with this signature will be suppressed until the
+next successful submission (auto-clear) or you acknowledge via:
+{{ base_url }}/notifications
+
+--
+JobApplyBot
