@@ -53,12 +53,17 @@ async def get_queued_jobs(session: AsyncSession) -> list[Job]:
     """Return jobs ready for tailoring, ordered by score DESC.
 
     A job becomes eligible for tailoring when discovery marks it
-    ``status="matched"`` (keyword score >= threshold). The pipeline
-    stage pulls them highest-score-first so budget-constrained runs
-    still hit the best matches.
+    ``status="matched"`` (keyword score >= threshold) **or** when the
+    review queue flips it to ``status="retailoring"`` after a user clicks
+    "Re-tailor with a different angle" in the drawer (Phase 5 plan 05-05).
+    Both cases run through the same engine, so the pipeline stage selects
+    them in one query and pulls them highest-score-first so budget-
+    constrained runs still hit the best matches.
     """
     stmt = (
-        select(Job).where(Job.status == "matched").order_by(Job.score.desc())
+        select(Job)
+        .where(Job.status.in_(("matched", "retailoring")))
+        .order_by(Job.score.desc())
     )
     result = await session.execute(stmt)
     return list(result.scalars().all())
