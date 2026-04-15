@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 4 complete — ready for Phase 5 (Submission)
+**Current focus:** Phase 5 (Email Submission / Review Queue) — Wave 1 in progress
 
 ## Current Position
 
-Phase: 4 of 6 (LLM Tailoring & DOCX Generation)
-Plan: 7 of 7 in current phase (Wave 5 test hardening complete: 04-07)
-Status: Phase complete
-Last activity: 2026-04-12 — Completed 04-07-PLAN.md (41 new Phase 4 tests, 216/216 suite green)
+Phase: 5 of 6 (Email Submission, Review Queue, Manual Apply & Notifications)
+Plan: 05-01 of 7 in current phase (Wave 1 schema foundation complete)
+Status: In progress
+Last activity: 2026-04-15 — Completed 05-01-PLAN.md (submissions + failure_suppressions tables, partial UNIQUE index, 4 new Settings columns, canonical job state machine; 216/216 green)
 
-Progress: [███████████] 100% (23 of 23 plans complete: Phases 1-3 + 04-01..04-07) — Phase 4 closed
+Progress: [███████████░] ~80% (24 of 30 plans complete: Phases 1-4 + 05-01) — Phase 5 opened
 
 ## Performance Metrics
 
@@ -45,6 +45,14 @@ Progress: [███████████] 100% (23 of 23 plans complete: Pha
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 05-01: Partial UNIQUE index MUST use `op.create_index(..., sqlite_where=sa.text(...))` — `UniqueConstraint(..., sqlite_where=...)` silently drops the WHERE clause on SQLite (research Pitfall 9). Applied to `ux_submissions_job_sent` (SC-7 idempotency).
+- 05-01: CANONICAL_JOB_STATUSES is a 13-element frozenset in `app.review.states`; enforcement is service-layer only (Job.status stays a plain str column, mirroring CANONICAL_FAILURE_REASONS precedent). `assert_valid_transition(current, target)` is the uniform gate before any Phase 5 Job.status write.
+- 05-01: Legacy `applied` status kept in CANONICAL_JOB_STATUSES as a terminal (no outgoing transitions) — zero-churn Phase 3 back-compat, avoids retroactive row rewriting.
+- 05-01: `Settings.notification_email` nullable — NULL means "resolve to smtp_user at send time" so users are not forced to configure a second inbox upfront. Downstream plans need a resolver helper.
+- 05-01: `Settings.base_url` default `http://localhost:8000` — LAN-first; operator overrides via Settings UI when exposing beyond localhost. Used to build review-page links in notification emails.
+- 05-01: `Submission.submitter` column ships now with values `email | playwright` so Phase 6 Playwright lands without a schema bump.
+- 05-01: New feature packages (`app.submission`, `app.review`) register with Alembic metadata via import side-effect at the bottom of `app/db/models.py` (mirrors Phase 3 discovery / Phase 4 tailoring pattern).
+- 05-01: Python `Settings` SQLModel class mirrors the four new columns at field-declaration level (not just the migration) — SQLModel attribute access requires the Python-side fields and catching this in Task 2 avoids AttributeError in every downstream Phase 5 consumer.
 - 04-07: FakeLLMProvider is a local test class (not a shared conftest fixture) — Phase 4 is its only consumer and local definition keeps the test surface legible
 - 04-07: Base resume DOCX fixture built via python-docx in a pytest helper rather than checked into the repo — fully deterministic, version-tracked as code
 - 04-07: SC-5 cache-token-visibility test asserts against the template file via read_text+substring checks rather than rendering through Jinja2 — avoids needing a full Jinja env + dummy context
@@ -209,6 +217,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-12
-Stopped at: Completed 04-07-PLAN.md. Wave 5 phase-closing test hardening landed on master. Task 1 commit 25b630e added tests/test_phase4_tailoring.py (1,167 lines, 41 tests) covering TAIL-01..TAIL-09 and SAFE-04. Test groups: PII stripping (5), Prompts (4), Validator (4), Budget guard (8), DOCX writer (9), Preview (3), Service layer (5), Settings UI (1), Cache token visibility (2). Key tests tie directly to phase success criteria: SC-1 (bold/italic preservation via replace_paragraph_text_preserving_format round-trip), SC-2 (end-to-end tailor_resume retry loop rejecting invented "React" across 3 attempts), SC-3/SAFE-04 (PII blob assertion flattening every FakeLLMProvider.calls payload and grepping for literal name/email/phone), SC-4 (budget halt at spent==cap), SC-5 (template file assertion for cache_read_tokens + "cache savings" substrings). FakeLLMProvider test double records every system/messages payload so PII-in-prompt assertions can inspect outgoing traffic. Base resume DOCX fixture is built in-memory via python-docx (no binary check-in). Zero deviations — one mechanical fixture fix added external_id='ext-N' to Job instances to satisfy NOT NULL constraint. 216/216 tests green (175 existing + 41 new). **Phase 4 is COMPLETE** and feature-frozen; ready for Phase 5 (Submission).
+Last session: 2026-04-15
+Stopped at: Completed 05-01-PLAN.md (Wave 1 schema foundation). Alembic 0005_phase5_submission ships submissions + failure_suppressions tables plus four new Settings columns (notification_email, base_url, submissions_paused, auto_holdout_margin_pct). Partial UNIQUE index `ux_submissions_job_sent` (WHERE status='sent') verified real via sqlite_master inspection AND proven by IntegrityError on duplicate-sent insert. `app.review.states` ships a 13-element CANONICAL_JOB_STATUSES frozenset plus assert_valid_transition() service-layer validator; illegal transitions like submitted->matched raise ValueError. New `app.submission` and `app.review` packages register with Alembic metadata via import side-effect at the bottom of `app/db/models.py`. Python Settings SQLModel class mirrors the four new migration columns. Downgrade/upgrade roundtrip clean. 216/216 suite green (no regressions). Two atomic commits: 47c88c2 (Task 1: models + state frozenset) and 47f3ab3 (Task 2: migration + Settings field additions). Zero deviations. Note: a parallel wave-1 plan 05-02 landed commit 6c38d70 between my two commits (email builder primitives + aiosmtplib dep) — non-overlapping, both waves integrate cleanly. Phase 5 Wave 1 schema is now stable; Wave 2 plans (submitter, pipeline, review UI, notifications) can run in parallel against the tables.
 Resume file: None
