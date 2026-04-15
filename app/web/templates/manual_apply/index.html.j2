@@ -1,0 +1,36 @@
+{% extends "base.html.j2" %}
+{% block title %}Manual Apply &mdash; Job Apply{% endblock %}
+{% block content %}
+<h2>Manual Apply</h2>
+<p>Paste a job URL (Greenhouse, Lever, Ashby, or generic) to add it to the review queue.
+The job bypasses the keyword-match threshold but still respects duplicate detection
+and the standard tailoring + submission pipeline.</p>
+
+<form hx-post="/manual-apply/preview"
+      hx-target="#preview-slot"
+      hx-swap="innerHTML"
+      hx-indicator="#preview-spinner">
+  <fieldset role="group">
+    <label for="manual-apply-url" style="flex: 1;">
+      Job URL
+      <input id="manual-apply-url"
+             type="url"
+             name="url"
+             placeholder="https://boards.greenhouse.io/acme/jobs/1234"
+             required>
+    </label>
+  </fieldset>
+  <button type="submit">Preview</button>
+  <span id="preview-spinner" class="htmx-indicator">Fetching...</span>
+</form>
+
+<div id="preview-slot"></div>
+
+<hr>
+<details>
+  <summary>Can't fetch a job URL? Paste the description manually.</summary>
+  <p>If a URL is behind an auth wall (LinkedIn, Indeed) or otherwise fails to load,
+  the preview step will automatically swap to a fallback form. You can also kick off
+  the fallback form directly with a bogus URL.</p>
+</details>
+{% endblock %}

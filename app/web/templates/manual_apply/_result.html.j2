@@ -1,0 +1,33 @@
+{# Confirmation fragment after create_manual_job. Rendered either when
+   a duplicate was detected or a new Job row was inserted. #}
+<article class="manual-apply-result"
+         data-testid="manual-apply-result"
+         data-existing="{{ 'true' if existing else 'false' }}">
+  {% if existing %}
+  <header>
+    <h3>Already in the queue</h3>
+  </header>
+  <p>
+    This URL matches <strong>job #{{ job.id }}</strong>
+    (<em>{{ job.title }}</em> at <strong>{{ job.company }}</strong>).
+    No duplicate was created.
+  </p>
+  <p>Status: <code>{{ job.status }}</code></p>
+  {% else %}
+  <header>
+    <h3>Queued for tailoring</h3>
+  </header>
+  <p>
+    Created <strong>job #{{ job.id }}</strong>
+    (<em>{{ job.title }}</em> at <strong>{{ job.company }}</strong>).
+    It will be picked up on the next tailoring run.
+  </p>
+  <p>Status: <code>{{ job.status }}</code></p>
+  {% endif %}
+
+  <p>
+    <a href="/jobs/{{ job.id }}/detail" role="button" class="secondary">View job detail</a>
+    <a href="/review" role="button" class="secondary">Go to review queue</a>
+    <a href="/manual-apply" role="button">Paste another URL</a>
+  </p>
+</article>

@@ -1,0 +1,47 @@
+{# Fallback manual-entry form rendered when URL fetch fails or the user
+   pastes a bot-walled URL. Submits to /manual-apply/fallback which
+   skips the fetch step entirely. #}
+<article class="manual-apply-fallback" data-testid="manual-apply-fallback">
+  <header>
+    <h3>Paste the job description manually</h3>
+    {% if error %}
+    <p class="error" data-testid="fallback-error">
+      Couldn't fetch the URL automatically (<code>{{ error }}</code>).
+      Fill in the details below and we'll still route the job through the
+      tailoring pipeline.
+    </p>
+    {% endif %}
+  </header>
+
+  <form hx-post="/manual-apply/fallback"
+        hx-target="#preview-slot"
+        hx-swap="innerHTML">
+    <label>
+      Title
+      <input type="text" name="title" value="{{ title }}" required>
+    </label>
+    <label>
+      Company
+      <input type="text" name="company" value="{{ company }}" required>
+    </label>
+    <label>
+      Source
+      <select name="source">
+        <option value="manual" {% if source == 'manual' %}selected{% endif %}>manual</option>
+        <option value="greenhouse" {% if source == 'greenhouse' %}selected{% endif %}>greenhouse</option>
+        <option value="lever" {% if source == 'lever' %}selected{% endif %}>lever</option>
+        <option value="ashby" {% if source == 'ashby' %}selected{% endif %}>ashby</option>
+      </select>
+    </label>
+    <label>
+      URL (optional)
+      <input type="url" name="url" value="{{ url }}">
+    </label>
+    <label>
+      Description
+      <textarea name="description" rows="10"
+                placeholder="Paste the full job description here.">{{ description }}</textarea>
+    </label>
+    <button type="submit">Tailor this job</button>
+  </form>
+</article>

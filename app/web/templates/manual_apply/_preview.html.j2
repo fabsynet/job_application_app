@@ -1,0 +1,40 @@
+{# Preview card rendered after a successful fetch_and_parse call. #}
+<article class="manual-apply-preview" data-testid="manual-apply-preview">
+  <header>
+    <hgroup>
+      <h3>{{ parsed.title }}</h3>
+      <p>
+        <strong>{{ parsed.company }}</strong>
+        &middot;
+        <span class="source-badge source-{{ parsed.source }}">{{ parsed.source }}</span>
+      </p>
+    </hgroup>
+  </header>
+
+  <p><small><a href="{{ parsed.url }}" target="_blank" rel="noopener">{{ parsed.url }}</a></small></p>
+
+  <blockquote>
+    {{ excerpt }}{% if parsed.description|length > 300 %}&hellip;{% endif %}
+  </blockquote>
+
+  <form hx-post="/manual-apply/confirm"
+        hx-target="#preview-slot"
+        hx-swap="innerHTML">
+    <input type="hidden" name="title" value="{{ parsed.title }}">
+    <input type="hidden" name="company" value="{{ parsed.company }}">
+    <input type="hidden" name="description" value="{{ parsed.description }}">
+    <input type="hidden" name="source" value="{{ parsed.source }}">
+    <input type="hidden" name="url" value="{{ parsed.url }}">
+    <input type="hidden" name="external_id" value="{{ parsed.external_id }}">
+
+    <fieldset role="group">
+      <button type="submit">Tailor this job</button>
+      <button type="button"
+              class="secondary"
+              hx-get="/manual-apply"
+              hx-target="#preview-slot"
+              hx-select="#preview-slot"
+              hx-swap="innerHTML">Cancel</button>
+    </fieldset>
+  </form>
+</article>
