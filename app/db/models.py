@@ -160,6 +160,9 @@ from app.discovery.models import DiscoveryRunStats, Job, Source  # noqa: F401, E
 # Phase 4 tailoring models — same pattern as Phase 3 discovery above.
 from app.tailoring.models import CostLedger, TailoringRecord  # noqa: F401, E402
 
+# Phase 5 submission models — imported so Alembic env.py picks them up
+from app.submission.models import FailureSuppression, Submission  # noqa: F401, E402
+
 __all__ = [
     "Settings",
     "Secret",
@@ -172,4 +175,6 @@ __all__ = [
     "DiscoveryRunStats",
     "TailoringRecord",
     "CostLedger",
+    "Submission",
+    "FailureSuppression",
 ]
