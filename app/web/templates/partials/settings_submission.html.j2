@@ -1,0 +1,30 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Submission</h3>
+<p>Pause the submission stage without affecting discovery or tailoring, and tune the auto-mode holdout margin.</p>
+
+<form hx-post="/settings/submissions-paused"
+      hx-target="#settings-content" hx-swap="innerHTML">
+  <fieldset>
+    <label>
+      <input type="checkbox" name="submissions_paused" value="true"
+             {% if settings.submissions_paused %}checked{% endif %}>
+      <strong>Pause submissions</strong>
+      &mdash; Stop sending applications. Discovery + tailoring keep running so the review queue fills up for later.
+    </label>
+  </fieldset>
+  <button type="submit" class="primary">Save pause toggle</button>
+</form>
+
+<form hx-post="/settings/auto-holdout-margin"
+      hx-target="#settings-content" hx-swap="innerHTML">
+  <label for="auto_holdout_margin_pct">
+    Auto-mode holdout margin:
+    <output id="ahm-value">{{ settings.auto_holdout_margin_pct }}%</output>
+  </label>
+  <input type="range" name="auto_holdout_margin_pct" id="auto_holdout_margin_pct"
+         min="0" max="50" step="1"
+         value="{{ settings.auto_holdout_margin_pct }}"
+         oninput="document.getElementById('ahm-value').textContent = this.value + '%'">
+  <small>Margin above your match threshold required for auto-submit. Tailored jobs below this fall to the review queue even in auto mode.</small>
+  <button type="submit" class="primary">Save holdout margin</button>
+</form>

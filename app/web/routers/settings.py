@@ -60,6 +60,8 @@ _SECTION_MAP: dict[str, tuple[str, str]] = {
     "tailoring": ("partials/settings_tailoring.html.j2", "Tailoring"),
     "limits": ("partials/settings_limits.html.j2", "Rate Limits"),
     "safety": ("partials/settings_safety.html.j2", "Safety"),
+    "notifications": ("partials/settings_notifications.html.j2", "Notifications"),
+    "submission": ("partials/settings_submission.html.j2", "Submission"),
 }
 
 
@@ -711,6 +713,86 @@ async def save_smtp_credentials(
             request, session,
             flash=("success", "Saved but validation encountered an error."),
         )
+
+
+# ── Phase 5 notifications + submission controls (Plan 05-08) ─────────
+
+
+@router.post("/notification-email", response_class=HTMLResponse)
+async def save_notification_email(
+    request: Request,
+    notification_email: str = Form(""),
+    session=Depends(get_session),
+):
+    """Persist ``Settings.notification_email``.
+
+    Empty string is coerced to ``None`` so the downstream resolver
+    falls back to the SMTP username — matches the 05-01 decision that
+    notification_email is nullable.
+    """
+    value = (notification_email or "").strip()
+    if value and "@" not in value:
+        return await _render_section(
+            request, session, "notifications",
+            flash=("error", "Notification email must contain '@'."),
+        )
+    await set_setting(session, "notification_email", value or None)
+    return await _render_section(
+        request, session, "notifications",
+        flash=("success", "Notification email saved."),
+    )
+
+
+@router.post("/base-url", response_class=HTMLResponse)
+async def save_base_url(
+    request: Request,
+    base_url: str = Form(...),
+    session=Depends(get_session),
+):
+    """Persist ``Settings.base_url`` (used to build review-page links in emails)."""
+    value = (base_url or "").strip()
+    if not value:
+        raise HTTPException(status_code=400, detail="base_url cannot be empty")
+    if not (value.startswith("http://") or value.startswith("https://")):
+        return await _render_section(
+            request, session, "notifications",
+            flash=("error", "Base URL must start with http:// or https://"),
+        )
+    await set_setting(session, "base_url", value)
+    return await _render_section(
+        request, session, "notifications",
+        flash=("success", "Base URL saved."),
+    )
+
+
+@router.post("/submissions-paused", response_class=HTMLResponse)
+async def save_submissions_paused(
+    request: Request,
+    session=Depends(get_session),
+):
+    """Flip ``Settings.submissions_paused``. Checkbox-only form."""
+    form = await request.form()
+    paused = form.get("submissions_paused", "false").lower() == "true"
+    await set_setting(session, "submissions_paused", paused)
+    return await _render_section(
+        request, session, "submission",
+        flash=("success", "Submission pause toggled."),
+    )
+
+
+@router.post("/auto-holdout-margin", response_class=HTMLResponse)
+async def save_auto_holdout_margin(
+    request: Request,
+    auto_holdout_margin_pct: int = Form(...),
+    session=Depends(get_session),
+):
+    """Persist ``Settings.auto_holdout_margin_pct`` — clamped to [0, 50]."""
+    value = max(0, min(50, int(auto_holdout_margin_pct)))
+    await set_setting(session, "auto_holdout_margin_pct", value)
+    return await _render_section(
+        request, session, "submission",
+        flash=("success", f"Auto-mode holdout margin set to {value}%."),
+    )
 
 
 # ── Secrets CRUD (preserved from Phase 1) ─────────────────────────────

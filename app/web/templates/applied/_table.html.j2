@@ -1,0 +1,42 @@
+<table>
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>Company</th>
+      <th>Source</th>
+      <th>Submitted</th>
+      <th>Score</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for job, submission, record in rows %}
+    <tr>
+      <td>{{ job.title }}</td>
+      <td>{{ job.company }}</td>
+      <td><small>{{ job.source }}</small></td>
+      <td>
+        {% if submission and submission.sent_at %}
+          {{ submission.sent_at.strftime('%Y-%m-%d %H:%M') }}
+        {% else %}
+          <small>&mdash;</small>
+        {% endif %}
+      </td>
+      <td>{{ job.score }}</td>
+      <td><mark>{{ job.status }}</mark></td>
+      <td>
+        <a href="/applied/{{ job.id }}" role="button" class="secondary outline">Detail</a>
+        {% if record and record.tailored_resume_path %}
+        <a href="/applied/{{ job.id }}/download" role="button" class="outline">Resume</a>
+        {% endif %}
+        {% if record and record.cover_letter_path %}
+        <a href="/applied/{{ job.id }}/cover-letter" role="button" class="outline">Cover letter</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7"><em>No applied jobs yet.</em></td></tr>
+    {% endfor %}
+  </tbody>
+</table>

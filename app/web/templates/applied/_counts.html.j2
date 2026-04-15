@@ -1,0 +1,18 @@
+<article>
+  <header><strong>Today</strong></header>
+  <p>
+    <mark>submitted: {{ counts_today.submitted }}</mark>
+    <mark>approved: {{ counts_today.approved }}</mark>
+    <mark>failed: {{ counts_today.failed }}</mark>
+    <mark>needs_info: {{ counts_today.needs_info }}</mark>
+    <mark>skipped: {{ counts_today.skipped }}</mark>
+  </p>
+  <header><strong>Last 7 days</strong></header>
+  <p>
+    <mark>submitted: {{ counts_week.submitted }}</mark>
+    <mark>approved: {{ counts_week.approved }}</mark>
+    <mark>failed: {{ counts_week.failed }}</mark>
+    <mark>needs_info: {{ counts_week.needs_info }}</mark>
+    <mark>skipped: {{ counts_week.skipped }}</mark>
+  </p>
+</article>

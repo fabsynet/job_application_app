@@ -1,0 +1,21 @@
+{% if banner.rate_limited %}
+<article style="background:#fff3cd;border:1px solid #f0b849;padding:0.75rem;">
+  <header>
+    <strong>Daily cap hit</strong>
+    &mdash; {{ banner.waiting }} job{{ '' if banner.waiting == 1 else 's' }} waiting for tomorrow.
+  </header>
+  <p>
+    You can raise today's cap to push through the remainder on a good day,
+    or open each job's detail view to complete the application manually.
+  </p>
+  <form hx-post="/applied/raise-cap"
+        hx-target="#banner-slot"
+        hx-swap="innerHTML">
+    <fieldset role="group">
+      <input type="number" name="raise_by" value="5" min="1" max="1000" required>
+      <button type="submit" class="primary">Raise cap</button>
+    </fieldset>
+    <small>Current daily cap: {{ settings.daily_cap }}.</small>
+  </form>
+</article>
+{% endif %}

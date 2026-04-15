@@ -1,0 +1,27 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Notifications</h3>
+<p>Where summary and failure emails land, and the base URL used in notification bodies.</p>
+
+<form hx-post="/settings/notification-email"
+      hx-target="#settings-content" hx-swap="innerHTML">
+  <label for="notification_email">
+    Notification email
+    <small>(where summary / failure alerts are sent; blank falls back to SMTP username)</small>
+  </label>
+  <input type="email" id="notification_email" name="notification_email"
+         value="{{ settings.notification_email or '' }}"
+         placeholder="you@example.com">
+  <button type="submit" class="primary">Save notification email</button>
+</form>
+
+<form hx-post="/settings/base-url"
+      hx-target="#settings-content" hx-swap="innerHTML">
+  <label for="base_url">
+    Base URL
+    <small>(used to build review-page links inside notification emails)</small>
+  </label>
+  <input type="url" id="base_url" name="base_url"
+         value="{{ settings.base_url or 'http://localhost:8000' }}"
+         required>
+  <button type="submit" class="primary">Save base URL</button>
+</form>

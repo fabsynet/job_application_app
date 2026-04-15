@@ -1,0 +1,71 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ job.title }} at {{ job.company }} &mdash; Applied{% endblock %}
+{% block content %}
+<article>
+  <header>
+    <h2>{{ job.title }} <small>at {{ job.company }}</small></h2>
+    <p>
+      <small>
+        Source: <code>{{ job.source }}</code> &middot;
+        Score: <strong>{{ job.score }}</strong> &middot;
+        Status: <mark>{{ job.status }}</mark>
+      </small>
+    </p>
+    <p>
+      {% if record and record.tailored_resume_path %}
+      <a href="/applied/{{ job.id }}/download" role="button">Download resume</a>
+      {% endif %}
+      {% if record and record.cover_letter_path %}
+      <a href="/applied/{{ job.id }}/cover-letter" role="button" class="secondary">Download cover letter</a>
+      {% endif %}
+      {% if job.url %}
+      <a href="{{ job.url }}" target="_blank" rel="noopener" role="button" class="outline">Original posting</a>
+      {% endif %}
+    </p>
+  </header>
+
+  {% if submission %}
+  <section>
+    <h3>Submission</h3>
+    <ul>
+      <li>Submitter: <code>{{ submission.submitter }}</code></li>
+      <li>Sent at: {{ submission.sent_at.strftime('%Y-%m-%d %H:%M UTC') if submission.sent_at else '(not yet sent)' }}</li>
+      <li>To: <code>{{ submission.smtp_to }}</code></li>
+      <li>Subject: {{ submission.subject }}</li>
+      <li>Attachment: <code>{{ submission.attachment_filename }}</code></li>
+    </ul>
+  </section>
+  {% else %}
+  <section>
+    <p><em>This job has been approved but not yet submitted. You can download the tailored resume and cover letter above to complete the application manually.</em></p>
+  </section>
+  {% endif %}
+
+  <div class="grid">
+    <section>
+      <h3>Job Description</h3>
+      <div>
+        {% if job.description_html %}
+          {{ job.description_html | safe }}
+        {% else %}
+          <pre>{{ job.description }}</pre>
+        {% endif %}
+      </div>
+    </section>
+
+    <section>
+      <h3>Tailored Resume (Preview)</h3>
+      <div>{{ tailored_preview_html | safe }}</div>
+    </section>
+  </div>
+
+  <section>
+    <h3>Cover Letter</h3>
+    <pre>{{ cover_letter_text }}</pre>
+  </section>
+
+  <footer>
+    <a href="/applied">&larr; Back to applied jobs</a>
+  </footer>
+</article>
+{% endblock %}
