@@ -70,6 +70,12 @@ class Settings(SQLModel, table=True):
     # --- Phase 4 fields ---
     tailoring_intensity: str = Field(default="balanced")  # light | balanced | full
 
+    # --- Phase 5 fields ---
+    notification_email: Optional[str] = Field(default=None)  # fallback: smtp_user
+    base_url: str = Field(default="http://localhost:8000")
+    submissions_paused: bool = Field(default=False)
+    auto_holdout_margin_pct: int = Field(default=10)
+
 
 class Secret(SQLModel, table=True):
     """Encrypted secret store.
