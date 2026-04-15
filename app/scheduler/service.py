@@ -272,10 +272,31 @@ class SchedulerService:
 
         await self._killswitch.raise_if_engaged()
 
+        # Submission stage (Phase 5).  Lazy-imported per the module-top
+        # note — the submission pipeline transitively imports
+        # ``app.settings.service`` / ``app.submission.creds`` which both
+        # use lazy ``get_settings`` calls internally, but the outer
+        # ``run_submission`` import still needs to stay out of the
+        # scheduler's static graph to match the tailoring pattern.
+        from app.submission.pipeline import run_submission
+
+        submission_counts = await run_submission(
+            ctx,
+            self._session_factory,
+            rate_limiter=self._rate_limiter,
+            killswitch_check=self._killswitch.raise_if_engaged,
+        )
+
+        await self._killswitch.raise_if_engaged()
+
         # Store merged stage counts on the Run row.  The wrapper's
         # else-branch will call finalize_run(status="succeeded") which
         # merges counts onto the Run.counts JSON.
-        self._last_counts = {**discovery_counts, **tailoring_counts}
+        self._last_counts = {
+            **discovery_counts,
+            **tailoring_counts,
+            **submission_counts,
+        }
 
 
 __all__ = ["SchedulerService"]

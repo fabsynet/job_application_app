@@ -47,6 +47,22 @@ def build_attachment_filename(*, full_name: str, company: str) -> str:
     return f"{_slug_ascii(full_name)}_{_slug_ascii(company)}_Resume.docx"
 
 
+def extract_docx_plaintext(path: Path | str) -> str:
+    """Read any DOCX and return its paragraphs joined by single newlines.
+
+    Distinct from :func:`extract_cover_letter_plaintext` (which uses a
+    blank-line join suitable for plain-text email bodies). This helper
+    is used by the Plan 05-04 pipeline to recover the tailored resume
+    as plain text for the low-confidence holdout keyword-coverage
+    check without loading the DOCX twice. Empty / whitespace-only
+    paragraphs are dropped.
+    """
+    from docx import Document
+
+    doc = Document(str(path))
+    return "\n".join(p.text for p in doc.paragraphs if p.text and p.text.strip())
+
+
 def extract_cover_letter_plaintext(cover_letter_path: Path | str) -> str:
     """Read the cover letter DOCX and return paragraph text joined by blank lines.
 
@@ -117,6 +133,7 @@ def build_email_message(
 __all__ = [
     "build_subject",
     "build_attachment_filename",
+    "extract_docx_plaintext",
     "extract_cover_letter_plaintext",
     "resolve_recipient_email",
     "build_email_message",
