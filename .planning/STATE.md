@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 5 (Email Submission / Review Queue) — Wave 1 in progress
+**Current focus:** Phase 5 (Email Submission / Review Queue) — Wave 1 complete (05-01 schema + 05-02 email primitives)
 
 ## Current Position
 
 Phase: 5 of 6 (Email Submission, Review Queue, Manual Apply & Notifications)
-Plan: 05-01 of 7 in current phase (Wave 1 schema foundation complete)
+Plan: 05-02 of 7 in current phase (Wave 1 complete: schema foundation + email primitives landed in parallel)
 Status: In progress
-Last activity: 2026-04-15 — Completed 05-01-PLAN.md (submissions + failure_suppressions tables, partial UNIQUE index, 4 new Settings columns, canonical job state machine; 216/216 green)
+Last activity: 2026-04-15 — Completed 05-02-PLAN.md (aiosmtplib + app.submission.builder/sender/creds, 29 new tests, 245/245 suite green)
 
-Progress: [███████████░] ~80% (24 of 30 plans complete: Phases 1-4 + 05-01) — Phase 5 opened
+Progress: [███████████░] ~83% (25 of 30 plans complete: Phases 1-4 + 05-01 + 05-02) — Phase 5 Wave 1 done
 
 ## Performance Metrics
 
@@ -33,8 +33,8 @@ Progress: [███████████░] ~80% (24 of 30 plans complete: 
 | 04    | 7     | ~78 min  | ~11 min  |
 
 **Recent Trend:**
-- Last 5 plans: 04-03 (~5 min) | 04-04 (~7 min) | 04-05 (~32 min, 3 deviations) | 04-06 (~8 min, 2 minor deviations, 175 tests green) | 04-07 (~12 min, 0 deviations, 216 tests green)
-- Trend: 04-07 (Wave 5 phase-closing tests) landed cleanly with no deviations. 41 new tests (1,167 lines) covering TAIL-01..09 + SAFE-04 using FakeLLMProvider. 216/216 green. Phase 4 is now feature-complete and fully tested — ready for Phase 5.
+- Last 5 plans: 04-05 (~32 min, 3 deviations) | 04-06 (~8 min, 2 minor deviations) | 04-07 (~12 min, 0 deviations) | 05-01 (schema, parallel) | 05-02 (~22 min, 2 deviations auto-fixed)
+- Trend: 05-02 landed clean after two expected deviations — the app/tests vs tests/ directory convention and the now-well-known importlib.reload(app.config) staleness pattern. Full suite 245/245. Phase 5 Wave 1 (schema + email primitives) is complete and ready for Wave 2.
 
 *Updated after each plan completion*
 
@@ -45,6 +45,15 @@ Progress: [███████████░] ~80% (24 of 30 plans complete: 
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 05-02: Phase 5 submission tests live under tests/submission/ (the pyproject testpaths root), NOT app/tests/submission/ as the plan drafted — the shared async_session / env_with_fernet fixtures only exist in tests/conftest.py
+- 05-02: app.submission.creds.load_smtp_creds imports get_settings lazily inside the function body to avoid the 04-05 importlib.reload(app.config) staleness pitfall (live_app fixtures in test_phase2_resume.py reload app.config mid-run) — this is now the second consumer of the lazy-get_settings pattern and should be considered canonical for any Phase 5+ module that depends on fernet_key
+- 05-02: _slug_ascii falls back to "Unknown" on empty / whitespace-only / pure-non-ASCII inputs so build_attachment_filename always yields a safe [A-Za-z0-9_] MIME header stem (research pitfall 1)
+- 05-02: SubmissionSendError wraps every aiosmtplib exception with a stable string error_class — specific branches for SMTPAuthenticationError / SMTPRecipientsRefused / SMTPServerDisconnected / SMTPTimeoutError, plus a catch-all SMTPException branch using type(exc).__name__ so future aiosmtplib subclasses still get a stable identifier for Plan 05-05's suppression table
+- 05-02: SmtpConfig plain-connection fallback (neither start_tls nor use_tls) is permitted for any port outside {587, 465} — dev/test only, Plan 05-04 should reject unsupported ports at the config-save layer instead of at send time
+- 05-02: Builder helpers (build_subject, build_attachment_filename, build_email_message) are keyword-only so the 05-04 pipeline cannot silently swap from_addr/to_addr or role/company at the call site
+- 05-02: aiosmtplib.send is monkeypatched in sender tests; no real SMTP server in the suite per plan success criterion "no network calls in the test suite"
+- 05-02: Phase 4's stdlib `EmailMessage.add_attachment` path confirmed working — no MIMEMultipart / MIMEBase anywhere in app/submission (research §"Don't Hand-Roll")
+- 05-02: smtp_port string→int coercion happens exactly once, inside load_smtp_creds (research pitfall 7) — SmtpConfig.port is typed int and callers should never pass a raw Secret value
 - 05-01: Partial UNIQUE index MUST use `op.create_index(..., sqlite_where=sa.text(...))` — `UniqueConstraint(..., sqlite_where=...)` silently drops the WHERE clause on SQLite (research Pitfall 9). Applied to `ux_submissions_job_sent` (SC-7 idempotency).
 - 05-01: CANONICAL_JOB_STATUSES is a 13-element frozenset in `app.review.states`; enforcement is service-layer only (Job.status stays a plain str column, mirroring CANONICAL_FAILURE_REASONS precedent). `assert_valid_transition(current, target)` is the uniform gate before any Phase 5 Job.status write.
 - 05-01: Legacy `applied` status kept in CANONICAL_JOB_STATUSES as a terminal (no outgoing transitions) — zero-churn Phase 3 back-compat, avoids retroactive row rewriting.
@@ -214,9 +223,17 @@ None.
 - 04-05: **`app.resume.service` module-level `from app.config import get_settings` binding is a latent fragility.** It captures the get_settings function object at first import, so any module-level reload of `app.config` (as the integration-test `live_app` fixture does) leaves `app.resume.service` holding a stale reference with a stale LRU cache. Any future code path that calls `get_resume_path()` or `save_resume()` from a pipeline stage must route through a lazy `get_settings()` import (the way `run_tailoring` now does) OR refactor `_resume_dir()` to call `app.config.get_settings()` lazily. Cleanup plan: refactor `app.resume.service._resume_dir()` to `return Path(__import__("app.config", fromlist=["get_settings"]).get_settings().data_dir) / "resumes"` or similar — a single-line change that eliminates the binding hazard.
 - 04-05: APScheduler teardown race — late pipeline firings during pytest monkeypatch teardown can still propagate exceptions up the stack. `run_tailoring` is defensive, but `run_discovery` and `run_pipeline` itself are not. Non-blocking for now; flag if more pipeline stages land in Phase 5.
 - 04-05: BudgetGuard instance lifecycle — `run_tailoring` currently constructs a fresh `BudgetGuard()` per stage invocation. Safe today (asyncio.Lock is per-instance; each `_execute_pipeline` owns exactly one), but if a future stage needs cross-call concurrency (parallel tailoring inside one run) the BudgetGuard should be promoted to a `SchedulerService` attribute initialised at lifespan. Flag for 04-07.
+- 05-02: `SmtpConfig` plain-connection fallback accepts any port outside {587, 465} without TLS. Safe for unit tests but unsafe for production if a user somehow configures an unusual port. Plan 05-04 (or the Settings UI path that writes smtp_port) must reject anything outside a small allowlist (25/465/587/2525) at save time so this layer can trust its input.
+- 05-02: `send_via_smtp` has no retry/backoff — transient errors (SMTPServerDisconnected, SMTPTimeoutError) bubble straight up. Plan 05-04 or 05-05 must decide whether to add an in-run retry or just mark-and-move-on. Transient failures should probably NOT debit the daily submission cap, which is an open question for 05-04's accounting.
+- 05-02: `from_addr` for email submissions is not resolved inside the 05-02 primitives — the Plan 05-04 pipeline will need to pick between `profile.email` (user's identity) and `smtp_user` (the SMTP auth username) before calling `build_email_message`. Often identical but not guaranteed (e.g. alias forwarding setups).
 
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Completed 05-01-PLAN.md (Wave 1 schema foundation). Alembic 0005_phase5_submission ships submissions + failure_suppressions tables plus four new Settings columns (notification_email, base_url, submissions_paused, auto_holdout_margin_pct). Partial UNIQUE index `ux_submissions_job_sent` (WHERE status='sent') verified real via sqlite_master inspection AND proven by IntegrityError on duplicate-sent insert. `app.review.states` ships a 13-element CANONICAL_JOB_STATUSES frozenset plus assert_valid_transition() service-layer validator; illegal transitions like submitted->matched raise ValueError. New `app.submission` and `app.review` packages register with Alembic metadata via import side-effect at the bottom of `app/db/models.py`. Python Settings SQLModel class mirrors the four new migration columns. Downgrade/upgrade roundtrip clean. 216/216 suite green (no regressions). Two atomic commits: 47c88c2 (Task 1: models + state frozenset) and 47f3ab3 (Task 2: migration + Settings field additions). Zero deviations. Note: a parallel wave-1 plan 05-02 landed commit 6c38d70 between my two commits (email builder primitives + aiosmtplib dep) — non-overlapping, both waves integrate cleanly. Phase 5 Wave 1 schema is now stable; Wave 2 plans (submitter, pipeline, review UI, notifications) can run in parallel against the tables.
+Stopped at: Completed 05-02-PLAN.md in parallel with 05-01. Phase 5 Wave 1 (schema + email primitives) is now complete. 05-02 landed aiosmtplib==5.1.0 and three new modules: app/submission/builder.py (5 pure helpers — build_subject, build_attachment_filename, extract_cover_letter_plaintext, resolve_recipient_email, build_email_message), app/submission/creds.py (load_smtp_creds + SmtpCreds + SmtpCredsMissing, lazy get_settings inside function), and app/submission/sender.py (send_via_smtp + SmtpConfig + SubmissionSendError with stable error_class for future failure-suppression hashing). 29 new unit tests — 17 builder + 12 sender/creds; network-free via monkeypatched aiosmtplib.send and the in-memory async_session fixture. Full suite 245/245 green. Task commits: 6c38d70 (Task 1: aiosmtplib + builder) and 12064fa (Task 2: creds + sender). Two deviations, both auto-fixed: (1) Rule 3 — tests relocated from app/tests/submission/ to tests/submission/ to match pyproject `testpaths = ["tests"]`; (2) Rule 1 — `load_smtp_creds` originally module-imported `get_settings`, failed under test_phase2_resume.py live_app fixture (importlib.reload(app.config) left a stale function reference). Fixed with the canonical 04-05 lazy-import-inside-function pattern. Phase 5 Wave 2 (05-03 submission registry, 05-04 pipeline, 05-05 notifications, 05-06 review UI, 05-07 manual apply) can now run against these primitives + the 05-01 schema.
+
+---
+
+Previous session: 2026-04-15 (earlier)
+Previously stopped at: Completed 05-01-PLAN.md (Wave 1 schema foundation). Alembic 0005_phase5_submission ships submissions + failure_suppressions tables plus four new Settings columns (notification_email, base_url, submissions_paused, auto_holdout_margin_pct). Partial UNIQUE index `ux_submissions_job_sent` (WHERE status='sent') verified real via sqlite_master inspection AND proven by IntegrityError on duplicate-sent insert. `app.review.states` ships a 13-element CANONICAL_JOB_STATUSES frozenset plus assert_valid_transition() service-layer validator; illegal transitions like submitted->matched raise ValueError. New `app.submission` and `app.review` packages register with Alembic metadata via import side-effect at the bottom of `app/db/models.py`. Python Settings SQLModel class mirrors the four new migration columns. Downgrade/upgrade roundtrip clean. 216/216 suite green (no regressions). Two atomic commits: 47c88c2 (Task 1: models + state frozenset) and 47f3ab3 (Task 2: migration + Settings field additions). Zero deviations. Note: a parallel wave-1 plan 05-02 landed commit 6c38d70 between my two commits (email builder primitives + aiosmtplib dep) — non-overlapping, both waves integrate cleanly. Phase 5 Wave 1 schema is now stable; Wave 2 plans (submitter, pipeline, review UI, notifications) can run in parallel against the tables.
 Resume file: None
