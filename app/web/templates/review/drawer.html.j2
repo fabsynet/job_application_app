@@ -1,0 +1,47 @@
+<article class="review-drawer" id="review-drawer-inner">
+  <header>
+    <h3>{{ job.company }} &mdash; {{ job.title }}</h3>
+    <p>
+      Match score: {{ job.score }} &middot;
+      Status: <strong>{{ job.status }}</strong> &middot;
+      Version: v{{ record.version }}
+      {% if record.intensity %} &middot; Intensity: {{ record.intensity }}{% endif %}
+    </p>
+  </header>
+
+  <section class="review-drawer-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <div class="review-drawer-diff">
+      <h4>Base &harr; Tailored diff</h4>
+      {{ diff_html | safe }}
+    </div>
+
+    <div class="review-drawer-edit">
+      <h4>Edit tailored sections</h4>
+      {% include "review/_edit_form.html.j2" %}
+
+      <details>
+        <summary>Cover letter</summary>
+        <pre style="white-space:pre-wrap;">{{ cover_letter_text }}</pre>
+      </details>
+
+      <hr>
+
+      <fieldset role="group">
+        <button type="button"
+                hx-post="/review/{{ job.id }}/approve"
+                hx-target="#review-table"
+                hx-swap="innerHTML">Approve</button>
+        <button type="button"
+                hx-post="/review/{{ job.id }}/reject"
+                hx-vals='{"mode":"skip"}'
+                hx-target="#review-table"
+                hx-swap="innerHTML">Skip permanently</button>
+        <button type="button"
+                hx-post="/review/{{ job.id }}/reject"
+                hx-vals='{"mode":"retailor"}'
+                hx-target="#review-table"
+                hx-swap="innerHTML">Re-tailor with a different angle</button>
+      </fieldset>
+    </div>
+  </section>
+</article>

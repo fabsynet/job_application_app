@@ -1,0 +1,50 @@
+{% extends "base.html.j2" %}
+{% block title %}Review Queue &mdash; Job Apply{% endblock %}
+{% block content %}
+<h2>Review Queue</h2>
+<p>{{ total }} job{{ '' if total == 1 else 's' }} awaiting review</p>
+
+<form method="get" action="/review" hx-get="/review" hx-target="#review-table" hx-trigger="change">
+  <fieldset role="group">
+    <label>
+      Status filter:
+      <select name="status" multiple size="4">
+        {% for s in default_statuses %}
+        <option value="{{ s }}" {% if s in current_status %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+        <option value="skipped" {% if 'skipped' in current_status %}selected{% endif %}>skipped</option>
+        <option value="submitted" {% if 'submitted' in current_status %}selected{% endif %}>submitted</option>
+      </select>
+    </label>
+    <label>
+      Sort by:
+      <select name="sort_by">
+        <option value="tailored_at" {% if current_sort == 'tailored_at' %}selected{% endif %}>Tailored at</option>
+        <option value="company" {% if current_sort == 'company' %}selected{% endif %}>Company</option>
+        <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Role</option>
+        <option value="score" {% if current_sort == 'score' %}selected{% endif %}>Match score</option>
+        <option value="status" {% if current_sort == 'status' %}selected{% endif %}>Status</option>
+      </select>
+    </label>
+    <label>
+      Direction:
+      <select name="sort_dir">
+        <option value="desc" {% if current_dir == 'desc' %}selected{% endif %}>Desc</option>
+        <option value="asc" {% if current_dir == 'asc' %}selected{% endif %}>Asc</option>
+      </select>
+    </label>
+  </fieldset>
+</form>
+
+<div id="review-table">
+  {% include "review/_table.html.j2" %}
+</div>
+
+<aside id="review-drawer">
+  {% if drawer %}
+    {% include "review/drawer.html.j2" %}
+  {% endif %}
+</aside>
+
+<div id="modal"></div>
+{% endblock %}

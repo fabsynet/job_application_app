@@ -53,6 +53,7 @@ from app.web.routers import toggles as toggles_router
 from app.web.routers import sources as sources_router
 from app.web.routers import jobs as jobs_router
 from app.web.routers import notifications as notifications_router
+from app.web.routers import review as review_router
 from app.web.routers import tailoring as tailoring_router
 from app.web.routers import wizard as wizard_router
 
@@ -179,6 +180,7 @@ def create_app() -> FastAPI:
     app.include_router(jobs_router.router)
     app.include_router(tailoring_router.router)
     app.include_router(notifications_router.router)
+    app.include_router(review_router.router)
     return app
 
 

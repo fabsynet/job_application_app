@@ -1,0 +1,58 @@
+<table role="grid" id="review-table-inner">
+  <thead>
+    <tr>
+      <th><input type="checkbox" id="review-select-all"
+                 onclick="document.querySelectorAll('input[name=job_ids]').forEach(c => c.checked = this.checked)"></th>
+      <th>Company</th>
+      <th>Role</th>
+      <th>Match</th>
+      <th>Tailored at</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for job, record in rows %}
+    <tr id="review-row-{{ job.id }}">
+      <td>
+        <input type="checkbox" name="job_ids" value="{{ job.id }}" form="batch-form">
+      </td>
+      <td>
+        <a href="#"
+           hx-get="/review/{{ job.id }}"
+           hx-target="#review-drawer"
+           hx-swap="innerHTML">{{ job.company }}</a>
+      </td>
+      <td>{{ job.title }}</td>
+      <td>{{ job.score }}</td>
+      <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') if record.created_at else '' }}</td>
+      <td>{{ job.status }}</td>
+      <td>
+        <button type="button"
+                hx-post="/review/{{ job.id }}/approve"
+                hx-target="#review-table"
+                hx-swap="innerHTML">Approve</button>
+        <button type="button"
+                hx-post="/review/{{ job.id }}/reject"
+                hx-vals='{"mode":"skip"}'
+                hx-target="#review-table"
+                hx-swap="innerHTML">Skip</button>
+        <button type="button"
+                hx-post="/review/{{ job.id }}/retailor"
+                hx-target="#review-table"
+                hx-swap="innerHTML">Re-tailor</button>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7"><em>No jobs awaiting review.</em></td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<form id="batch-form" style="margin-top:1rem;">
+  <button type="button"
+          hx-get="/review/confirm-approve"
+          hx-include="[name='job_ids']:checked"
+          hx-target="#modal"
+          hx-swap="innerHTML">Approve selected</button>
+</form>

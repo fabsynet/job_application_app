@@ -1,0 +1,18 @@
+<form id="review-edit-form"
+      hx-post="/review/{{ job.id }}/save-edits"
+      hx-target="#review-edit-form"
+      hx-swap="outerHTML">
+  {% if saved_toast %}
+    <div class="toast toast-success" role="status">{{ saved_toast }}</div>
+  {% endif %}
+  {% for section in edit_sections %}
+    <label>
+      <strong>{{ section.heading or '(preamble)' }}</strong>
+      <input type="hidden" name="heading_{{ loop.index0 }}" value="{{ section.heading }}">
+      <textarea name="section_{{ loop.index0 }}"
+                rows="{{ (section.content|length) + 3 }}"
+                style="width:100%;font-family:inherit;">{{ section.content | join('\n') }}</textarea>
+    </label>
+  {% endfor %}
+  <button type="submit">Save edits</button>
+</form>
