@@ -103,7 +103,16 @@ Plans:
   5. User sees a dashboard showing counts by state (applied/queued/skipped/failed) for today and the last 7 days, and can download the tailored resume artifact for any past application
   6. User sees an applied-jobs table listing every submitted application (role, company, source, timestamp, match score, status), can filter by source/status and sort by date/score/company, and can click any row to open a detail view with the full job description, tailored DOCX (preview + download), and cover letter body used
   7. Re-running against the same application record never double-submits — submitter idempotency is verifiable by forcing a mid-run crash and confirming no duplicate email on retry
-**Plans**: TBD
+**Plans**: 8 plans
+Plans:
+- [ ] 05-01-PLAN.md — DB migration 0005 + Submission/FailureSuppression models + CANONICAL_JOB_STATUSES state machine
+- [ ] 05-02-PLAN.md — Email sender primitives: aiosmtplib wrapper, EmailMessage builder, cover-letter extract, SMTP creds loader
+- [ ] 05-03-PLAN.md — Submitter registry + strategy protocol + EmailStrategy (SUBM-06, Playwright-ready)
+- [ ] 05-04-PLAN.md — run_submission pipeline stage: holdout + quiet hours + pause + daily cap + idempotency + scheduler wiring
+- [ ] 05-05-PLAN.md — Review queue UI: table + diff drawer + inline DOCX edit + approve/reject/re-tailor + batch approve
+- [ ] 05-06-PLAN.md — Manual paste-a-link flow: /manual-apply with fetch/preview/confirm + dedup + fallback textarea
+- [ ] 05-07-PLAN.md — Notifications: suppression signatures + success/failure email senders + Jinja templates + ack route
+- [ ] 05-08-PLAN.md — Applied-jobs dashboard: counts + filterable/sortable table + detail view + daily-cap banner + new settings UI
 
 ### Phase 6: Playwright Browser Submission & Learning Loop
 **Goal**: Browser-based submission goes live for Greenhouse/Lever/Ashby and generic ATS forms in a persistent Playwright context — and the learning loop turns every unknown form field into a permanent, reusable profile answer that makes the app get better the longer the user runs it.
@@ -128,7 +137,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Configuration, Profile & Resume Upload | 5/5 | ✓ Complete | 2026-04-12 |
 | 3. Safe-Channel Discovery, Dedup & Matching | 6/6 | ✓ Complete | 2026-04-12 |
 | 4. LLM Tailoring & DOCX Generation | 7/7 | ✓ Complete | 2026-04-12 |
-| 5. Email Submission, Review Queue, Manual Apply & Notifications | 0/TBD | Not started | - |
+| 5. Email Submission, Review Queue, Manual Apply & Notifications | 0/8 | Planned | - |
 | 6. Playwright Browser Submission & Learning Loop | 0/TBD | Not started | - |
 
 ## Coverage
