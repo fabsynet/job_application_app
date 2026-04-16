@@ -109,12 +109,13 @@ def test_select_strategy_returns_none_when_nothing_applies():
     assert chosen is None
 
 
-def test_default_registry_contains_email_strategy():
+def test_default_registry_contains_playwright_and_email():
     reg = default_registry()
-    assert len(reg) == 1
-    assert reg[0].name == "email"
+    assert len(reg) == 2
+    assert reg[0].name == "playwright"
+    assert reg[1].name == "email"
     # SubmitterStrategy is runtime_checkable — registry contents must satisfy it.
-    assert isinstance(reg[0], SubmitterStrategy)
+    assert all(isinstance(s, SubmitterStrategy) for s in reg)
 
 
 # --- submit (async) -------------------------------------------------------

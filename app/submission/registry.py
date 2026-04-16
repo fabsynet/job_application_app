@@ -88,13 +88,18 @@ class SubmitterStrategy(Protocol):
 
 
 def default_registry() -> list[SubmitterStrategy]:
-    """Return the Phase 5 default registry: ``[EmailStrategy()]``."""
-    # Lazy import to avoid a circular: the email strategy imports
-    # SubmissionContext / SubmissionOutcome / SubmitterStrategy from this
-    # module.
+    """Return the default strategy registry.
+
+    PlaywrightStrategy is first (handles known ATS forms), EmailStrategy
+    is the fallback.  ``select_strategy`` iterates first-applicable so
+    Playwright gets first crack at every job with a Greenhouse/Lever/Ashby
+    source or URL.
+    """
+    # Lazy imports to avoid circulars.
+    from app.playwright_submit.strategy import PlaywrightStrategy
     from app.submission.strategies.email import EmailStrategy
 
-    return [EmailStrategy()]
+    return [PlaywrightStrategy(), EmailStrategy()]
 
 
 def select_strategy(

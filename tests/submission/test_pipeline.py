@@ -168,7 +168,7 @@ async def _seed_job(
         title=title,
         company=company,
         url=f"https://example.com/{fingerprint}",
-        source="greenhouse",
+        source="custom",
         description=description,
         status=status,
         score=80,
