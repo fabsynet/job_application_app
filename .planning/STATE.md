@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 ## Current Position
 
 Phase: 6 of 6 (Playwright Browser Submission / Learning Loop)
-Plan: 06-07 of 8 in current phase — Saved Answers + Playwright Settings UI
+Plan: 06-06 of 8 in current phase — Needs-info queue router + templates
 Status: In progress
-Last activity: 2026-04-16 — Completed 06-07-PLAN.md (saved answers CRUD + playwright settings toggles, 9 tests)
+Last activity: 2026-04-16 — Completed 06-06-PLAN.md (needs-info queue UI with list/detail/answer/retry endpoints, nav link, reused answers email, 7 tests)
 
-Progress: [██████████████████████████████████████░░] 95% (37 of 39 plans complete: Phases 1-5 complete + 06-01 through 06-07)
+Progress: [██████████████████████████████████████░░] 97% (38 of 39 plans complete: Phases 1-5 complete + 06-01 through 06-07)
 
 ## Performance Metrics
 
@@ -48,6 +48,8 @@ Recent decisions affecting current work:
 - 06-04: No confidence threshold for LLM semantic matching — if the LLM says two labels are equivalent, the match is accepted and auto-filled. Per locked design decision (must_haves.truths).
 - 06-04: Graceful degradation on LLM failure — find_matching_answers returns all-None instead of raising. Pipeline proceeds without auto-fill for that batch.
 - 06-04: Label normalization (lowercase, strip, collapse whitespace) for SavedAnswer dedup — upsert by field_label_normalized prevents duplicate answers for "First Name" vs "first  name".
+- 06-06: Retry endpoint flips job to approved for pipeline pickup rather than inline Playwright — browser lifecycle management belongs in the scheduler pipeline, not the web request layer.
+- 06-06: Router mounted in Task 1 (not Task 2) because live_app tests reload app.main and require the router registered to return 200.
 - 05-06: `detect_source` returns `(slug, source_type)` — slug FIRST. Plan 05-06's code snippet had the tuple order flipped; any future caller must unpack as `slug, source_type = detect_source(url)`. Stamped a Task 1 test (`test_fetch_greenhouse_url_stamps_source_greenhouse`) that will break loudly if the signature ever changes.
 - 05-06: FetchError reasons are a small stable vocabulary — not_found / auth_wall / timeout / empty_body / connect_failed / request_error / http_NNN / unexpected_error / empty_url / title_and_company_required. The UI renders the reason verbatim inside a `<code>` block in _fallback.html.j2. No localization layer in v1.
 - 05-06: `<200`-char empty-body heuristic on 2xx responses catches LinkedIn/Indeed SPA shells that return 200 with a login prompt. The cap is well below any real job posting HTML (~5k+ chars minimum empirically).
@@ -296,8 +298,13 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-15
-Stopped at: Completed 06-03-PLAN.md (form filler + ATS-specific fillers). Two atomic commits: f0f4cf4 (Task 1: base form filler with label heuristic engine, 60 tests) and ad7019d (Task 2: ATS-specific fillers for Greenhouse/Lever/Ashby/Generic, 31 tests). Two deviations: Rule 2 — added BaseFiller ABC for interface contract; Rule 1 — fixed work_authorization regex to match "Authorization" suffix. 91 new tests, 127 total playwright_submit tests green.
+Last session: 2026-04-16
+Stopped at: Completed 06-06-PLAN.md (needs-info queue UI). Two atomic commits: fd47137 (Task 1: needs-info router with 4 endpoints + 3 templates + 7 tests + main.py mount) and 83d7892 (Task 2: nav link + reused_answers email parameter + success template update). One deviation: Rule 3 — router mounted in Task 1 instead of Task 2 to unblock tests. Full suite 564 passed (1 pre-existing deselected). ~8 min.
+
+---
+
+Previous session: 2026-04-15
+Previously stopped at: Completed 06-03-PLAN.md (form filler + ATS-specific fillers). Two atomic commits: f0f4cf4 (Task 1: base form filler with label heuristic engine, 60 tests) and ad7019d (Task 2: ATS-specific fillers for Greenhouse/Lever/Ashby/Generic, 31 tests). Two deviations: Rule 2 — added BaseFiller ABC for interface contract; Rule 1 — fixed work_authorization regex to match "Authorization" suffix. 91 new tests, 127 total playwright_submit tests green.
 
 ---
 
