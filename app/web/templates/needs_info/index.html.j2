@@ -1,0 +1,37 @@
+{% extends "base.html.j2" %}
+
+{% block title %}Needs Info — Job Apply{% endblock %}
+
+{% block content %}
+<h2>Needs Info Queue</h2>
+<p>Applications halted because of unknown form fields. Answer the fields to retry.</p>
+
+{% if jobs %}
+<table role="grid">
+  <thead>
+    <tr>
+      <th>Job</th>
+      <th>Company</th>
+      <th>Source</th>
+      <th>Unknown Fields</th>
+      <th>Unresolved</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for job in jobs %}
+    <tr>
+      <td><a href="/needs-info/{{ job.job_id }}">{{ job.title }}</a></td>
+      <td>{{ job.company }}</td>
+      <td>{{ job.url }}</td>
+      <td>{{ job.field_count }}</td>
+      <td>{{ job.unresolved_count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p><em>No halted applications.</em></p>
+{% endif %}
+
+<p><a href="/">Back to Dashboard</a></p>
+{% endblock %}

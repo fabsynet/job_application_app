@@ -1,0 +1,28 @@
+{# Partial: renders the input control for a single unknown field.
+   Expects `field` dict with id, field_type, field_label, field_options. #}
+
+{% if field.field_type == "select" and field.field_options %}
+<select name="field_{{ field.id }}">
+  <option value="">-- Select --</option>
+  {% for opt in field.field_options.split(",") %}
+  <option value="{{ opt.strip() }}">{{ opt.strip() }}</option>
+  {% endfor %}
+</select>
+
+{% elif field.field_type == "checkbox" %}
+<label>
+  <input type="checkbox" name="field_{{ field.id }}" value="yes">
+  {{ field.field_label }}
+</label>
+
+{% elif field.field_type == "radio" and field.field_options %}
+{% for opt in field.field_options.split(",") %}
+<label>
+  <input type="radio" name="field_{{ field.id }}" value="{{ opt.strip() }}">
+  {{ opt.strip() }}
+</label>
+{% endfor %}
+
+{% else %}
+<input type="text" name="field_{{ field.id }}" placeholder="Enter answer for {{ field.field_label }}">
+{% endif %}

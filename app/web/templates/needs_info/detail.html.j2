@@ -1,0 +1,66 @@
+{% extends "base.html.j2" %}
+
+{% block title %}Needs Info — {{ title }} — Job Apply{% endblock %}
+
+{% block content %}
+<h2>Needs Info: {{ title }}</h2>
+
+<div class="grid">
+  {# Left column: job context #}
+  <div>
+    <article>
+      <header><strong>Job Context</strong></header>
+      <dl>
+        <dt>Title</dt>
+        <dd>{{ title }}</dd>
+        <dt>Company</dt>
+        <dd>{{ company }}</dd>
+        <dt>Source</dt>
+        <dd>{{ url }}</dd>
+        <dt>Status</dt>
+        <dd>{{ status }}</dd>
+      </dl>
+      <p>Resolved: {{ resolved_count }} / {{ resolved_count + unresolved_count }}</p>
+    </article>
+  </div>
+
+  {# Right column: unknown fields with answer form #}
+  <div>
+    <article>
+      <header><strong>Unknown Fields ({{ unresolved_count }} unresolved)</strong></header>
+
+      {% if unresolved_fields %}
+      <form method="post" action="/needs-info/{{ job_id }}/answer">
+        {% for field in unresolved_fields %}
+        <fieldset>
+          <legend>
+            {{ field.field_label }}
+            {% if field.is_required %}<mark>Required</mark>{% endif %}
+            <small>({{ field.field_type }}, page {{ field.page_number }})</small>
+          </legend>
+
+          {% if field.screenshot_path %}
+          <img src="{{ field.screenshot_path }}" alt="Screenshot of {{ field.field_label }}" style="max-width:100%; margin-bottom:0.5rem;">
+          {% endif %}
+
+          {% include "needs_info/answer_form.html.j2" %}
+        </fieldset>
+        {% endfor %}
+
+        <button type="submit">Save Answers &amp; Retry Now</button>
+      </form>
+      {% else %}
+      <p><em>All fields resolved.</em></p>
+      <form method="post" action="/needs-info/{{ job_id }}/retry">
+        <button type="submit" hx-post="/needs-info/{{ job_id }}/retry" hx-indicator="#retry-spinner">
+          Retry Now
+        </button>
+        <span id="retry-spinner" class="htmx-indicator" aria-busy="true">Retrying...</span>
+      </form>
+      {% endif %}
+    </article>
+  </div>
+</div>
+
+<p><a href="/needs-info">Back to Queue</a></p>
+{% endblock %}
