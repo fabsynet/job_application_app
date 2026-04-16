@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema + 06-02 browser primitives + 06-04 learning service complete; 5 plans remaining
+**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema + 06-02 browser primitives + 06-03 form fillers + 06-04 learning service complete; 4 plans remaining
 
 ## Current Position
 
 Phase: 6 of 6 (Playwright Browser Submission / Learning Loop)
-Plan: 06-04 of 8 in current phase — Learning service + semantic matcher + needs-info aggregation
+Plan: 06-03 of 8 in current phase — Form filler + ATS-specific fillers
 Status: In progress
-Last activity: 2026-04-15 — Completed 06-04-PLAN.md (SavedAnswer CRUD, LLM matcher, needs-info queries, 33 tests)
+Last activity: 2026-04-15 — Completed 06-03-PLAN.md (label heuristics, Greenhouse/Lever/Ashby/Generic fillers, 91 tests)
 
-Progress: [███████████████████████████████████░░░░░] 87% (34 of 39 plans complete: Phases 1-5 complete + 06-01 + 06-02 + 06-04)
+Progress: [████████████████████████████████████░░░░] 90% (35 of 39 plans complete: Phases 1-5 complete + 06-01 + 06-02 + 06-03 + 06-04)
 
 ## Performance Metrics
 
@@ -297,7 +297,12 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Completed 06-04-PLAN.md (learning service + semantic matcher + needs-info aggregation). Two atomic commits: bbfb1d9 (Task 1: SavedAnswer CRUD + UnknownField persistence service, 17 tests) and 0273df7 (Task 2: LLM semantic matcher + needs-info aggregation, 16 tests). One deviation: Rule 1 — fixed func.case() SQLAlchemy API to use case() directly. 33/33 new tests green.
+Stopped at: Completed 06-03-PLAN.md (form filler + ATS-specific fillers). Two atomic commits: f0f4cf4 (Task 1: base form filler with label heuristic engine, 60 tests) and ad7019d (Task 2: ATS-specific fillers for Greenhouse/Lever/Ashby/Generic, 31 tests). Two deviations: Rule 2 — added BaseFiller ABC for interface contract; Rule 1 — fixed work_authorization regex to match "Authorization" suffix. 91 new tests, 127 total playwright_submit tests green.
+
+---
+
+Previous session: 2026-04-15 (earlier)
+Previously stopped at: Completed 06-04-PLAN.md (learning service + semantic matcher + needs-info aggregation). Two atomic commits: bbfb1d9 (Task 1: SavedAnswer CRUD + UnknownField persistence service, 17 tests) and 0273df7 (Task 2: LLM semantic matcher + needs-info aggregation, 16 tests). One deviation: Rule 1 — fixed func.case() SQLAlchemy API to use case() directly. 33/33 new tests green.
 
 ---
 
