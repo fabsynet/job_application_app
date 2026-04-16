@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema foundation complete; 7 plans remaining
+**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema + 06-02 browser primitives complete; 6 plans remaining
 
 ## Current Position
 
 Phase: 6 of 6 (Playwright Browser Submission / Learning Loop)
-Plan: 06-01 of 8 in current phase — Phase 6 database schema (SavedAnswer + UnknownField + Settings extensions)
+Plan: 06-02 of 8 in current phase — Browser primitives (BrowserManager, CAPTCHA detection, screenshots)
 Status: In progress
-Last activity: 2026-04-15 — Completed 06-01-PLAN.md (2 new SQLModel tables, migration 0006, 3 Settings columns, 369/369 suite green)
+Last activity: 2026-04-15 — Completed 06-02-PLAN.md (3 utility modules, 36 tests, all green)
 
-Progress: [████████████████████████████████░░░░░░░░] 82% (32 of 39 plans complete: Phases 1-5 complete + 06-01)
+Progress: [██████████████████████████████████░░░░░░] 85% (33 of 39 plans complete: Phases 1-5 complete + 06-01 + 06-02)
 
 ## Performance Metrics
 
@@ -294,7 +294,12 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Completed 06-01-PLAN.md (Phase 6 schema foundation). Two atomic commits: 78bef07 (Task 1: app/learning/models.py SavedAnswer + UnknownField + app/db/models.py Settings extensions + import side-effect) and af4d0fc (Task 2: Alembic migration 0006 creating saved_answers + unknown_fields tables + 3 Settings columns). Zero deviations. 369/369 suite green.
+Stopped at: Completed 06-02-PLAN.md (browser primitives). Two atomic commits: 97c0c34 (Task 1: BrowserManager with storageState persistence, 11 tests) and 151f991 (Task 2: CAPTCHA detection + screenshot utilities, 25 tests). One deviation: Rule 3 — installed playwright package locally (already in requirements.txt but not in local venv). 36/36 new tests green.
+
+---
+
+Previous session: 2026-04-15 (earlier)
+Previously stopped at: Completed 06-01-PLAN.md (Phase 6 schema foundation). Two atomic commits: 78bef07 (Task 1: app/learning/models.py SavedAnswer + UnknownField + app/db/models.py Settings extensions + import side-effect) and af4d0fc (Task 2: Alembic migration 0006 creating saved_answers + unknown_fields tables + 3 Settings columns). Zero deviations. 369/369 suite green.
 
 ---
 
