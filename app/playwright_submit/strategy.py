@@ -13,6 +13,7 @@ back to ``async_session`` from ``app.db.base``.
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -151,7 +152,7 @@ class PlaywrightStrategy:
                         "field_id": 0,  # no DB ID yet
                         "field_label": uf.label,
                         "field_type": uf.field_type,
-                        "field_options": uf.options,
+                        "field_options": json.dumps(uf.options) if uf.options else None,
                         "is_required": uf.is_required,
                         "page_number": uf.page_number,
                     }
@@ -178,7 +179,7 @@ class PlaywrightStrategy:
                     {
                         "field_label": uf.label,
                         "field_type": uf.field_type,
-                        "field_options": uf.options,
+                        "field_options": json.dumps(uf.options) if uf.options else None,
                         "is_required": uf.is_required,
                         "page_number": uf.page_number,
                     }
