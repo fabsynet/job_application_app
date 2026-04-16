@@ -124,7 +124,16 @@ Plans:
   3. User provides an answer once in the UI and the next hourly run retries that halted application successfully — without creating a duplicate
   4. A second job that asks a semantically similar question (minor wording differences) is answered automatically from the cached answer, verifiable in the run log
   5. Generic ATS form pages (outside Greenhouse/Lever/Ashby) are submitted via the same label-based matching engine, with per-step screenshots captured for debugging
-**Plans**: TBD
+**Plans**: 8 plans
+Plans:
+- [ ] 06-01-PLAN.md -- Schema: SavedAnswer + UnknownField tables + Settings columns + Alembic migration 0006
+- [ ] 06-02-PLAN.md -- BrowserManager + CAPTCHA detection + screenshot utilities
+- [ ] 06-03-PLAN.md -- Label-based form filler engine + ATS-specific fillers (Greenhouse/Lever/Ashby/generic)
+- [ ] 06-04-PLAN.md -- Learning loop service: SavedAnswer CRUD + LLM semantic matcher + needs-info aggregation
+- [ ] 06-05-PLAN.md -- PlaywrightStrategy + registry integration (single Phase 5 touchpoint)
+- [ ] 06-06-PLAN.md -- Needs-info queue UI + answer submission + immediate Playwright retry
+- [ ] 06-07-PLAN.md -- Saved Answers settings UI + Playwright configuration toggles
+- [ ] 06-08-PLAN.md -- Integration tests for all SUBM-03/04/05 + LEARN-01/02/03/04/05 + visual sweep
 
 ## Progress
 
@@ -138,7 +147,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Safe-Channel Discovery, Dedup & Matching | 6/6 | ✓ Complete | 2026-04-12 |
 | 4. LLM Tailoring & DOCX Generation | 7/7 | ✓ Complete | 2026-04-12 |
 | 5. Email Submission, Review Queue, Manual Apply & Notifications | 0/8 | Planned | - |
-| 6. Playwright Browser Submission & Learning Loop | 0/TBD | Not started | - |
+| 6. Playwright Browser Submission & Learning Loop | 0/8 | Planned | - |
 
 ## Coverage
 
