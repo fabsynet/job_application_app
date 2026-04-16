@@ -54,6 +54,7 @@ async def send_success_notification(
     record: TailoringRecord,
     submission_id: int,
     recipient_email: str,
+    reused_answers: list[tuple[str, str]] | None = None,
 ) -> bool:
     """SC-4: one summary email per successful submission.
 
@@ -89,6 +90,7 @@ async def send_success_notification(
         base_url=base_url,
         review_url=f"{base_url}/review/{job.id}",
         tailored_resume_path=record.tailored_resume_path,
+        reused_answers=reused_answers or [],
     )
 
     msg = EmailMessage()

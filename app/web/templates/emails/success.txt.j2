@@ -9,6 +9,13 @@ Submission: #{{ submission_id }}
 
 Tailored resume: {{ tailored_resume_path }}
 Review in app:   {{ review_url }}
+{% if reused_answers %}
+
+Saved Answers Applied:
+{% for label, answer in reused_answers %}
+- "{{ label }}": {{ answer }}
+{% endfor %}
+{% endif %}
 
 --
 JobApplyBot
