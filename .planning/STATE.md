@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema + 06-02 browser primitives complete; 6 plans remaining
+**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema + 06-02 browser primitives + 06-04 learning service complete; 5 plans remaining
 
 ## Current Position
 
 Phase: 6 of 6 (Playwright Browser Submission / Learning Loop)
-Plan: 06-02 of 8 in current phase — Browser primitives (BrowserManager, CAPTCHA detection, screenshots)
+Plan: 06-04 of 8 in current phase — Learning service + semantic matcher + needs-info aggregation
 Status: In progress
-Last activity: 2026-04-15 — Completed 06-02-PLAN.md (3 utility modules, 36 tests, all green)
+Last activity: 2026-04-15 — Completed 06-04-PLAN.md (SavedAnswer CRUD, LLM matcher, needs-info queries, 33 tests)
 
-Progress: [██████████████████████████████████░░░░░░] 85% (33 of 39 plans complete: Phases 1-5 complete + 06-01 + 06-02)
+Progress: [███████████████████████████████████░░░░░] 87% (34 of 39 plans complete: Phases 1-5 complete + 06-01 + 06-02 + 06-04)
 
 ## Performance Metrics
 
@@ -45,6 +45,9 @@ Progress: [███████████████████████
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 06-04: No confidence threshold for LLM semantic matching — if the LLM says two labels are equivalent, the match is accepted and auto-filled. Per locked design decision (must_haves.truths).
+- 06-04: Graceful degradation on LLM failure — find_matching_answers returns all-None instead of raising. Pipeline proceeds without auto-fill for that batch.
+- 06-04: Label normalization (lowercase, strip, collapse whitespace) for SavedAnswer dedup — upsert by field_label_normalized prevents duplicate answers for "First Name" vs "first  name".
 - 05-06: `detect_source` returns `(slug, source_type)` — slug FIRST. Plan 05-06's code snippet had the tuple order flipped; any future caller must unpack as `slug, source_type = detect_source(url)`. Stamped a Task 1 test (`test_fetch_greenhouse_url_stamps_source_greenhouse`) that will break loudly if the signature ever changes.
 - 05-06: FetchError reasons are a small stable vocabulary — not_found / auth_wall / timeout / empty_body / connect_failed / request_error / http_NNN / unexpected_error / empty_url / title_and_company_required. The UI renders the reason verbatim inside a `<code>` block in _fallback.html.j2. No localization layer in v1.
 - 05-06: `<200`-char empty-body heuristic on 2xx responses catches LinkedIn/Indeed SPA shells that return 200 with a login prompt. The cap is well below any real job posting HTML (~5k+ chars minimum empirically).
@@ -294,7 +297,12 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Completed 06-02-PLAN.md (browser primitives). Two atomic commits: 97c0c34 (Task 1: BrowserManager with storageState persistence, 11 tests) and 151f991 (Task 2: CAPTCHA detection + screenshot utilities, 25 tests). One deviation: Rule 3 — installed playwright package locally (already in requirements.txt but not in local venv). 36/36 new tests green.
+Stopped at: Completed 06-04-PLAN.md (learning service + semantic matcher + needs-info aggregation). Two atomic commits: bbfb1d9 (Task 1: SavedAnswer CRUD + UnknownField persistence service, 17 tests) and 0273df7 (Task 2: LLM semantic matcher + needs-info aggregation, 16 tests). One deviation: Rule 1 — fixed func.case() SQLAlchemy API to use case() directly. 33/33 new tests green.
+
+---
+
+Previous session: 2026-04-15 (earlier)
+Previously stopped at: Completed 06-02-PLAN.md (browser primitives). Two atomic commits: 97c0c34 (Task 1: BrowserManager with storageState persistence, 11 tests) and 151f991 (Task 2: CAPTCHA detection + screenshot utilities, 25 tests). One deviation: Rule 3 — installed playwright package locally (already in requirements.txt but not in local venv). 36/36 new tests green.
 
 ---
 
