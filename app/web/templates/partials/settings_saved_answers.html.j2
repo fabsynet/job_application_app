@@ -1,0 +1,59 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Saved Answers</h3>
+<p>Answers learned from previous applications. These are reused to auto-fill future form fields.</p>
+
+{% if answers %}
+<figure>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th scope="col">Question</th>
+        <th scope="col">Answer</th>
+        <th scope="col">Type</th>
+        <th scope="col">Times Reused</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for answer in answers %}
+      <tr id="answer-row-{{ answer.id }}">
+        <td>{{ answer.field_label }}</td>
+        <td id="answer-text-{{ answer.id }}">
+          <span class="answer-display">{{ answer.answer_text }}</span>
+        </td>
+        <td>{{ answer.answer_type }}</td>
+        <td>{{ answer.times_reused }}</td>
+        <td>
+          <details class="dropdown" style="display:inline-block; margin:0;">
+            <summary role="button" class="outline secondary" style="padding:0.25rem 0.5rem; font-size:0.85rem;">
+              Edit
+            </summary>
+            <div style="padding:0.5rem;">
+              <form hx-post="/settings/saved-answers/{{ answer.id }}/edit"
+                    hx-target="#settings-content" hx-swap="innerHTML">
+                <input type="text" name="answer_text" value="{{ answer.answer_text }}"
+                       style="margin-bottom:0.5rem;">
+                <button type="submit" class="primary" style="padding:0.25rem 0.5rem; font-size:0.85rem;">
+                  Save
+                </button>
+              </form>
+            </div>
+          </details>
+          <form hx-post="/settings/saved-answers/{{ answer.id }}/delete"
+                hx-target="#settings-content" hx-swap="innerHTML"
+                hx-confirm="Delete this saved answer?"
+                style="display:inline-block; margin:0;">
+            <button type="submit" class="outline secondary"
+                    style="padding:0.25rem 0.5rem; font-size:0.85rem;">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</figure>
+{% else %}
+<p><em>No saved answers yet. Answers are created when you respond to unknown form fields.</em></p>
+{% endif %}

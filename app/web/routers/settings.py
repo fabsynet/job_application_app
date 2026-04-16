@@ -62,6 +62,8 @@ _SECTION_MAP: dict[str, tuple[str, str]] = {
     "safety": ("partials/settings_safety.html.j2", "Safety"),
     "notifications": ("partials/settings_notifications.html.j2", "Notifications"),
     "submission": ("partials/settings_submission.html.j2", "Submission"),
+    "playwright": ("partials/settings_playwright.html.j2", "Playwright"),
+    "saved-answers": ("partials/settings_saved_answers.html.j2", "Saved Answers"),
 }
 
 
@@ -99,6 +101,10 @@ async def _render_section(
         from app.discovery.service import get_all_sources
 
         ctx["sources"] = await get_all_sources(session)
+    elif section_name == "saved-answers":
+        from app.learning.service import get_all_saved_answers
+
+        ctx["answers"] = await get_all_saved_answers(session)
 
     return templates.TemplateResponse(request, template_path, ctx)
 

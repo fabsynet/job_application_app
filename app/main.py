@@ -57,6 +57,7 @@ from app.web.routers import manual_apply as manual_apply_router
 from app.web.routers import notifications as notifications_router
 from app.web.routers import review as review_router
 from app.web.routers import tailoring as tailoring_router
+from app.web.routers import saved_answers as saved_answers_router
 from app.web.routers import wizard as wizard_router
 
 if TYPE_CHECKING:
@@ -185,6 +186,7 @@ def create_app() -> FastAPI:
     app.include_router(review_router.router)
     app.include_router(manual_apply_router.router)
     app.include_router(applied_router.router)
+    app.include_router(saved_answers_router.router)
     return app
 
 

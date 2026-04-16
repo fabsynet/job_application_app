@@ -1,0 +1,29 @@
+{% include "partials/flash_message.html.j2" %}
+<h3>Playwright</h3>
+<p>Configure browser automation behavior for form submissions.</p>
+
+<form hx-post="/settings/playwright" hx-target="#settings-content" hx-swap="innerHTML">
+  <fieldset>
+    <label>
+      <input type="checkbox" name="playwright_headless" value="true"
+             {% if settings.playwright_headless %}checked{% endif %}>
+      <strong>Headless Browser Mode</strong>
+      &mdash; Run Playwright in headless mode (default). Disable to watch forms being filled in real time.
+    </label>
+    <label>
+      <input type="checkbox" name="pause_if_unsure" value="true"
+             {% if settings.pause_if_unsure %}checked{% endif %}>
+      <strong>Pause on Unknown Fields</strong>
+      &mdash; Halt applications when form fields can't be auto-filled. Disable for "always advance" mode (screenshots captured but no halts).
+    </label>
+  </fieldset>
+
+  <label for="screenshot_retention_days">
+    Screenshot Retention (days)
+  </label>
+  <input type="number" name="screenshot_retention_days" id="screenshot_retention_days"
+         min="1" max="365" value="{{ settings.screenshot_retention_days }}">
+  <small>Screenshots older than this are automatically deleted. Screenshots for halted applications are kept until resolved.</small>
+
+  <button type="submit" class="primary">Save Playwright settings</button>
+</form>
