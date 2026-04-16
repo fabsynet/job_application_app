@@ -76,6 +76,11 @@ class Settings(SQLModel, table=True):
     submissions_paused: bool = Field(default=False)
     auto_holdout_margin_pct: int = Field(default=10)
 
+    # --- Phase 6 fields ---
+    playwright_headless: bool = Field(default=True)
+    pause_if_unsure: bool = Field(default=True)
+    screenshot_retention_days: int = Field(default=30)
+
 
 class Secret(SQLModel, table=True):
     """Encrypted secret store.
@@ -169,6 +174,9 @@ from app.tailoring.models import CostLedger, TailoringRecord  # noqa: F401, E402
 # Phase 5 submission models — imported so Alembic env.py picks them up
 from app.submission.models import FailureSuppression, Submission  # noqa: F401, E402
 
+# Phase 6 learning models — imported so Alembic env.py picks them up
+from app.learning.models import SavedAnswer, UnknownField  # noqa: F401, E402
+
 __all__ = [
     "Settings",
     "Secret",
@@ -183,4 +191,6 @@ __all__ = [
     "CostLedger",
     "Submission",
     "FailureSuppression",
+    "SavedAnswer",
+    "UnknownField",
 ]
