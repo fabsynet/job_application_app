@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Given a base resume + keywords, the app gets your tailored application in front of every matching job posting — with zero manual effort after setup.
-**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 schema + 06-02 browser primitives + 06-03 form fillers + 06-04 learning service complete; 4 plans remaining
+**Current focus:** Phase 6 (Playwright Browser Submission / Learning Loop) — 06-01 through 06-07 complete; 1 plan remaining
 
 ## Current Position
 
 Phase: 6 of 6 (Playwright Browser Submission / Learning Loop)
-Plan: 06-03 of 8 in current phase — Form filler + ATS-specific fillers
+Plan: 06-07 of 8 in current phase — Saved Answers + Playwright Settings UI
 Status: In progress
-Last activity: 2026-04-15 — Completed 06-03-PLAN.md (label heuristics, Greenhouse/Lever/Ashby/Generic fillers, 91 tests)
+Last activity: 2026-04-16 — Completed 06-07-PLAN.md (saved answers CRUD + playwright settings toggles, 9 tests)
 
-Progress: [████████████████████████████████████░░░░] 90% (35 of 39 plans complete: Phases 1-5 complete + 06-01 + 06-02 + 06-03 + 06-04)
+Progress: [██████████████████████████████████████░░] 95% (37 of 39 plans complete: Phases 1-5 complete + 06-01 through 06-07)
 
 ## Performance Metrics
 
