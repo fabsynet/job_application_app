@@ -771,6 +771,32 @@ async def save_base_url(
     )
 
 
+@router.post("/playwright", response_class=HTMLResponse)
+async def save_playwright(
+    request: Request,
+    session=Depends(get_session),
+):
+    """Save Playwright browser automation settings.
+
+    Checkboxes only submit when checked — absence means False.
+    Screenshot retention is clamped to 1-365 days.
+    """
+    form = await request.form()
+    headless = form.get("playwright_headless", "false").lower() == "true"
+    pause = form.get("pause_if_unsure", "false").lower() == "true"
+    retention_raw = int(form.get("screenshot_retention_days", "30"))
+    retention = max(1, min(365, retention_raw))
+
+    await set_setting(session, "playwright_headless", headless)
+    await set_setting(session, "pause_if_unsure", pause)
+    await set_setting(session, "screenshot_retention_days", retention)
+
+    return await _render_section(
+        request, session, "playwright",
+        flash=("success", "Playwright settings saved."),
+    )
+
+
 @router.post("/submissions-paused", response_class=HTMLResponse)
 async def save_submissions_paused(
     request: Request,
