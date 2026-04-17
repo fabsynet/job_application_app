@@ -21,7 +21,8 @@ FROM mcr.microsoft.com/playwright/python:v1.58.0-noble
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    ALEMBIC_DATABASE_URL=sqlite:////data/app.db
 
 # Non-root application user (uid 1000)
 # The Playwright base image may already have GID/UID 1000, so create only if missing.

@@ -25,7 +25,14 @@ from sqlmodel import SQLModel
 # SQLModel.metadata before Alembic inspects it.
 from app.db import models  # noqa: F401
 
+import os
+
 config = context.config
+
+# Allow overriding the DB URL via env var (e.g. in Docker where /data is an
+# absolute mount point, not relative ./data).
+if db_url := os.environ.get("ALEMBIC_DATABASE_URL"):
+    config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
