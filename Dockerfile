@@ -24,8 +24,9 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
 
 # Non-root application user (uid 1000)
-RUN groupadd --system --gid 1000 app \
- && useradd  --system --uid 1000 --gid app --home /app --shell /bin/bash app
+# The Playwright base image may already have GID/UID 1000, so create only if missing.
+RUN getent group 1000 >/dev/null || groupadd --system --gid 1000 app; \
+    id -u 1000 >/dev/null 2>&1 || useradd --system --uid 1000 --gid $(getent group 1000 | cut -d: -f1) --home /app --shell /bin/bash app
 
 WORKDIR /app
 
@@ -37,9 +38,9 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY . /app
 
 # Host-mounted data directory (SQLite, logs, uploads, browser state)
-RUN mkdir -p /data && chown -R app:app /data /app
+RUN mkdir -p /data && chown -R 1000:1000 /data /app
 
-USER app
+USER 1000
 
 EXPOSE 8000
 
