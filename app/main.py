@@ -54,6 +54,7 @@ from app.web.routers import sources as sources_router
 from app.web.routers import applied as applied_router
 from app.web.routers import jobs as jobs_router
 from app.web.routers import manual_apply as manual_apply_router
+from app.web.routers import needs_info as needs_info_router
 from app.web.routers import notifications as notifications_router
 from app.web.routers import review as review_router
 from app.web.routers import tailoring as tailoring_router
@@ -184,6 +185,7 @@ def create_app() -> FastAPI:
     app.include_router(tailoring_router.router)
     app.include_router(notifications_router.router)
     app.include_router(review_router.router)
+    app.include_router(needs_info_router.router)
     app.include_router(manual_apply_router.router)
     app.include_router(applied_router.router)
     app.include_router(saved_answers_router.router)

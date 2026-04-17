@@ -1,0 +1,12 @@
+.git
+.venv
+__pycache__
+*.pyc
+data/
+.planning/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+Omobolaji__Resume.docx
+SETUP_AND_TEST_GUIDE.md
