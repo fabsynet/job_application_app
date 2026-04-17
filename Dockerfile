@@ -45,4 +45,5 @@ USER 1000
 EXPOSE 8000
 
 # See header: --workers 1 is required by APScheduler singleton invariant.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Run Alembic migrations before starting the app so tables exist on first boot.
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1"]
